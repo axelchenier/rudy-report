@@ -6,8 +6,8 @@ import { esc, modelBadge } from "../ui.js";
 import { predictGame, seasonAverages } from "./college_predictor.js";
 
 const EXP = 11.5;                                   // Torvik's Barthag exponent (reproduces his Barthag to ±0.0003)
-const barthag = (o, d) => o ** EXP / (o ** EXP + d ** EXP);
-const log5 = (a, b) => (a - a * b) / (a + b - 2 * a * b);   // chance team A (Barthag a) beats a team of Barthag b
+export const barthag = (o, d) => o ** EXP / (o ** EXP + d ** EXP);
+export const log5 = (a, b) => (a - a * b) / (a + b - 2 * a * b);   // chance team A (Barthag a) beats a team of Barthag b
 const METHOD = "Changes one thing and holds everything else fixed. See 'How it works' below.";
 const f1 = (v) => v == null ? "–" : Number(v).toFixed(1);
 const sg = (v, d = 1) => (v > 0 ? "+" : v < 0 ? "−" : "±") + Math.abs(v).toFixed(d);

@@ -279,6 +279,14 @@ scores: margin chart with a 5-game average, game table with opponent T-Rank, pos
 (points per 100 possessions, not opponent-adjusted), and splits (home/away as ESPN lists them, conference/non-conference, vs top-25
 and top-100, vs non-D-I, postseason, close games, by month). `data/college/gamelogs/<season>/teams.json` (~1.2 MB per season).
 
+**Transfer what-if** (`#/college/transfer?season=&pid=&to=`, College menu, **Model estimate**): move a player to another team
+in the same season and see both teams' AdjO/AdjD/AdjEM, Barthag, estimated T-Rank and record change. Method (fit by
+`pipeline/college_transfer.py` → `data/college/transfer_model.json`, 2 KB): across 6,689 D-I team-seasons, AdjEM = 0.837 ×
+Σ(Torvik BPM × Min%) − 0.25 (r = 0.9997); AdjO and AdjD use the same fit on OBPM and DBPM. The old team gives his minutes to its
+bench (minute-weighted bench OBPM/DBPM); the new team gives him the slider's minutes, taken from the end of its bench first.
+"Typical transfer carryover" uses how 3,213 real transfers' OBPM/DBPM and minutes changed the next season. Record = log5 vs
+Torvik's SOS, change added to the real record. Not modeled: position fit, usage overlap, coaching, eligibility.
+
 **College what-if sliders** (team pages, labeled *Model estimate*): change adjusted offense, adjusted defense, 3P% or
 opponents' 3P% and see AdjEM, Barthag (Torvik's formula, exponent 11.5), an estimated T-Rank, expected wins against the same
 strength of schedule (log5 vs Torvik's SOS; preseason uses the opponent strength that reproduces Torvik's projected record),
@@ -308,6 +316,7 @@ Nightly college job (Torvik refresh + ESPN games + reports + draft board):
 | `pipeline/update_college.py` | Nightly job → `data/college/reports/` (and runs `college_draft.py`). |
 | `pipeline/college_draft.py` | Draft model + prospect reports → `data/draft/`. |
 | `pipeline/college_gamelogs.py` | College player game logs (ESPN box scores) → `data/college/gamelogs/`. |
+| `pipeline/college_transfer.py` | Fits the Transfer what-if's player→team link and transfer carryover → `data/college/transfer_model.json`. |
 | `pipeline/college_nba.py` | Draft classes 2008-2026 + college-to-NBA data → `data/draft/history/`, `data/draft/translation.json`. |
 | `pipeline/college_bracket.py` | Real NCAA brackets (ESPN) → `data/college/brackets/<year>.json`. |
 | `js/pages/college_tourney.js` | Tournament Simulator page. |

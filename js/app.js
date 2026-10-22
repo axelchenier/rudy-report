@@ -25,6 +25,7 @@ import { draftBoardPage, draftProspectPage } from "./pages/draft.js";
 import { draftHistoryPage } from "./pages/draft_history.js";
 import { draftTranslationPage } from "./pages/draft_translation.js";
 import { draftMockPage } from "./pages/draft_mock.js";
+import { collegeTransferPage } from "./pages/college_transfer.js";
 import { setFooter } from "./footer.js";
 
 const app = document.getElementById("app");
@@ -51,6 +52,7 @@ const routes = [
   [/^#\/college\/reports\/?(daily|weekly|monthly)?\/?([\w-]*)$/, collegeReportsPage, "college"],
   [/^#\/college\/predictor(?:\?(.*))?$/, collegePredictorPage, "college"],
   [/^#\/college\/tournament(?:\?(.*))?$/, collegeTourneyPage, "college"],
+  [/^#\/college\/transfer(?:\?(.*))?$/, collegeTransferPage, "college"],
   [/^#\/college\/conferences(?:\?(.*))?$/, collegeConferencesPage, "college"],
   [/^#\/college\/conference\/([^?\/]+)(?:\?(.*))?$/, collegeConferencePage, "college"],
   [/^#\/draft\/?(?:\?(.*))?$/, draftBoardPage, "draft"],

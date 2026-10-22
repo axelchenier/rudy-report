@@ -22,7 +22,7 @@ export const ccol = (key, extra = {}) => STRING_KEYS.has(key)
 export function collegeNav(active) {
   const items = [["teams", "Teams", "#/college/teams"], ["players", "Players", "#/college/players"], ["conferences", "Conferences", "#/college/conferences"], ["compare", "Compare", "#/college/compare"],
     ["reports", "Reports", "#/college/reports"], ["predictor", "Predictor", "#/college/predictor"],
-    ["tournament", "Tournament sim", "#/college/tournament"], ["draft", "2027 Draft", "#/draft"]];
+    ["tournament", "Tournament sim", "#/college/tournament"], ["transfer", "Transfer what-if", "#/college/transfer"], ["draft", "2027 Draft", "#/draft"]];
   return `<div class="tabs" style="margin-bottom:12px;flex-wrap:wrap">${items.map(([k, l, h]) =>
     `<a class="tab-link ${k === active ? "active" : ""}" href="${h}">${l}</a>`).join("")}</div>`;
 }
@@ -254,7 +254,8 @@ export async function collegePlayerPage(app, pid) {
         ${esc(p.CLASS || "–")} · ${esc(p.HT || "–")} · ${esc(p.POS || "")} ${p.AGE ? `· age ${p.AGE} on Feb 1` : ""} ${p.HOMETOWN ? `· from ${esc(p.HOMETOWN)}` : ""}<br>
         ${p.GP} games${p.GS != null ? ` (${p.GS} starts)` : ""} · ${fmt(p.MIN, "MIN")} min/game · ${fmt(p.MIN_PCT, "MIN_PCT")}% of team minutes
         ${p.NBA_PICK ? ` · <b>NBA draft pick #${p.NBA_PICK}</b>` : ""}</p></div>
-      <a class="btn" href="#/college/compare?type=players&ids=${pid}&season=${season}">Compare →</a></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap"><a class="btn" href="#/college/compare?type=players&ids=${pid}&season=${season}">Compare →</a>
+        ${p.BPM != null ? `<a class="btn" href="#/college/transfer?season=${season}&pid=${pid}">Transfer what-if →</a>` : ""}</div></div>
     <div class="grid stat-cards">${cards}</div>
     <p class="muted small">Percentiles and ranks are among the ${pool.length.toLocaleString()} D-I players who played at least 40% of their team's minutes in ${season} (100th = best).</p>
     <div id="cextras"></div>
