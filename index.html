@@ -31,7 +31,16 @@
         <a href="#/players" data-nav="players">Players</a>
         <a href="#/teams" data-nav="teams">Teams</a>
         <a href="#/standings" data-nav="standings">Standings</a>
-        <a href="#/hubs" data-nav="hubs">Hubs</a>
+        <div class="nav-group">
+          <button class="nav-drop" data-nav="hubs" aria-haspopup="true" aria-expanded="false">Hubs <span aria-hidden="true">▾</span></button>
+          <div class="nav-menu">
+            <a href="#/hubs">Stat hubs</a>
+            <span class="nav-menu-label">League history</span>
+            <a href="#/history/trends">League trends</a>
+            <a href="#/history/leaders">All-time &amp; season leaders</a>
+            <a href="#/history/playoffs">Playoffs &amp; champions</a>
+          </div>
+        </div>
         <a href="#/compare" data-nav="compare">Compare</a>
         <div class="nav-group">
           <button class="nav-drop" data-nav="tools" aria-haspopup="true" aria-expanded="false">Tools <span aria-hidden="true">▾</span></button>

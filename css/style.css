@@ -447,3 +447,5 @@ label.bar-pick select { flex: 1 1 auto; min-width: 0; max-width: 100%; }
 .fr-fresh { background: #16a34a; } .fr-late { background: #d97706; } .fr-old { background: #dc2626; }
 .fr-bad { color: #dc2626; }
 .fr-table { margin-top: 6px; font-size: 12px; }
+/* Dropdown section label (e.g. Hubs > League history) */
+.nav-menu-label { display: block; padding: 8px 10px 2px; font-size: 11px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); border-top: 1px solid var(--border); margin-top: 4px; }
