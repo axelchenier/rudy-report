@@ -32,6 +32,7 @@ import re
 import sys
 import time
 import unicodedata
+import warnings
 from datetime import date, datetime, timezone
 from pathlib import Path
 
@@ -121,7 +122,15 @@ def looks_html(text):
 def read_csv(path, **kw):
     if not path.exists() or looks_html(path.read_text(errors="ignore")[:300]):
         return None
-    return pd.read_csv(path, index_col=False, **kw)
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", pd.errors.ParserWarning)      # the broken header below
+        df = pd.read_csv(path, index_col=False, **kw)
+    # Older Torvik team_results files (2008-2021) have a broken last header, "Fun Rk, adjt" in ONE quoted cell, so the
+    # tempo column had no name and was dropped. Re-read with the two names split so AdjT (tempo) is kept.
+    if "Fun Rk, adjt" in df.columns:
+        names = [c for c in df.columns if c != "Fun Rk, adjt"] + ["Fun Rk", "adjt"]
+        df = pd.read_csv(path, header=None, skiprows=1, names=names, index_col=False, **kw)
+    return df
 
 
 # ---------------------------------------------------------------- ESPN box scores (sportsdataverse)
