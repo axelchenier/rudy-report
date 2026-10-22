@@ -224,6 +224,16 @@ chances fit on 2008-2023 college seasons, with a back-test and a method note) an
 rule-based strengths/weaknesses with numbers, most similar past drafted players, NBA Draft Combine data when it exists,
 college career). No scouting opinions and no outside rankings.
 
+**Draft classes 2008-2026** (`#/draft/history`, `#/draft/history?year=2016`; in the **Draft** menu): every pick from
+NBA.com's DraftHistory, linked to our NBA player page (career stats, NBA.com) and, when he played Division I, to his
+college stats (Torvik). Each class shows picks-by-range outcomes, longest careers, best value after pick 20, top scorers and a
+"re-draft" by career NBA minutes. The overview page has hit rates by pick range (classes 2008-2020, 6+ NBA seasons each).
+Outcome labels use NBA.com regular-season minutes only (no Basketball-Reference stats): **Starter** = 2+ seasons with
+2,000+ minutes, **Rotation** = 5,000+ career minutes, **Played** = 1+ game. Built by `pipeline/college_nba.py`
+(DraftHistory cached and refreshed daily; NBA careers read from `data/careers/`, college lines from `data/college/`) into
+`data/draft/history/` and `data/draft/translation.json`. 906 of 914 college picks are linked; the rest never played D-I
+(e.g. Shaedon Sharpe, Ricky Ledo) or NBA.com lists a non-college club as their school.
+
 **College what-if sliders** (team pages, labeled *Model estimate*): change adjusted offense, adjusted defense, 3P% or
 opponents' 3P% and see AdjEM, Barthag (Torvik's formula, exponent 11.5), an estimated T-Rank, expected wins against the same
 strength of schedule (log5 vs Torvik's SOS; preseason uses the opponent strength that reproduces Torvik's projected record),
@@ -252,6 +262,7 @@ Nightly college job (Torvik refresh + ESPN games + reports + draft board):
 |---|---|
 | `pipeline/update_college.py` | Nightly job → `data/college/reports/` (and runs `college_draft.py`). |
 | `pipeline/college_draft.py` | Draft model + prospect reports → `data/draft/`. |
+| `pipeline/college_nba.py` | Draft classes 2008-2026 + college-to-NBA data → `data/draft/history/`, `data/draft/translation.json`. |
 | `pipeline/college_bracket.py` | Real NCAA brackets (ESPN) → `data/college/brackets/<year>.json`. |
 | `js/pages/college_tourney.js` | Tournament Simulator page. |
 | `js/pages/college_conf.js` | Conference pages (all conferences + one conference). |

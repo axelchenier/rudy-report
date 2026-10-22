@@ -13,7 +13,8 @@ OPTIONS
   --out DIR               write reports somewhere else (default data/college/reports)
 
 A normal run (no --season/--out) also rebuilds the 2027 Draft board (pipeline/college_draft.py -> data/draft/) and, from
-mid-March to April, saves that year's NCAA bracket once the title game is final (pipeline/college_bracket.py --current).
+mid-March to April, saves that year's NCAA bracket once the title game is final (pipeline/college_bracket.py --current), and rebuilds
+the 2008-2026 draft classes / college-to-NBA data (pipeline/college_nba.py).
 
 Safe to run every day (idempotent). Errors print "ERROR: ..." and exit 1.
 
@@ -605,6 +606,12 @@ def run():
             college_bracket.update_current()
         except Exception as e:  # noqa: BLE001  - a bracket hiccup shouldn't stop the reports
             print(f"WARNING: bracket update failed: {e}")
+        # Draft classes 2008-2026 + college-to-NBA data (NBA.com DraftHistory, refreshed daily; NBA careers from data/careers/).
+        import college_nba
+        try:
+            college_nba.main()
+        except Exception as e:  # noqa: BLE001
+            print(f"WARNING: draft history update failed: {e}")
 
 
 if __name__ == "__main__":

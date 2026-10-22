@@ -2,7 +2,7 @@
 // Displays data/draft/*.json from pipeline/college_draft.py. Stats are real (Torvik T-Rank CSVs, NBA Draft Combine);
 // the board order and chances are a MODEL ESTIMATE made by this site. No scouting opinions, no one else's rankings.
 import { esc } from "../ui.js";
-import { collegeNav } from "./college.js";
+import { draftNav } from "./draft_nav.js";
 import { careerOf, TORVIK_CREDIT } from "../college/cdata.js";
 
 const cache = new Map();
@@ -31,7 +31,7 @@ function methodNote(b) {
 export async function draftBoardPage(app, query = "") {
   let b;
   try { b = await getJSON("data/draft/board.json"); }
-  catch { app.innerHTML = `${collegeNav("draft")}<h1>2027 NBA Draft</h1><p class="muted">No board yet. Run <code>.venv/bin/python pipeline/college_draft.py</code>.</p>`; return; }
+  catch { app.innerHTML = `${draftNav("board")}<h1>2027 NBA Draft</h1><p class="muted">No board yet. Run <code>.venv/bin/python pipeline/college_draft.py</code>.</p>`; return; }
   const confs = [...new Set(b.prospects.map((p) => p.conf))].sort();
   const draw = () => {
     const q = state.q.toLowerCase();
@@ -47,7 +47,7 @@ export async function draftBoardPage(app, query = "") {
         <td><b>${chance(p.p_first)}</b></td><td>${chance(p.p_drafted)}</td><td class="left muted">${esc(p.top_comp || "")}</td></tr>`).join("")}</tbody></table></div>`
       : `<p class="muted">No prospects match.</p>`;
   };
-  app.innerHTML = `${collegeNav("draft")}
+  app.innerHTML = `${draftNav("board")}
     <div class="page-head"><div><h1>2027 NBA Draft · Rudy Report Model Board ${BADGE}</h1>
       <p class="sub">College prospects ranked by a statistical model's chance of being a first-round pick. ${esc(b.stats_season)} stats, ${esc(b.roster_season)} teams. Click a player for the full report.</p></div></div>
     <div class="callout"><p>ℹ This order is <b>our model's estimate</b> from college stats, age and height. It is not a scouting ranking, a mock draft or any outlet's big board. Method below.</p></div>
@@ -64,7 +64,7 @@ export async function draftBoardPage(app, query = "") {
 
 export async function draftProspectPage(app, pid) {
   const [b, p] = await Promise.all([getJSON("data/draft/board.json"), getJSON(`data/draft/prospects/${pid}.json`).catch(() => null)]);
-  if (!p) { app.innerHTML = `${collegeNav("draft")}<h1>Prospect not found</h1><p class="muted">This player isn't on the current board. <a href="#/college/player/${esc(pid)}">College stats page →</a></p>`; return; }
+  if (!p) { app.innerHTML = `${draftNav("board")}<h1>Prospect not found</h1><p class="muted">This player isn't on the current board. <a href="#/college/player/${esc(pid)}">College stats page →</a></p>`; return; }
   const s = p.season_line, c = p.combine_data;
   const bar = (x) => `<tr><td class="left">${esc(x.label)}${x.lower_better ? ` <span class="muted small">(lower is better)</span>` : ""}</td><td>${esc(x.shown)}</td>
     <td style="width:45%"><div style="background:var(--panel-2);border-radius:6px;height:14px;position:relative">
@@ -73,7 +73,7 @@ export async function draftProspectPage(app, pid) {
   let career = [];
   try { career = (await careerOf(Number(pid))).sort((a, b2) => a.SEASON < b2.SEASON ? -1 : 1); } catch { /* careers optional */ }
   const sline = (k, f = num) => f(s[k]);
-  app.innerHTML = `${collegeNav("draft")}
+  app.innerHTML = `${draftNav("board")}
     <p class="muted small"><a href="#/draft">← Model Board</a></p>
     <div class="page-head"><div><h1>${esc(p.player)}</h1>
       <p class="sub">${esc(p.team)} · ${esc(p.conf)} · ${esc(p.class_now || "")} in ${esc(b.roster_season)} · ${esc(p.ht || "–")} · ${esc(p.role || "")}

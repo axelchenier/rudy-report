@@ -362,3 +362,14 @@ input[type=range] { vertical-align: middle; accent-color: var(--accent); }
 .profile { grid-template-columns: repeat(auto-fill, minmax(min(380px, 100%), 1fr)); }
 .seeded8 tbody tr:nth-child(8) td { border-bottom: 2px solid var(--accent); }
 .not-tracked { border-left: 3px solid var(--muted); }
+
+/* Draft classes + college-to-NBA pages (draft_history.js, draft_translation.js) */
+.grid.three-col { grid-template-columns: repeat(auto-fit, minmax(min(260px, 100%), 1fr)); }
+.grid.three-col > * { min-width: 0; }
+.mini-list { margin: 0; padding-left: 22px; line-height: 1.7; }
+.hbar { background: var(--panel-2); border-radius: 6px; height: 12px; min-width: 100px; }
+.hbar > div { background: var(--accent); height: 100%; border-radius: 6px; }
+.tier { font-size: 12px; border-radius: 6px; padding: 1px 7px; border: 1px solid var(--border); white-space: nowrap; color: var(--muted); }
+.tier-starter { color: var(--good); border-color: var(--good); font-weight: 600; }
+.tier-rotation { color: var(--accent); border-color: var(--accent); }
+.tier-none { opacity: .7; }

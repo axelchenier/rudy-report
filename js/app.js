@@ -22,6 +22,7 @@ import { collegePredictorPage } from "./pages/college_predictor.js";
 import { collegeTourneyPage } from "./pages/college_tourney.js";
 import { collegeConferencesPage, collegeConferencePage } from "./pages/college_conf.js";
 import { draftBoardPage, draftProspectPage } from "./pages/draft.js";
+import { draftHistoryPage } from "./pages/draft_history.js";
 import { setFooter } from "./footer.js";
 
 const app = document.getElementById("app");
@@ -50,8 +51,9 @@ const routes = [
   [/^#\/college\/tournament(?:\?(.*))?$/, collegeTourneyPage, "college"],
   [/^#\/college\/conferences(?:\?(.*))?$/, collegeConferencesPage, "college"],
   [/^#\/college\/conference\/([^?\/]+)(?:\?(.*))?$/, collegeConferencePage, "college"],
-  [/^#\/draft\/?(?:\?(.*))?$/, draftBoardPage, "college"],
-  [/^#\/draft\/(\d+)$/, draftProspectPage, "college"],
+  [/^#\/draft\/?(?:\?(.*))?$/, draftBoardPage, "draft"],
+  [/^#\/draft\/history\/?(?:\?(.*))?$/, draftHistoryPage, "draft"],
+  [/^#\/draft\/(\d+)$/, draftProspectPage, "draft"],
   [/^#\/reports(?:\/(daily|weekly|monthly))?(?:\/([\w-]+))?$/, reportsPage, "reports"],
 ];
 
@@ -62,7 +64,7 @@ async function render() {
   const params = hash.match(re)?.slice(1) || [];
   document.querySelectorAll("[data-nav]").forEach((a) => a.classList.toggle("active", a.dataset.nav === navKey));
   const picker = document.querySelector(".season-picker");          // the header picker is for NBA seasons
-  if (picker) picker.style.visibility = navKey === "college" || navKey === "tools" ? "hidden" : "";   // Tools use the current season
+  if (picker) picker.style.visibility = navKey === "college" || navKey === "draft" || navKey === "tools" ? "hidden" : "";   // Tools use the current season
   app.innerHTML = `<p class="muted">Loading…</p>`;
   try {
     await page(app, ...params);
