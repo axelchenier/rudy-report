@@ -46,7 +46,7 @@ async function trends(box, params) {
   const first = rows[0], last = rows[rows.length - 1];
   box.innerHTML = `
     <div class="card">
-      <div class="toolbar"><div class="tabs" id="tr-stat">${TRENDS.map(([k, l]) => `<button data-k="${k}" class="${k === stat ? "active" : ""}">${esc(l)}</button>`).join("")}</div></div>
+      <div class="toolbar"><div class="tabs tabs-wrap" id="tr-stat">${TRENDS.map(([k, l]) => `<button data-k="${k}" class="${k === stat ? "active" : ""}">${esc(l)}</button>`).join("")}</div></div>
       <p class="muted small" id="tr-desc"></p>
       <div class="chart-box"><canvas id="tr-chart"></canvas></div>
       <p class="small" id="tr-sum"></p>
