@@ -84,6 +84,8 @@ async function render() {
     console.error(err);
     app.innerHTML = `<div class="card"><h3>Something went wrong</h3><p class="muted">${esc(err.message)}</p></div>`;
   }
+  const tab = app.querySelector(".subnav .active");   // narrow screens: scroll the section tab row to the current tab
+  if (tab) tab.parentElement.scrollLeft = Math.max(0, tab.offsetLeft - 24);
   setFooter(hash);                 // footer credits the data sources of this section (NBA / College / Draft)
   window.scrollTo(0, 0);
 }

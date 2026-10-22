@@ -66,7 +66,7 @@ export async function collegeComparePage(app, query = "") {
   result.innerHTML = `
     <div class="table-wrap" style="margin-top:12px"><table class="data"><thead>${head}</thead><tbody>${body}</tbody></table></div>
     <div class="charts">
-      <div class="card"><div class="toolbar" style="margin:0 0 8px"><label>Bar chart stat <select id="barstat">${statKeys.map((k) =>
+      <div class="card"><div class="toolbar" style="margin:0 0 8px"><label class="bar-pick">Chart <select id="barstat">${statKeys.map((k) =>
         `<option value="${k}" ${k === (type === "players" ? "BPM" : "ADJEM") ? "selected" : ""}>${esc(STATS[k].label)} · ${esc(STATS[k].name)}</option>`).join("")}</select></label></div>
         <div class="chart-box"><canvas id="bar"></canvas></div></div>
       <div class="card"><h3>D-I percentile <span class="muted small">(100 = best${type === "players" ? " among players with 40%+ of team minutes" : " of D-I teams"}${mixed ? ", each against his own season" : ` in ${season}`})</span></h3>

@@ -22,9 +22,9 @@ export const ccol = (key, extra = {}) => STRING_KEYS.has(key)
 export function collegeNav(active) {
   const items = [["teams", "Teams", "#/college/teams"], ["players", "Players", "#/college/players"], ["leaders", "Leaders", "#/college/leaders"], ["conferences", "Conferences", "#/college/conferences"], ["compare", "Compare", "#/college/compare"],
     ["reports", "Reports", "#/college/reports"], ["predictor", "Predictor", "#/college/predictor"],
-    ["tournament", "Tournament sim", "#/college/tournament"], ["transfer", "Transfer what-if", "#/college/transfer"], ["draft", "2027 Draft", "#/draft"]];
-  return `<div class="tabs" style="margin-bottom:12px;flex-wrap:wrap">${items.map(([k, l, h]) =>
-    `<a class="tab-link ${k === active ? "active" : ""}" href="${h}">${l}</a>`).join("")}</div>`;
+    ["tournament", "Tourney sim", "#/college/tournament"], ["transfer", "Transfer", "#/college/transfer"], ["draft", "2027 Draft", "#/draft"]];
+  return `<nav class="tabs subnav" aria-label="College sections">${items.map(([k, l, h]) =>
+    `<a class="tab-link ${k === active ? "active" : ""}" href="${h}"${k === active ? ' aria-current="page"' : ""}>${l}</a>`).join("")}</nav>`;
 }
 const creditLine = () => `<p class="muted small">College data: ${TORVIK_CREDIT} bulk CSV files (ratings, four factors, player stats incl. BPM) and ESPN box scores
   (turnovers, fouls, starts, home/away records) via the free <code>sportsdataverse</code> package. Pulled ${esc(CMETA.pulled_at_utc)}.

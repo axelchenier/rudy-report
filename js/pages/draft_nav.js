@@ -3,8 +3,8 @@ export function draftNav(active) {
   const items = [["board", "2027 Model Board", "#/draft"], ["mock", "Mock draft", "#/draft/mock"], ["history", "Draft classes 2008-2026", "#/draft/history"],
     ["translation", "College → NBA", "#/draft/translation"],
     ["college", "College hub", "#/college"]];
-  return `<div class="tabs" style="margin-bottom:12px;flex-wrap:wrap">${items.map(([k, l, h]) =>
-    `<a class="tab-link ${k === active ? "active" : ""}" href="${h}">${l}</a>`).join("")}</div>`;
+  return `<nav class="tabs subnav" aria-label="Draft sections">${items.map(([k, l, h]) =>
+    `<a class="tab-link ${k === active ? "active" : ""}" href="${h}"${k === active ? ' aria-current="page"' : ""}>${l}</a>`).join("")}</nav>`;
 }
 const _cache = new Map();
 export const getJSON = (path) => { if (!_cache.has(path)) _cache.set(path, fetch(path).then((r) => { if (!r.ok) throw new Error(`Could not load ${path}`); return r.json(); })); return _cache.get(path); };
