@@ -18,6 +18,7 @@ import { collegeTeamsPage, collegePlayersPage, collegeTeamPage, collegePlayerPag
 import { collegeComparePage } from "./pages/college_compare.js";
 import { collegeReportsPage } from "./pages/college_reports.js";
 import { collegePredictorPage } from "./pages/college_predictor.js";
+import { draftBoardPage, draftProspectPage } from "./pages/draft.js";
 
 const app = document.getElementById("app");
 
@@ -41,6 +42,8 @@ const routes = [
   [/^#\/college\/compare(?:\?(.*))?$/, collegeComparePage, "college"],
   [/^#\/college\/reports\/?(daily|weekly|monthly)?\/?([\w-]*)$/, collegeReportsPage, "college"],
   [/^#\/college\/predictor(?:\?(.*))?$/, collegePredictorPage, "college"],
+  [/^#\/draft\/?(?:\?(.*))?$/, draftBoardPage, "college"],
+  [/^#\/draft\/(\d+)$/, draftProspectPage, "college"],
   [/^#\/reports(?:\/(daily|weekly|monthly))?(?:\/([\w-]+))?$/, reportsPage, "reports"],
 ];
 

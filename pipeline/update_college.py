@@ -12,6 +12,8 @@ OPTIONS
                           archive (used to test the in-season report design while the new season hasn't started)
   --out DIR               write reports somewhere else (default data/college/reports)
 
+A normal run (no --season/--out) also rebuilds the 2027 Draft board (pipeline/college_draft.py -> data/draft/).
+
 Safe to run every day (idempotent). Errors print "ERROR: ..." and exit 1.
 
 WHAT IT WRITES (data/college/reports/)
@@ -589,9 +591,17 @@ def main():
     print(f"In season: {len(games)} games through {days[-1]}. Built daily {built[-3:]}, weekly and monthly.")
 
 
+def run():
+    main()
+    # Rebuild the 2027 Draft board from the freshest stats (skipped for archive/test runs).
+    if "--season" not in sys.argv and "--out" not in sys.argv:
+        import college_draft
+        college_draft.main()
+
+
 if __name__ == "__main__":
     try:
-        main()
+        run()
     except Exception as e:  # noqa: BLE001
         import traceback
         traceback.print_exc()
