@@ -124,6 +124,9 @@ export async function teamPage(app, id, query = "") {
     <p class="muted small">Players are listed under the team NBA.com shows for them at the end of the season;
       a traded player's numbers include games for all his teams that season.</p>
 
+    <h2>Franchise &amp; playoff history</h2>
+    <div id="fr"></div>
+
     <h2>Team stats by season</h2>
     <div class="toolbar"><div class="tabs">
       <button data-mode="teams" class="active">Per Game</button>
@@ -152,4 +155,34 @@ export async function teamPage(app, id, query = "") {
     drawHistory(b.dataset.mode);
   }));
   drawHistory("teams");
+  franchiseBox(box.querySelector("#fr"), id, t.TEAM_NAME).catch(() => { box.querySelector("#fr").innerHTML = `<p class="muted">Franchise history not available.</p>`; });
+}
+
+// Franchise totals (NBA.com FranchiseHistory) + every playoff run since 1996-97 (data/index/playoffs.json).
+const ROUND_LOST = ["", "Lost first round", "Lost conf. semifinals", "Lost conf. finals", "Lost NBA Finals"];
+async function franchiseBox(el, id, name) {
+  const get = (p) => fetch(p).then((r) => (r.ok ? r.json() : null)).catch(() => null);
+  const [fr, po] = await Promise.all([get("data/index/franchises.json"), get("data/index/playoffs.json")]);
+  const rows = (c) => (c ? c.rows.map((r) => Object.fromEntries(c.cols.map((k, i) => [k, r[i]]))) : []);
+  const eras = rows(fr).filter((r) => r.TEAM_ID === id), whole = eras[0];
+  const series = rows(po).filter((r) => r.WIN_ID === id || r.LOSE_ID === id);
+  const runs = [...new Set(series.map((r) => r.SEASON))].sort().reverse().map((season) => {
+    const ss = series.filter((r) => r.SEASON === season).sort((a, b) => a.ROUND - b.ROUND), last = ss[ss.length - 1];
+    const won = last.WIN_ID === id, seed = ss[0].WIN_ID === id ? ss[0].WIN_SEED : ss[0].LOSE_SEED;
+    const res = won && last.ROUND === 4 ? "<b>Won NBA title</b>" : won ? "In progress" : ROUND_LOST[last.ROUND];
+    const opp = won ? "" : ` to ${esc(last.WIN)} ${last.LOSE_W}-${last.WIN_W}`;
+    return `<tr><td class="left"><a href="#/history/playoffs?season=${season}">${esc(season)}</a></td><td>${seed ?? "–"}</td><td class="left">${res}${opp}</td>
+      <td>${ss.reduce((a, r) => a + (r.WIN_ID === id ? r.WIN_W : r.LOSE_W), 0)}-${ss.reduce((a, r) => a + (r.WIN_ID === id ? r.LOSE_W : r.WIN_W), 0)}</td></tr>`;
+  });
+  const seasonsSince = (po ? [...new Set(rows(po).map((r) => r.SEASON))] : []).length;
+  el.innerHTML = `${whole ? `<div class="grid stat-cards">
+      <div class="card stat-card"><div class="label">Since ${esc(whole.START_YEAR)}</div><div class="value">${whole.WINS}-${whole.LOSSES}</div><div class="muted small">${(100 * whole.WIN_PCT).toFixed(1)}% · ${whole.YEARS} seasons</div></div>
+      <div class="card stat-card"><div class="label">NBA titles</div><div class="value">${whole.LEAGUE_TITLES}</div><div class="muted small">${whole.CONF_TITLES} conference titles</div></div>
+      <div class="card stat-card"><div class="label">Playoff appearances</div><div class="value">${whole.PO_APPEARANCES}</div><div class="muted small">${whole.DIV_TITLES} division titles</div></div>
+      <div class="card stat-card"><div class="label">Playoffs since 1996-97</div><div class="value">${runs.length} of ${seasonsSince}</div><div class="muted small">seasons on this site</div></div></div>
+    ${eras.length > 1 ? `<p class="small">As: ${eras.slice(1).map((e) => `${esc(e.TEAM_CITY)} ${esc(e.TEAM_NAME)} (${esc(e.START_YEAR)}–${esc(e.END_YEAR)}, ${e.LEAGUE_TITLES} title${e.LEAGUE_TITLES === 1 ? "" : "s"})`).join(" · ")}</p>` : ""}` : ""}
+    ${runs.length ? `<details class="card" ${runs.length <= 8 ? "open" : ""}><summary><b>Playoff runs since 1996-97</b> · ${runs.length}</summary>
+      <div class="table-wrap"><table class="data"><thead><tr><th class="left">Season</th><th title="Final regular-season conference rank">Seed</th><th class="left">Result</th><th>Playoff W-L</th></tr></thead>
+      <tbody>${runs.join("")}</tbody></table></div></details>` : `<p class="muted">No playoff appearances since 1996-97.</p>`}
+    <p class="muted small">Source: NBA.com FranchiseHistory (whole franchise, every season since it began) and NBA.com playoff game logs.</p>`;
 }

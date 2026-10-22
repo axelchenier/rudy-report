@@ -81,6 +81,18 @@ def league_trends(meta):
     return {"source": "NBA.com team totals + advanced (LeagueDashTeamStats), summed over every team", "rows": rows}
 
 
+def franchises():
+    """NBA.com FranchiseHistory (saved by the history download in pipeline/cache/) -> data/index/franchises.json.
+    First row per TEAM_ID = the whole franchise; the rest = its eras under other names/cities."""
+    src = Path(__file__).resolve().parent / "cache" / "franchise_history.json"
+    if not src.exists():
+        return None
+    keep = ["TEAM_ID", "TEAM_CITY", "TEAM_NAME", "START_YEAR", "END_YEAR", "YEARS", "GAMES", "WINS", "LOSSES", "WIN_PCT",
+            "PO_APPEARANCES", "DIV_TITLES", "CONF_TITLES", "LEAGUE_TITLES"]
+    rows = [{k: r.get(k) for k in keep} for r in json.loads(src.read_text()) if r.get("LEAGUE_ID", "00") == "00"]
+    return {"source": "NBA.com FranchiseHistory (all seasons since each franchise began, playoffs counted by NBA.com)", **compact(rows, keep)}
+
+
 def compact(rows, cols=None):
     cols = cols or list(dict.fromkeys(k for r in rows for k in r))
     return {"cols": cols, "rows": [[r.get(c) for c in cols] for r in rows]}
@@ -121,6 +133,9 @@ def main():
     write(DATA / "index" / "similar.json", compact(sim, SIM_COLS))
     write(DATA / "index" / "player_seasons.json", player_seasons(seasons))
     write(DATA / "index" / "league_trends.json", league_trends(meta))
+    fr = franchises()
+    if fr:                     # keep the committed file when the cache isn't on this machine
+        write(DATA / "index" / "franchises.json", fr)
     print(f"players {len(people)}, similar rows {len(sim)}, seasons {seasons[0]}..{seasons[-1]}")
 
 
