@@ -20,11 +20,13 @@ export async function loadMeta() {
 }
 
 export const SEASONS = () => META.seasons.map((s) => s.season);   // newest first
+export const completeSeasons = () => META.seasons.filter((s) => !s.in_progress).map((s) => s.season);
 
 // The season picked in the header (remembered between visits).
 export function currentSeason() {
   const saved = localStorage.getItem("season");
-  return SEASONS().includes(saved) ? saved : SEASONS()[0];
+  // Default: META.default_season (the last COMPLETE season until the new one has ~20 games).
+  return SEASONS().includes(saved) ? saved : (META.default_season || SEASONS()[0]);
 }
 export function setSeason(season) { localStorage.setItem("season", season); }
 

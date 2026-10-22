@@ -92,53 +92,58 @@ def save_json(rows, path):
     path.write_text(json.dumps(rows.to_dict(orient="records"), ensure_ascii=False))
 
 
+def fetch_season(season, abbrev=None):
+    """Download every player/team table for ONE season and save the JSON files. Returns a summary dict.
+    (update_reports.py also uses this to refresh the current season.)"""
+    if abbrev is None:
+        abbrev = {t["id"]: t["abbreviation"] for t in static_teams.get_teams()}
+    print(f"Season {season}:")
+
+    # ---- PLAYERS: basic + advanced, joined on PLAYER_ID -----------------
+    basic = get_players(season, "Base")[PLAYER_BASIC_COLS]
+    adv = get_players(season, "Advanced")[PLAYER_ADV_COLS]
+    players = basic.merge(adv, on="PLAYER_ID", how="left")
+    players.insert(0, "SEASON", season)
+    print(f"  players: {len(players)}")
+
+    # ---- TEAMS: basic + advanced + per-100-possession shooting -----------
+    tbasic = get_teams(season, "Base")[TEAM_BASIC_COLS]
+    tadv = get_teams(season, "Advanced")[TEAM_ADV_COLS]
+    t100 = get_teams(season, "Base", per_mode="Per100Possessions")[["TEAM_ID", "PTS", "FG3A", "FG3M", "FGA", "FTA", "AST", "TOV", "REB"]]
+    t100 = t100.rename(columns={c: f"{c}_PER100" for c in t100.columns if c != "TEAM_ID"})
+    teams = tbasic.merge(tadv, on="TEAM_ID").merge(t100, on="TEAM_ID")
+    teams.insert(1, "TEAM_ABBREVIATION", teams["TEAM_ID"].map(abbrev))
+    # 3-point attempt rate = share of all shots that were threes (calculated from the real numbers above)
+    teams["FG3A_RATE"] = teams["FG3A"] / teams["FGA"]
+    teams.insert(0, "SEASON", season)
+    print(f"  teams: {len(teams)}")
+
+    # ---- EXTRA VIEWS for the Basketball-Reference-style toggles -------------
+    # Season totals and per-36-minute numbers for players (basic stats only),
+    # season totals and per-100-possession numbers for teams.
+    p_tot = get_players(season, "Base", "Totals")[PLAYER_BASIC_COLS]
+    p_36 = get_players(season, "Base", "Per36")[PLAYER_BASIC_COLS]
+    t_tot = get_teams(season, "Base", "Totals")[TEAM_BASIC_COLS]
+    t_100 = get_teams(season, "Base", "Per100Possessions")[TEAM_BASIC_COLS]
+    for table in (p_tot, p_36, t_tot, t_100):
+        table.insert(0, "SEASON", season)
+    for table in (t_tot, t_100):
+        table.insert(2, "TEAM_ABBREVIATION", table["TEAM_ID"].map(abbrev))
+
+    save_json(players, DATA_DIR / season / "players.json")          # per game + advanced
+    save_json(teams, DATA_DIR / season / "teams.json")              # per game + advanced
+    save_json(p_tot, DATA_DIR / season / "players_totals.json")
+    save_json(p_36, DATA_DIR / season / "players_per36.json")
+    save_json(t_tot, DATA_DIR / season / "teams_totals.json")
+    save_json(t_100, DATA_DIR / season / "teams_per100.json")
+    return {"season": season, "players": len(players), "teams": len(teams),
+            "max_team_games": int(teams["GP"].max())}
+
+
 def main():
     # Team abbreviations (like "MIN" for Minnesota) come from nba_api's built-in team list.
     abbrev = {t["id"]: t["abbreviation"] for t in static_teams.get_teams()}
-    loaded = []
-
-    for season in SEASONS:
-        print(f"Season {season}:")
-
-        # ---- PLAYERS: basic + advanced, joined on PLAYER_ID -----------------
-        basic = get_players(season, "Base")[PLAYER_BASIC_COLS]
-        adv = get_players(season, "Advanced")[PLAYER_ADV_COLS]
-        players = basic.merge(adv, on="PLAYER_ID", how="left")
-        players.insert(0, "SEASON", season)
-        print(f"  players: {len(players)}")
-
-        # ---- TEAMS: basic + advanced + per-100-possession shooting -----------
-        tbasic = get_teams(season, "Base")[TEAM_BASIC_COLS]
-        tadv = get_teams(season, "Advanced")[TEAM_ADV_COLS]
-        t100 = get_teams(season, "Base", per_mode="Per100Possessions")[["TEAM_ID", "PTS", "FG3A", "FG3M", "FGA", "FTA", "AST", "TOV", "REB"]]
-        t100 = t100.rename(columns={c: f"{c}_PER100" for c in t100.columns if c != "TEAM_ID"})
-        teams = tbasic.merge(tadv, on="TEAM_ID").merge(t100, on="TEAM_ID")
-        teams.insert(1, "TEAM_ABBREVIATION", teams["TEAM_ID"].map(abbrev))
-        # 3-point attempt rate = share of all shots that were threes (calculated from the real numbers above)
-        teams["FG3A_RATE"] = teams["FG3A"] / teams["FGA"]
-        teams.insert(0, "SEASON", season)
-        print(f"  teams: {len(teams)}")
-
-        # ---- EXTRA VIEWS for the Basketball-Reference-style toggles -------------
-        # Season totals and per-36-minute numbers for players (basic stats only),
-        # season totals and per-100-possession numbers for teams.
-        p_tot = get_players(season, "Base", "Totals")[PLAYER_BASIC_COLS]
-        p_36 = get_players(season, "Base", "Per36")[PLAYER_BASIC_COLS]
-        t_tot = get_teams(season, "Base", "Totals")[TEAM_BASIC_COLS]
-        t_100 = get_teams(season, "Base", "Per100Possessions")[TEAM_BASIC_COLS]
-        for table in (p_tot, p_36, t_tot, t_100):
-            table.insert(0, "SEASON", season)
-        for table in (t_tot, t_100):
-            table.insert(2, "TEAM_ABBREVIATION", table["TEAM_ID"].map(abbrev))
-
-        save_json(players, DATA_DIR / season / "players.json")          # per game + advanced
-        save_json(teams, DATA_DIR / season / "teams.json")              # per game + advanced
-        save_json(p_tot, DATA_DIR / season / "players_totals.json")
-        save_json(p_36, DATA_DIR / season / "players_per36.json")
-        save_json(t_tot, DATA_DIR / season / "teams_totals.json")
-        save_json(t_100, DATA_DIR / season / "teams_per100.json")
-        loaded.append({"season": season, "players": len(players), "teams": len(teams),
-                       "max_team_games": int(teams["GP"].max())})
+    loaded = [fetch_season(season, abbrev) for season in SEASONS]
 
     # ---- META: what we loaded, from where, and when ---------------------------
     meta = {
@@ -151,7 +156,13 @@ def main():
     # Keep any extra-source info that fetch_extras.py added earlier.
     old = DATA_DIR / "meta.json"
     if old.exists():
-        meta["extras"] = json.loads(old.read_text()).get("extras", {})
+        previous = json.loads(old.read_text())
+        meta["extras"] = previous.get("extras", {})
+        # Keep the in-progress season (added by update_reports.py) at the top of the list.
+        current = [s for s in previous.get("seasons", []) if s.get("in_progress")]
+        meta["seasons"] = current + loaded
+        if previous.get("current_season"):
+            meta["current_season"] = previous["current_season"]
     old.write_text(json.dumps(meta, indent=2))
     print("Done. Saved to", DATA_DIR)
 

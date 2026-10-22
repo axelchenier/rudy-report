@@ -1,6 +1,6 @@
 // ask.js - the home page: a big "Ask a question" search bar (StatMuse-style).
 // Flow: question -> parser.js (rules) -> intent -> engine.js -> headline + tables.
-import { load, loadAllSeasons, currentSeason, SEASONS, META } from "../data.js";
+import { load, loadAllSeasons, currentSeason, SEASONS, META, completeSeasons } from "../data.js";
 import { STATS } from "../stats.js";
 import { esc, renderTable } from "../ui.js";
 import { buildNameIndex } from "../ask/names.js";
@@ -26,7 +26,7 @@ const EXAMPLES = [
 
 let nameIndex = null;           // built once: every player and team name we know
 async function getIndex() {
-  if (!nameIndex) nameIndex = buildNameIndex(await loadAllSeasons("players"), await load("teams", SEASONS()[0]));
+  if (!nameIndex) nameIndex = buildNameIndex(await loadAllSeasons("players"), await load("teams", completeSeasons()[0]));
   return nameIndex;
 }
 
@@ -68,7 +68,8 @@ LIMIT 10;</textarea>
 
 async function showAnswer(box, question) {
   box.innerHTML = `<p class="muted">Thinking…</p>`;
-  const ctx = { index: await getIndex(), seasons: SEASONS(), season: currentSeason() };
+  // "past N years" / "all time" use COMPLETE seasons only; the in-progress season is used for "this season".
+  const ctx = { index: await getIndex(), seasons: completeSeasons(), current: META.current_season, season: currentSeason() };
   let intent = parseQuestion(question, ctx);
   if (intent.type === "unknown" && AI_ENABLED) {
     try { intent = { ...intent, ...(await askAI(question, Object.keys(STATS))).intent }; } catch (e) { console.warn(e); }

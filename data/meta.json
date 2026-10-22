@@ -5,6 +5,13 @@
   "pulled_at_utc": "2026-10-22 03:38 UTC",
   "seasons": [
     {
+      "season": "2026-27",
+      "players": 246,
+      "teams": 22,
+      "max_team_games": 1,
+      "in_progress": true
+    },
+    {
       "season": "2025-26",
       "players": 582,
       "teams": 30,
@@ -71,5 +78,8 @@
     "nba_tracking": "NBA.com/stats LeagueDashPtStats (Second Spectrum player tracking)",
     "bbref": "Basketball-Reference.com season advanced tables (BPM, OBPM, DBPM, PER, WS, VORP)",
     "bbref_url": "https://www.basketball-reference.com/"
-  }
+  },
+  "current_season": "2026-27",
+  "default_season": "2025-26",
+  "current_pulled_at_utc": "2026-10-22 04:13 UTC"
 }

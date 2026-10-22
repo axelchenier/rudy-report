@@ -8,6 +8,7 @@ import { teamsPage } from "./pages/teams.js";
 import { playerPage } from "./pages/player.js";
 import { teamPage } from "./pages/team.js";
 import { comparePage } from "./pages/compare.js";
+import { reportsPage } from "./pages/reports.js";
 
 const app = document.getElementById("app");
 
@@ -20,6 +21,7 @@ const routes = [
   [/^#\/player\/(\d+)$/, playerPage, "players"],
   [/^#\/team\/(\d+)$/, teamPage, "teams"],
   [/^#\/compare(?:\?(.*))?$/, comparePage, "compare"],
+  [/^#\/reports(?:\/(daily|weekly|monthly))?(?:\/([\w-]+))?$/, reportsPage, "reports"],
 ];
 
 async function render() {

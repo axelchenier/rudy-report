@@ -27,7 +27,7 @@ function findStats(q) {
 }
 
 // Which seasons does the question cover? Returns { seasons: [...], label } or null (= use the season picked in the header).
-function findSeasons(q, all) {
+function findSeasons(q, all, current) {
   const yearsAgo = q.match(/(?:past|last|previous|over the last|over the past)\s+(\d+|two|three|four|five|six|seven|eight|nine|ten)\s+(?:years|seasons)/);
   const words = { two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9, ten: 10 };
   if (yearsAgo) {
@@ -42,7 +42,8 @@ function findSeasons(q, all) {
   if (range) { const s = `${range[1]}-${range[2]}`; if (all.includes(s)) return { seasons: [s], label: s }; }
   const year = q.match(/\b(?:in )?(20\d\d)\b/);                   // "in 2024" -> the season that ENDED in 2024
   if (year) { const s = all.find((x) => 2000 + +x.slice(5) === +year[1]); if (s) return { seasons: [s], label: s }; }
-  if (/last season|this past season|this season|current season/.test(q)) return { seasons: [all[0]], label: all[0] };
+  if (/this season|current season|so far/.test(q) && current) return { seasons: [current], label: `${current} (in progress)` };
+  if (/last season|this past season/.test(q)) return { seasons: [all[0]], label: all[0] };
   return null;
 }
 
@@ -70,7 +71,7 @@ function numberAfter(q, end) {
  */
 export function parseQuestion(question, ctx) {
   const q = normalize(question);
-  const span = findSeasons(q, ctx.seasons);
+  const span = findSeasons(q, ctx.seasons, ctx.current);
   // Blank out season text like "2023 24" so its numbers aren't mistaken for stat filters.
   const qs = q.replace(/(20\d\d)[\s\/-]+(\d\d)\b/g, (m) => " ".repeat(m.length)).replace(/\b(in|since) 20\d\d\b/g, (m) => " ".repeat(m.length));
   const stats = findStats(qs);

@@ -99,3 +99,44 @@ The whole folder can go on **GitHub Pages** for free:
 3. Turn on Pages in the repository's settings.
 
 The data files are about 19 MB. The SQL mode loads DuckDB from the jsDelivr CDN the first time it's used.
+
+## Reports tab (Daily / Weekly / Monthly)
+
+The **Reports** tab shows what happened in the current season, built only from NBA.com box scores:
+
+- **Daily:** scores, top performers, and notable stat lines. Compared with the previous game day.
+- **Weekly:** the last 7 days, compared with the 7 days before.
+- **Monthly:** the last 30 days, compared with the 30 days before.
+
+Each report has these sections:
+
+- **What changed:** risers and fallers in points per game and TS%, team record and net rating changes, league-wide averages, and leader changes. Arrows are green or red.
+- **Hottest / coldest:** players compared with their averages from last season.
+- **Team trends, streaks, rookies, and efficiency outliers.**
+- **Interesting trends:** plain sentences made by rules from those numbers. There are no predictions.
+
+If the comparison period has no games (the season just started), the report compares with **last season's averages** instead and says so.
+
+**Update the reports (run once a day, for example from cron):**
+
+```bash
+cd /path/to/nba-stats-app && .venv/bin/python pipeline/update_reports.py
+```
+
+Example cron line (every day at 10:00 UTC, after all US games are final):
+
+```
+0 10 * * * cd /path/to/nba-stats-app && .venv/bin/python pipeline/update_reports.py >> reports.log 2>&1
+```
+
+What the script does each run:
+
+- Refreshes the current season's data, including the season picker's newest season.
+- Rewrites `data/reports/daily/<last game date>.json`, `weekly/latest.json` and `monthly/latest.json`.
+- Saves a dated weekly copy on Mondays and a dated monthly copy on the 1st (add `--archive` to save them today).
+- Rebuilds `data/reports/index.json`.
+
+Running it twice gives the same result. If anything fails it prints `ERROR: ...` and exits with code 1.
+`--no-refresh` rebuilds the reports from already-downloaded data.
+
+Team ratings for date ranges (ORtg, DRtg, Net, Pace, 3PA/100) are estimated from box scores. The formula is possessions = FGA + 0.44×FTA − OREB + TOV, averaged between the two teams. Last-season comparisons use the same formula.
