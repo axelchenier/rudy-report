@@ -262,6 +262,12 @@ in those areas (new `pct` field on each board row from `college_draft.py`). Each
 any pick can be overridden and later picks re-fill. Not modeled: traded picks, protections, the 2nd round, players not on the board
 (incoming freshmen, internationals).
 
+**College team and player pages, history extras** (`js/pages/college_extras.js`): team pages end with *Program history*:
+NCAA tournament runs 2008-2026 (seed, region, result, from the saved ESPN brackets), best finish, titles, and every NBA draft pick
+since 2008 from that school with his NBA.com career and outcome label. Player pages show a *transfer path* (schools in order,
+from Torvik's season rows) and, for drafted players, the draft pick plus final college season vs NBA rookie season vs NBA
+career, with links to his NBA page and draft class.
+
 **College what-if sliders** (team pages, labeled *Model estimate*): change adjusted offense, adjusted defense, 3P% or
 opponents' 3P% and see AdjEM, Barthag (Torvik's formula, exponent 11.5), an estimated T-Rank, expected wins against the same
 strength of schedule (log5 vs Torvik's SOS; preseason uses the opponent strength that reproduces Torvik's projected record),

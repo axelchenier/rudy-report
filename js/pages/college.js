@@ -3,6 +3,7 @@
 import { STATS, fmt } from "../stats.js";
 import { renderTable, esc, rankOf, percentile, PALETTE, chartTheme } from "../ui.js";
 import { CCOLUMNS } from "../college/cstats.js";
+import { renderProgramHistory, renderPlayerExtras } from "./college_extras.js";
 import { renderCollegeWhatIf } from "./college_whatif.js";
 import { loadCMeta, CMETA, cload, cseasonFromQuery, currentCSeason, cseasonSelectHTML, seasonInfo, addRecords, careerOf,
   TORVIK_CREDIT, C_QUAL_MIN_PCT, playedSeasons, CSEASONS } from "../college/cdata.js";
@@ -189,8 +190,10 @@ export async function collegeTeamPage(app, id, query = "") {
     <h2>Season by season</h2>
     <div id="hist"><p class="muted small">Loading every season…</p></div>
     <div class="card" style="margin-top:12px"><div class="chart-box"><canvas id="trend"></canvas></div></div>
+    <div id="cprogram"></div>
     ${creditLine()}`;
   app.querySelector("#page-season").addEventListener("change", (e) => { location.hash = `#/college/team/${id}?season=${e.target.value}`; });
+  renderProgramHistory(app.querySelector("#cprogram"), id, t.TEAM_NAME).catch((e) => console.warn(e));
 
   renderCollegeWhatIf(app.querySelector("#cwhatif"), t, all, season, pre);
   renderTable(app.querySelector("#conf"), { rows: conf, entity: "teams", sortKey: pre ? "TRANK" : "W_PCT", sortAsc: pre, pageSize: 30,
@@ -250,6 +253,7 @@ export async function collegePlayerPage(app, pid) {
       <a class="btn" href="#/college/compare?type=players&ids=${pid}&season=${season}">Compare →</a></div>
     <div class="grid stat-cards">${cards}</div>
     <p class="muted small">Percentiles and ranks are among the ${pool.length.toLocaleString()} D-I players who played at least 40% of their team's minutes in ${season} (100th = best).</p>
+    <div id="cextras"></div>
     <h2>Season by season</h2>
     <div class="toolbar"><div class="tabs"><button data-m="basic" class="active">Per Game</button><button data-m="adv">Advanced</button></div></div>
     <div id="hist"></div>
@@ -262,6 +266,7 @@ export async function collegePlayerPage(app, pid) {
   app.querySelectorAll("[data-m]").forEach((b) => b.addEventListener("click", () => {
     app.querySelectorAll("[data-m]").forEach((x) => x.classList.toggle("active", x === b)); drawHist(b.dataset.m); }));
   drawHist("basic");
+  renderPlayerExtras(app.querySelector("#cextras"), pid, career).catch((e) => console.warn(e));
   if (career.length > 1) {
     const th = chartTheme();
     new Chart(app.querySelector("#trend"), { type: "line",
