@@ -9,6 +9,7 @@ import { playerPage } from "./pages/player.js";
 import { teamPage } from "./pages/team.js";
 import { comparePage } from "./pages/compare.js";
 import { reportsPage } from "./pages/reports.js";
+import { glossaryPage } from "./pages/glossary.js";
 
 const app = document.getElementById("app");
 
@@ -18,8 +19,9 @@ const routes = [
   [/^#\/ask(?:\?(.*))?$/, askPage, "ask"],
   [/^#\/players(?:\?(.*))?$/, playersPage, "players"],
   [/^#\/teams(?:\?(.*))?$/, teamsPage, "teams"],
-  [/^#\/player\/(\d+)$/, playerPage, "players"],
-  [/^#\/team\/(\d+)$/, teamPage, "teams"],
+  [/^#\/player\/(\d+)(?:\?(.*))?$/, playerPage, "players"],
+  [/^#\/team\/(\d+)(?:\?(.*))?$/, teamPage, "teams"],
+  [/^#\/glossary(?:\?(.*))?$/, glossaryPage, "glossary"],
   [/^#\/compare(?:\?(.*))?$/, comparePage, "compare"],
   [/^#\/reports(?:\/(daily|weekly|monthly))?(?:\/([\w-]+))?$/, reportsPage, "reports"],
 ];
@@ -50,7 +52,7 @@ async function start() {
   select.addEventListener("change", () => {
     setSeason(select.value);
     // On the Players/Teams pages the season is part of the address, so links can be shared.
-    const page = location.hash.match(/^#\/(players|teams)\b/);
+    const page = location.hash.match(/^#\/(players|teams|standings|hubs|player\/\d+|team\/\d+)\b/);
     if (page) location.hash = withSeason(location.hash, select.value);
     else render();
   });

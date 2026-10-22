@@ -1,5 +1,6 @@
 // ui.js - small reusable building blocks: a sortable table, safe HTML, and team colors.
 import { STATS, fmt } from "./stats.js";
+import { tip } from "./glossary.js";
 
 // Escape text before putting it inside HTML (so names like "O'Neal" can't break the page).
 export const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) =>
@@ -48,7 +49,7 @@ export function renderTable(container, { rows, columns, entity, sortKey, sortAsc
     const visible = sorted.slice(0, shown);
     const head = (rank ? `<th class="rk">#</th>` : "") + columns.map((c) => {
       const label = c.label || STATS[c.key]?.label || c.key;
-      const title = STATS[c.key]?.name || label;
+      const title = c.title || tip(c.key) || STATS[c.key]?.name || label;
       return `<th data-key="${c.key}" title="${esc(title)}" class="${c.left ? "left" : ""} ${c.key === key ? "sorted" + (asc ? " asc" : "") : ""}">${esc(label)}</th>`;
     }).join("");
     const body = visible.map((r, i) => `<tr>${rank ? `<td class="rk">${i + 1}</td>` : ""}${columns.map((c) => {
@@ -82,3 +83,33 @@ export function chartTheme() {
   const css = getComputedStyle(document.documentElement);
   return { text: css.getPropertyValue("--muted").trim(), grid: css.getPropertyValue("--border").trim() };
 }
+
+// ---- Percentile chips (Cleaning-the-Glass-style color scale) ----
+// p = 0..100 where 100 = best. Five color steps from "poor" to "elite".
+export function pctClass(p) {
+  return p == null ? "" : p >= 90 ? "p5" : p >= 70 ? "p4" : p >= 30 ? "p3" : p >= 10 ? "p2" : "p1";
+}
+export function pctChip(p, title = "") {
+  if (p == null) return `<span class="pchip p0" title="Not ranked (small sample)">–</span>`;
+  return `<span class="pchip ${pctClass(p)}" title="${esc(title || `${ordinal(p)} percentile (100 = best)`)}">${p}</span>`;
+}
+export const ordinal = (n) => { const s = ["th", "st", "nd", "rd"], v = n % 100; return n + (s[(v - 20) % 10] || s[v] || s[0]); };
+
+// Average of a stat over a list of rows (ignores missing values).
+export function avgOf(rows, key) {
+  const v = rows.map((r) => r[key]).filter((x) => x != null && !Number.isNaN(x));
+  return v.length ? v.reduce((a, b) => a + b, 0) / v.length : null;
+}
+
+// A stat label you can hover (or tap) to see its definition. Links to the glossary.
+export function statLabel(key, text) {
+  const t = tip(key);
+  return `<a class="tip" href="#/glossary?q=${encodeURIComponent(key)}" title="${esc(t)}" data-tip="${esc(t)}">${esc(text ?? STATS[key]?.label ?? key)}</a>`;
+}
+
+// "Model estimate" badge + one-line method note, used on every projection.
+export const modelBadge = (method) =>
+  `<span class="model-badge" title="${esc(method)}">Model estimate</span>`;
+
+// Compact JSON {cols, rows} -> list of objects.
+export const unpack = (c) => c.rows.map((r) => Object.fromEntries(c.cols.map((k, i) => [k, r[i]])));

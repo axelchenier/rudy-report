@@ -171,3 +171,67 @@ ul.trends li { margin: 4px 0; }
 @media (max-width: 860px) { .two-col { grid-template-columns: 1fr; } }
 .page-season { display: flex; align-items: center; gap: 8px; font-weight: 600; }
 .page-season select { font-size: 16px; font-weight: 600; padding: 8px 12px; border: 2px solid var(--accent); }
+
+/* ---------- Percentile chips, league averages, tooltips ---------- */
+.pchip { display: inline-block; min-width: 30px; padding: 1px 6px; border-radius: 999px; font-size: 12px; font-weight: 700;
+  text-align: center; vertical-align: middle; color: #fff; letter-spacing: 0; }
+.pchip.p0 { background: var(--panel-2); color: var(--muted); }
+.pchip.p1, .pbar i.p1 { background: #d64545; }          /* bottom 10%  */
+.pchip.p2, .pbar i.p2 { background: #e0864a; }          /* 10th-30th  */
+.pchip.p3, .pbar i.p3 { background: #8b949e; }          /* 30th-70th (average) */
+.pchip.p4, .pbar i.p4 { background: #4f9e5c; }          /* 70th-90th  */
+.pchip.p5, .pbar i.p5 { background: #23863a; }          /* top 10%    */
+.stat-card .value .pchip { margin-left: 4px; position: relative; top: -3px; }
+.stat-card .lgavg { font-size: 12px; color: var(--muted); }
+a.tip { color: inherit; text-decoration: underline dotted color-mix(in srgb, var(--muted) 70%, transparent); text-underline-offset: 3px; }
+a.tip:hover { color: var(--accent-2); }
+th[title] { cursor: help; }
+
+/* Percentile profile bars */
+.profile { display: grid; grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); gap: 12px; }
+.pgroup h3 { margin-bottom: 6px; }
+.prow { display: grid; grid-template-columns: minmax(150px, 2fr) 52px 72px 1fr 38px; gap: 8px; align-items: center; padding: 3px 0; font-size: 13px; }
+.prow .pname { line-height: 1.25; }
+.prow .pval { font-weight: 700; text-align: right; font-variant-numeric: tabular-nums; }
+.prow .pavg { font-size: 12px; text-align: right; font-variant-numeric: tabular-nums; }
+.prow .ppct { font-size: 12px; text-align: right; color: var(--muted); }
+.pbar { height: 8px; background: var(--panel-2); border-radius: 999px; overflow: hidden; }
+.pbar i.ps, .legend-ps { background: var(--accent-2); }
+.legend-ps { display: inline-block; width: 18px; height: 8px; border-radius: 999px; vertical-align: middle; }
+.pbar i { display: block; height: 100%; border-radius: 999px; }
+
+/* Page tabs (player/team pages, hubs) */
+.page-tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--border); margin: 6px 0 16px; overflow-x: auto; }
+.page-tabs a { padding: 8px 14px; color: var(--muted); font-weight: 600; border-bottom: 2px solid transparent; white-space: nowrap; }
+.page-tabs a:hover { color: var(--text); text-decoration: none; }
+.page-tabs a.active { color: var(--text); border-bottom-color: var(--accent); }
+.head-tools { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+span.win { color: var(--good); font-weight: 700; }
+span.loss { color: var(--bad); font-weight: 700; }
+.pos { color: var(--good); font-weight: 600; }
+.neg { color: var(--bad); font-weight: 600; }
+
+/* Model estimate badge + method note */
+.model-badge { display: inline-block; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em;
+  padding: 1px 7px; border-radius: 999px; border: 1px solid #a371f7; color: #a371f7; background: color-mix(in srgb, #a371f7 12%, transparent); }
+.method { margin-top: 16px; }
+.method p { margin: 6px 0 0; }
+
+/* Standings: playoff (after seed 6) and play-in (after seed 10) lines */
+.seeded tbody tr:nth-child(6) td, .seeded tbody tr:nth-child(10) td { border-bottom: 2px solid var(--accent); }
+
+/* Glossary */
+.gloss-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 10px; }
+.gloss p { margin: 6px 0 0; font-size: 14px; }
+.gloss .formula code { font-size: 12px; background: var(--panel-2); padding: 2px 6px; border-radius: 6px; display: inline-block; }
+.gloss:target { outline: 2px solid var(--accent); }
+
+/* Header with many tabs: let the nav scroll sideways on small screens */
+.nav { overflow-x: auto; scrollbar-width: none; }
+@media (max-width: 1100px) { .nav a { padding: 6px 8px; } .header-row { gap: 12px; } }
+@media (max-width: 860px) {
+  .header-row { flex-wrap: wrap; height: auto; padding: 8px 0; }
+  .nav { order: 3; width: 100%; }
+  .prow { grid-template-columns: minmax(100px, 1.4fr) 50px 1fr 36px; }
+  .prow .pavg { display: none; }
+}

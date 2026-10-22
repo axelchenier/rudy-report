@@ -1,29 +1,38 @@
-// player.js - one player's profile page: headline numbers, league ranks, and season-by-season tables.
-import { load, loadAllSeasons, currentSeason, qualifies, QUALIFY_SHARE } from "../data.js";
+// player.js - one player's profile page, in three tabs (each tab has its own shareable address):
+//   Overview          headline cards with percentile chips + league averages, a percentile profile, season-by-season tables
+//   Game log & splits every game of a season, rolling 5/10-game averages, home/road, rest, month and opponent splits
+//   Clutch · Hustle · Tracking   the player's numbers in those NBA.com datasets, with percentiles
+import { load, loadAllSeasons, currentSeason, qualifies, QUALIFY_SHARE, seasonGames, META } from "../data.js";
 import { STATS, COLUMNS, fmt } from "../stats.js";
-import { renderTable, esc, rankOf, teamAbbrLink, chartTheme, PALETTE } from "../ui.js";
+import { renderTable, esc, teamAbbrLink, chartTheme, PALETTE } from "../ui.js";
+import { statCard, profileHTML, tabBar, renderGameLog } from "./shared.js";
 
-// The stat "cards" at the top of the page.
 const CARD_STATS = ["PTS", "REB", "AST", "STL", "BLK", "FG3_PCT", "TS_PCT", "USG_PCT", "NET_RATING", "PIE"];
+const PROFILE = [
+  ["Scoring", ["PTS", "FGA", "FG_PCT", "FG3A", "FG3_PCT", "FTA", "FT_PCT", "EFG_PCT", "TS_PCT", "USG_PCT"]],
+  ["Playmaking", ["AST", "AST_PCT", "AST_TO", "AST_RATIO", "TOV", "TM_TOV_PCT"]],
+  ["Rebounding & defense", ["REB", "OREB", "DREB", "OREB_PCT", "DREB_PCT", "STL", "BLK", "DEF_RATING"]],
+  ["Impact", ["MIN", "PLUS_MINUS", "OFF_RATING", "NET_RATING", "PIE"]],
+];
 
-
-export async function playerPage(app, id) {
+export async function playerPage(app, id, query = "") {
   id = Number(id);
+  const params = new URLSearchParams(query);
+  const tab = params.get("tab") || "overview";
   const history = (await loadAllSeasons("players")).filter((p) => p.PLAYER_ID === id)
     .sort((a, b) => a.SEASON.localeCompare(b.SEASON));
   if (!history.length) { app.innerHTML = `<p>Player not found in the loaded seasons.</p>`; return; }
 
-  // Show the season picked in the header if the player played then; otherwise their latest season.
-  const season = history.some((h) => h.SEASON === currentSeason()) ? currentSeason() : history[history.length - 1].SEASON;
+  // Season: ?season= in the address, else the header picker if he played then, else his latest season.
+  const want = params.get("season") || currentSeason();
+  const season = history.some((h) => h.SEASON === want) ? want : history[history.length - 1].SEASON;
   const p = history.find((h) => h.SEASON === season);
-  const league = (await load("players", season)).filter((x) => qualifies(x, season));
-
-  const cards = CARD_STATS.map((k) => {
-    const rank = qualifies(p, season) ? rankOf(p[k], league.map((x) => x[k]), STATS[k].lowerBetter) : null;
-    return `<div class="card stat-card"><div class="label">${STATS[k].label}</div>
-      <div class="value">${fmt(p[k], k, "players")}</div>
-      <div class="rank ${rank && rank <= 10 ? "top" : ""}">${rank ? `#${rank} of ${league.length}` : "not enough games to rank"}</div></div>`;
-  }).join("");
+  const all = await load("players", season);
+  const league = all.filter((x) => qualifies(x, season));
+  const ranked = qualifies(p, season);
+  const base = `#/player/${id}`;
+  const seasonPick = `<label class="page-season">Season <select id="pl-season">${[...history].reverse().map((h) =>
+    `<option ${h.SEASON === season ? "selected" : ""}>${h.SEASON}</option>`).join("")}</select></label>`;
 
   app.innerHTML = `
     <div class="page-head">
@@ -32,10 +41,22 @@ export async function playerPage(app, id) {
         <p class="sub">${season} · <a href="#/team/${p.TEAM_ID}">${esc(p.TEAM_ABBREVIATION)}</a> · age ${p.AGE ?? "–"} ·
           ${p.GP} games · ${fmt(p.MIN, "MIN")} min/game · team went ${p.W}-${p.L} in his games</p>
       </div>
-      <a class="btn" href="#/compare?type=players&ids=${id}">Compare with others →</a>
+      <div class="head-tools">${seasonPick}<a class="btn" href="#/compare?type=players&ids=${id}">Compare →</a></div>
     </div>
-    <div class="grid stat-cards">${cards}</div>
-    <p class="muted small">Ranks are among the ${league.length} players who played at least ${QUALIFY_SHARE * 100}% of the ${season} season's games.</p>
+    ${tabBar(base, [["overview", "Overview"]], tab)}
+    <div id="tab"></div>`;
+  app.querySelectorAll(".page-tabs a").forEach((a) => a.href += `&season=${season}`);
+  app.querySelector("#pl-season").addEventListener("change", (e) => { location.hash = `${base}?tab=${tab}&season=${e.target.value}`; });
+  const box = app.querySelector("#tab");
+
+  // ---- Overview ----
+  box.innerHTML = `
+    <div class="grid stat-cards">${CARD_STATS.map((k) => statCard(k, p, league, "players", { ranked, avgLabel: "Avg qualified" })).join("")}</div>
+    <p class="muted small">Chips show the percentile (100 = best) and ranks are among the ${league.length} players who played at least
+      ${QUALIFY_SHARE * 100}% of ${season}'s games; "avg qualified" is their average.${ranked ? "" : " <b>He hasn't played enough games to be ranked.</b>"}
+      Hover any stat name for its definition, or see the <a href="#/glossary">glossary</a>.</p>
+    <h2>Percentile profile · ${season}</h2>
+    ${profileHTML(PROFILE, p, league, "players", { ranked })}
 
     <h2>Season by season</h2>
     <div class="toolbar"><div class="tabs">
@@ -50,26 +71,28 @@ export async function playerPage(app, id) {
     const file = mode === "advanced" ? "players" : mode;
     const rows = (await loadAllSeasons(file)).filter((x) => x.PLAYER_ID === id);
     const cols = mode === "advanced" ? COLUMNS.playersAdvanced : mode === "players_totals" ? COLUMNS.playersTotals : COLUMNS.playersBasic;
-    renderTable(app.querySelector("#hist"), {
+    renderTable(box.querySelector("#hist"), {
       rows, entity: "players", sortKey: "SEASON", sortAsc: true, rank: false,
       columns: [{ key: "SEASON", label: "Season", left: true }, { key: "TEAM_ABBREVIATION", label: "Team", left: true, html: teamAbbrLink },
         { key: "AGE", label: "Age" }, ...cols.map((key) => ({ key }))],
     });
   }
-  app.querySelectorAll("[data-mode]").forEach((b) => b.addEventListener("click", () => {
-    app.querySelectorAll("[data-mode]").forEach((x) => x.classList.toggle("active", x === b));
+  box.querySelectorAll("[data-mode]").forEach((b) => b.addEventListener("click", () => {
+    box.querySelectorAll("[data-mode]").forEach((x) => x.classList.toggle("active", x === b));
     drawHistory(b.dataset.mode);
   }));
   drawHistory("players");
 
-  // Line chart: points, rebounds, assists over the seasons.
-  if (history.length > 1) {
+  // Leave a just-started season (fewer than 10 games) out of the trend chart so one game doesn't look like a trend.
+  const inProg = new Set(META.seasons.filter((x) => x.in_progress).map((x) => x.season));
+  const chartRows = history.filter((h) => !(inProg.has(h.SEASON) && h.GP < 10));
+  if (history.length > 1 && chartRows.length > 1) {
     const t = chartTheme();
-    new Chart(app.querySelector("#trend"), {
+    new Chart(box.querySelector("#trend"), {
       type: "line",
-      data: { labels: history.map((h) => h.SEASON),
-        datasets: ["PTS", "REB", "AST"].map((k, i) => ({ label: STATS[k].name, data: history.map((h) => h[k]), borderColor: PALETTE[i], backgroundColor: PALETTE[i], tension: .25 })) },
-      options: { maintainAspectRatio: false, plugins: { legend: { labels: { color: t.text } }, title: { display: true, text: "Per-game averages by season", color: t.text } },
+      data: { labels: chartRows.map((h) => h.SEASON),
+        datasets: ["PTS", "REB", "AST"].map((k, i) => ({ label: STATS[k].name, data: chartRows.map((h) => h[k]), borderColor: PALETTE[i], backgroundColor: PALETTE[i], tension: .25 })) },
+      options: { maintainAspectRatio: false, plugins: { legend: { labels: { color: t.text } }, title: { display: true, text: `Per-game averages by season${chartRows.length < history.length ? " (in-progress season left out until 10 games)" : ""}`, color: t.text } },
         scales: { x: { ticks: { color: t.text }, grid: { color: t.grid } }, y: { ticks: { color: t.text }, grid: { color: t.grid }, beginAtZero: true } } },
     });
   }
