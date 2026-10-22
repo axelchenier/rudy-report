@@ -409,3 +409,15 @@ table.mock td.small { white-space: nowrap; }
 /* Trade what-if: two side-by-side columns */
 .trade-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 @media (max-width: 700px) { .trade-grid { grid-template-columns: 1fr; } }
+
+/* League history: playoff bracket */
+.bracket { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; align-items: center; }
+.bracket.finals { grid-template-columns: minmax(0, 360px); }
+.b-round { display: flex; flex-direction: column; gap: 8px; justify-content: space-around; height: 100%; }
+.b-round h4 { margin: 0; font-size: 12px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted, #8b949e); }
+.series { padding: 8px 10px; margin: 0; }
+.series summary { cursor: pointer; list-style: none; }
+.series summary > div { display: flex; justify-content: space-between; gap: 8px; }
+.series .sw { min-width: 1.2em; text-align: right; }
+.series-games { margin: 6px 0 0; padding-left: 18px; font-size: 12px; }
+@media (max-width: 700px) { .bracket { grid-template-columns: 1fr; } }

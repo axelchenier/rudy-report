@@ -2,6 +2,7 @@
 // Built only from files we already have (NBA.com LeagueGameLog via pipeline/fetch_more.py):
 //   data/<season>/team_gamelogs.json   both teams' totals for the game
 //   data/<season>/gamelogs/p_NN.json   every player's line (40 shards; ~0.5 MB gzipped for a whole season, cached after the first box score)
+//   data/<season>/playoffs.json        playoff games (004YY00RSG ids; pipeline/fetch_playoffs.py)
 // The season comes from the game id itself: 002YY##### = regular season starting in 20YY / 19YY.
 import { load } from "../data.js";
 import { esc, renderTable, unpack } from "../ui.js";
@@ -25,16 +26,21 @@ const pct = (m, a) => (a ? (100 * m / a).toFixed(1) : "–");
 const sign = (v) => (v > 0 ? "+" : "") + Math.round(v);
 
 export async function gamePage(app, gameId) {
-  const season = seasonOfGame(gameId);
+  const season = seasonOfGame(gameId), playoff = gameId.startsWith("004");
+  const coded = gameId.slice(5, 7) === "00" && "1234".includes(gameId[7]);      // ids before 2001-02 don't carry round/game
+  const kindText = !playoff ? `${season} regular season`
+    : coded ? `${season} playoffs · ${["", "first round", "conference semifinals", "conference finals", "NBA Finals"][+gameId[7]]}, game ${+gameId[9]}` : `${season} playoffs`;
   app.innerHTML = `<p class="muted">Loading box score…</p>`;
   let teamRows, lines, teams;
   try {
-    [teamRows, lines, teams] = await Promise.all([getJSON(`data/${season}/team_gamelogs.json`).then(unpack), seasonPlayerLines(season), load("teams", season).catch(() => [])]);
+    const po = playoff ? await getJSON(`data/${season}/playoffs.json`) : null;
+    [teamRows, lines, teams] = await Promise.all([po ? unpack(po.teams) : getJSON(`data/${season}/team_gamelogs.json`).then(unpack),
+      po ? unpack(po.players) : seasonPlayerLines(season), load("teams", season).catch(() => [])]);
   } catch (e) {
     app.innerHTML = `<h1>Box score</h1><p class="callout">No game log files for ${esc(season)} on this site.</p>`; return;
   }
   const two = teamRows.filter((r) => r.GAME_ID === gameId);
-  if (two.length !== 2) { app.innerHTML = `<h1>Box score</h1><p class="callout">Game ${esc(gameId)} isn't in the ${esc(season)} regular-season game log on this site (playoff games aren't loaded).</p>`; return; }
+  if (two.length !== 2) { app.innerHTML = `<h1>Box score</h1><p class="callout">Game ${esc(gameId)} isn't in the ${esc(season)} ${playoff ? "playoff" : "regular-season"} game log on this site.</p>`; return; }
   const name = (id) => teams.find((t) => t.TEAM_ID === id)?.TEAM_NAME;
   const [away, home] = two[0].HOME ? [two[1], two[0]] : [two[0], two[1]];
   const ot = Math.max(0, Math.round((home.MIN - 240) / 25));
@@ -58,7 +64,7 @@ export async function gamePage(app, gameId) {
     <p class="muted small"><a href="#/team/${away.TEAM_ID}?season=${season}&tab=gamelog">${esc(away.TEAM_ABBREVIATION)} game log</a> ·
       <a href="#/team/${home.TEAM_ID}?season=${season}&tab=gamelog">${esc(home.TEAM_ABBREVIATION)} game log</a></p>
     <h1>${esc(name(away.TEAM_ID) || away.TEAM_ABBREVIATION)} ${away.PTS} @ ${esc(name(home.TEAM_ID) || home.TEAM_ABBREVIATION)} ${home.PTS}${ot ? ` <span class="muted">(${ot > 1 ? ot : ""}OT)</span>` : ""}</h1>
-    <p class="muted">${esc(home.GAME_DATE)} · ${esc(season)} regular season · ${esc(winner.TEAM_ABBREVIATION)} won by ${Math.abs(home.PTS - away.PTS)} · about ${Math.round(poss)} possessions each
+    <p class="muted">${esc(home.GAME_DATE)} · ${esc(kindText)} · ${esc(winner.TEAM_ABBREVIATION)} won by ${Math.abs(home.PTS - away.PTS)} · about ${Math.round(poss)} possessions each
       ${top ? ` · top Game Score: <a href="#/player/${top.PLAYER_ID}">${esc(top.PLAYER_NAME)}</a> ${top.GAME_SCORE.toFixed(1)} (${top.PTS} pts, ${top.REB} reb, ${top.AST} ast)` : ""}</p>
     <div class="card table-wrap"><table class="data">
       <thead><tr><th class="left">Team</th><th>PTS</th><th>FG</th><th>3P</th><th>FT</th><th>REB (OR)</th><th>AST</th><th>STL</th><th>BLK</th><th>TOV</th>
@@ -66,7 +72,7 @@ export async function gamePage(app, gameId) {
       <tbody>${tline(away, fa)}${tline(home, fh)}</tbody></table>
       <p class="muted small">Last five columns are Dean Oliver's four factors and offensive rating, computed from the two box-score lines (possessions ≈ FGA + 0.44·FTA − OREB + TOV).</p></div>
     <div id="box-away"></div><div id="box-home"></div>
-    <p class="muted small">Source: NBA.com (LeagueGameLog), regular season. Game Score is John Hollinger's formula.</p>`;
+    <p class="muted small">Source: NBA.com (LeagueGameLog), ${playoff ? `playoffs · <a href="#/history/playoffs?season=${season}">${esc(season)} bracket</a>` : "regular season"}. Game Score is John Hollinger's formula.</p>`;
 
   const cols = [
     { key: "PLAYER_NAME", label: "Player", left: true, html: (r) => `<a href="#/player/${r.PLAYER_ID}?season=${season}">${esc(r.PLAYER_NAME)}</a>` },

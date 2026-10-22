@@ -1,6 +1,7 @@
 // history.js (page) - the league over time, 1996-97 to now (NBA.com data only).
 //   #/history/trends    league-wide averages by season: pace, 3-point volume, efficiency... (data/index/league_trends.json)
 //   #/history/leaders   every season's statistical leaders (data/index/player_seasons.json - the same file Ask uses)
+//   #/history/playoffs  every postseason bracket + champions (data/index/playoffs.json, made by pipeline/fetch_playoffs.py)
 import { META, loadPlayerSeasons, loadPlayerIndex, seasonGames, QUALIFY_SHARE } from "../data.js";
 import { esc, renderTable, chartTheme, PALETTE } from "../ui.js";
 
@@ -20,7 +21,7 @@ const TRENDS = [
   ["AST_RATE", "Assisted %", "Assists per made field goal", "pct"],
 ];
 const f = (v, kind) => (v == null ? "–" : kind === "pct" ? (100 * v).toFixed(1) : Number(v).toFixed(kind));
-const tabs = (k) => `<nav class="page-tabs">${[["trends", "League trends"], ["leaders", "Season leaders"]].map(([x, l]) =>
+const tabs = (k) => `<nav class="page-tabs">${[["trends", "League trends"], ["leaders", "Season leaders"], ["playoffs", "Playoffs & champions"]].map(([x, l]) =>
   `<a href="#/history/${x}" class="${x === k ? "active" : ""}">${l}</a>`).join("")}</nav>`;
 
 export async function historyPage(app, kind = "trends", query = "") {
@@ -30,6 +31,7 @@ export async function historyPage(app, kind = "trends", query = "") {
     <p class="sub">How the NBA has changed since 1996-97, and who led it each season. NBA.com data.</p></div></div>${tabs(kind)}<div id="hist"></div>`;
   const box = app.querySelector("#hist");
   if (kind === "leaders") return leaders(box, params);
+  if (kind === "playoffs") return playoffs(box, params);
   return trends(box, params);
 }
 
@@ -140,5 +142,48 @@ async function leaders(box, params) {
     { key: "PLAYER_NAME", label: "Leader", left: true, html: (r) => `<a href="#/player/${r.PLAYER_ID}?season=${r.SEASON}">${esc(r.PLAYER_NAME)}</a>` },
     { key: "TEAM", label: "Team", left: true }, { key: "V", label: sLabel, html: (r) => show(r.V, sKind) },
     { key: "RUNNER", label: "Runner-up", left: true, html: (r) => (r.RUNNER ? `${esc(r.RUNNER.PLAYER_NAME)} ${show(val(r.RUNNER, stat), sKind)}` : "–") },
+  ] });
+}
+
+// ---------------------------------------------------------------- playoffs
+async function playoffs(box, params) {
+  const idx = await fetch("data/index/playoffs.json").then((r) => (r.ok ? r.json() : null)).catch(() => null);
+  if (!idx || !idx.rows.length) { box.innerHTML = `<p class="callout">Playoff results haven't been loaded yet.</p>`; return; }
+  const all = idx.rows.map((r) => Object.fromEntries(idx.cols.map((c, i) => [c, r[i]])));
+  const seasons = [...new Set(all.map((r) => r.SEASON))].sort().reverse();
+  const season = seasons.includes(params.get("season")) ? params.get("season") : seasons[0];
+  const rows = all.filter((r) => r.SEASON === season);
+  const games = await fetch(`data/${season}/playoffs.json`).then((r) => r.json()).then((d) => d.teams.rows.map((x) => Object.fromEntries(d.teams.cols.map((c, i) => [c, x[i]])))).catch(() => []);
+  const seed = (s) => (s ? `<span class="muted small">(${s})</span> ` : "");
+  const card = (r) => {
+    const gs = games.filter((g) => g.TEAM_ID === r.WIN_ID && g.OPP === r.LOSE).sort((a, b) => a.GAME_ID.localeCompare(b.GAME_ID));
+    return `<details class="series card"><summary>
+        <div><b>${seed(r.WIN_SEED)}<a href="#/team/${r.WIN_ID}?season=${season}">${esc(r.WIN)}</a></b> <b class="sw">${r.WIN_W}</b></div>
+        <div><span>${seed(r.LOSE_SEED)}<a href="#/team/${r.LOSE_ID}?season=${season}">${esc(r.LOSE)}</a></span> <span class="sw">${r.LOSE_W}</span></div></summary>
+      <ol class="series-games">${gs.map((g) => `<li><a href="#/game/${g.GAME_ID}">${esc(g.GAME_DATE.slice(5))}</a> ${esc(r.WIN)} ${g.PTS}-${g.OPP_PTS} ${g.HOME ? "vs" : "@"} ${esc(r.LOSE)} <span class="${g.WL === "W" ? "win" : "loss"}">${g.WL}</span></li>`).join("")}</ol></details>`;
+  };
+  const RN = ["", "First round", "Conference semifinals", "Conference finals", "NBA Finals"];
+  const conf = (c) => `<div class="bracket">${[1, 2, 3].map((rd) => `<div class="b-round"><h4>${RN[rd]}</h4>${rows.filter((r) => r.ROUND === rd && r.CONF === c).sort((a, b) => a.SERIES - b.SERIES).map(card).join("")}</div>`).join("")}</div>`;
+  const fin = rows.find((r) => r.ROUND === 4);
+  const champs = seasons.map((s) => all.find((r) => r.SEASON === s && r.ROUND === 4)).filter(Boolean);
+  const count = new Map(); for (const c of champs) count.set(c.WIN, (count.get(c.WIN) || 0) + 1);
+  box.innerHTML = `
+    <div class="toolbar"><label>Season <select id="po-season">${seasons.map((s) => `<option ${s === season ? "selected" : ""}>${s}</option>`).join("")}</select></label>
+      ${fin ? `<span><b>Champion: <a href="#/team/${fin.WIN_ID}?season=${season}">${esc(fin.WIN)}</a></b> beat ${esc(fin.LOSE)} ${fin.WIN_W}-${fin.LOSE_W} in the Finals</span>` : ""}</div>
+    <p class="muted small">Numbers in brackets are NBA.com's final regular-season conference ranks; from 2020-21 the Play-In teams are shown in the slot they won.
+      Before 2015-16 division winners could be seeded above their rank, so a few older seeds differ from the official bracket. Click a series for its games and box scores.</p>
+    <h2>West</h2>${conf("West")}
+    <h2>East</h2>${conf("East")}
+    ${fin ? `<h2>NBA Finals</h2><div class="bracket finals">${card(fin)}</div>` : ""}
+    <h2 style="margin-top:22px">Champions since ${esc(seasons[seasons.length - 1])}</h2>
+    <p class="small">Most titles: ${[...count].sort((a, b) => b[1] - a[1]).slice(0, 5).map(([t, c]) => `${esc(t)} ${c}`).join(" · ")}</p>
+    <div id="po-champs"></div>
+    <p class="muted small">Source: ${esc(idx.source)}. First-round series were best-of-5 until 2002-03; 2019-20 was played in the Orlando bubble.</p>`;
+  box.querySelector("#po-season").addEventListener("change", (e) => { location.hash = `#/history/playoffs?season=${e.target.value}`; });
+  renderTable(box.querySelector("#po-champs"), { rows: champs, entity: "teams", rank: false, pageSize: 40, sortKey: "SEASON", columns: [
+    { key: "SEASON", label: "Season", left: true, html: (r) => `<a href="#/history/playoffs?season=${r.SEASON}">${esc(r.SEASON)}</a>` },
+    { key: "WIN", label: "Champion", left: true, html: (r) => `<a href="#/team/${r.WIN_ID}?season=${r.SEASON}">${esc(r.WIN)}</a> ${seed(r.WIN_SEED)}` },
+    { key: "LOSE", label: "Runner-up", left: true, html: (r) => `${esc(r.LOSE)} ${seed(r.LOSE_SEED)}` },
+    { key: "WIN_W", label: "Finals", left: true, html: (r) => `${r.WIN_W}-${r.LOSE_W}` },
   ] });
 }

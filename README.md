@@ -33,6 +33,7 @@ It's a **static site**: plain HTML, CSS and JavaScript files with no server code
 | `pipeline/build_indexes.py` | Combined player files (careers, Ask name index, Similar Players inputs). Run nightly by `update_reports.py`. |
 | `pipeline/fetch_schedule.py` | NBA.com schedule for the Playoff Odds / Draft Lottery tools. Run nightly by `update_reports.py`. |
 | `pipeline/fetch_more.py` | Python script that downloads standings, full game logs, clutch, hustle and more tracking stats (NBA.com). |
+| `pipeline/fetch_playoffs.py` | Playoff game logs (teams + players) for every finished season and `data/index/playoffs.json` (every series since 1996-97). Polite and resumable like `fetch_advanced.py`; not nightly, so run it once after each postseason. |
 | `pipeline/update_reports.py` | The nightly script: refreshes the current season, writes the Reports, rebuilds the combined player files, and runs `fetch_more.py`, `fetch_schedule.py` and `fetch_advanced.py` for the current season. |
 | `pipeline/cache/` | Saved copies of Basketball-Reference pages, so they aren't downloaded twice. |
 | `data/<season>/` | The JSON data files the website reads, one folder per season. |
