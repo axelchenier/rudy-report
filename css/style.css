@@ -347,3 +347,14 @@ input[type=range] { vertical-align: middle; accent-color: var(--accent); }
 .two-col > * { min-width: 0; }
 .charts > * { min-width: 0; }
 #barstat { max-width: calc(100vw - 160px); }
+
+/* Desktop header at 1020-1259px: the full nav (with Tools) must fit next to the brand and season picker, so tighten spacing
+   instead of switching to the hamburger. (Below 1020px the hamburger menu takes over.) */
+@media (min-width: 1020px) and (max-width: 1259px) {
+  .header-row { gap: 8px; }
+  .brand { font-size: 16px; gap: 8px; }
+  .nav { gap: 1px; }
+  .nav a, .nav-drop { padding: 6px 7px; }
+  .header-tools { gap: 6px; }
+  .season-picker select { max-width: 92px; }
+}
