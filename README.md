@@ -280,6 +280,11 @@ scores: margin chart with a 5-game average, game table with opponent T-Rank, pos
 (points per 100 possessions, not opponent-adjusted), and splits (home/away as ESPN lists them, conference/non-conference, vs top-25
 and top-100, vs non-D-I, postseason, close games, by month). `data/college/gamelogs/<season>/teams.json` (~1.2 MB per season).
 
+**Most similar college seasons** (college player pages): for each qualified season (40%+ of team minutes, 15+ games), the 5
+closest D-I player-seasons since 2007-08 on the 2027 Draft board's 15-stat profile (z-scored within each season), with each comp's
+NBA draft pick and outcome tier. `pipeline/college_similar.py` → `data/college/similar/<season>.json` (~9 MB total, ~0.5 MB per
+season, loaded only when that season's tab is opened), nightly.
+
 **Ask: NCAA tournament** (`js/ask/college_tourney.js`, from the saved ESPN brackets 2008-2026): "Who won the 2016 NCAA
 tournament", "2019 Final Four", "NCAA champions since 2010", "Duke NCAA tournament history", "Gonzaga in the 2021 tournament",
 "most Final Fours since 2008", "biggest upsets in the 2023 tournament", "16 seeds that beat a 1 seed", "12 seed vs 5 seed record",
@@ -344,6 +349,7 @@ Nightly college job (Torvik refresh + ESPN games + reports + draft board):
 | `pipeline/update_college.py` | Nightly job → `data/college/reports/` (and runs `college_draft.py`). |
 | `pipeline/college_draft.py` | Draft model + prospect reports → `data/draft/`. |
 | `pipeline/college_gamelogs.py` | College player game logs (ESPN box scores) → `data/college/gamelogs/`. |
+| `pipeline/college_similar.py` | 5 most similar D-I player-seasons for every qualified season since 2007-08 → `data/college/similar/` (player pages). |
 | `pipeline/college_freshness.py` | When each College/Draft dataset was rebuilt + the last nightly run's step results → `data/college/freshness.json` (footer "Data freshness"). |
 | `pipeline/college_schedule.py` | Recent results + next 7 days of D-I games (ESPN scoreboard) → `data/college/schedule.json` for the College home. |
 | `pipeline/college_leaders.py` | All-time single-season and career college leaderboards (2007-08+) → `data/college/leaders.json`. |

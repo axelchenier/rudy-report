@@ -5,6 +5,7 @@ import { renderTable, esc, rankOf, percentile, PALETTE, chartTheme } from "../ui
 import { CCOLUMNS } from "../college/cstats.js";
 import { renderProgramHistory, renderPlayerExtras } from "./college_extras.js";
 import { renderCollegeGameLog } from "./college_gamelog.js";
+import { renderSimilarSeasons } from "./college_similar.js";
 import { renderCollegeTeamLog } from "./college_teamlog.js";
 import { renderCollegeWhatIf } from "./college_whatif.js";
 import { loadCMeta, CMETA, cload, cseasonFromQuery, currentCSeason, cseasonSelectHTML, seasonInfo, addRecords, careerOf,
@@ -259,6 +260,7 @@ export async function collegePlayerPage(app, pid) {
     <div class="grid stat-cards">${cards}</div>
     <p class="muted small">Percentiles and ranks are among the ${pool.length.toLocaleString()} D-I players who played at least 40% of their team's minutes in ${season} (100th = best).</p>
     <div id="cextras"></div>
+    <div id="csimilar"></div>
     <h2>Season by season</h2>
     <div class="toolbar"><div class="tabs"><button data-m="basic" class="active">Per Game</button><button data-m="adv">Advanced</button></div></div>
     <div id="hist"></div>
@@ -273,6 +275,7 @@ export async function collegePlayerPage(app, pid) {
     app.querySelectorAll("[data-m]").forEach((x) => x.classList.toggle("active", x === b)); drawHist(b.dataset.m); }));
   drawHist("basic");
   renderPlayerExtras(app.querySelector("#cextras"), pid, career).catch((e) => console.warn(e));
+  renderSimilarSeasons(app.querySelector("#csimilar"), +pid, career).catch((e) => console.warn(e));
   renderCollegeGameLog(app.querySelector("#cgamelog"), pid, career.map((c) => c.SEASON)).catch((e) => console.warn(e));
   if (career.length > 1) {
     const th = chartTheme();

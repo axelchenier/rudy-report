@@ -614,7 +614,7 @@ def run():
         raise
     # Rebuild the 2027 Draft board from the freshest stats (skipped for archive/test runs).
     if "--season" not in sys.argv and "--out" not in sys.argv:
-        import college_draft, college_bracket, college_nba, college_gamelogs, college_leaders, college_schedule
+        import college_draft, college_bracket, college_nba, college_gamelogs, college_leaders, college_schedule, college_similar
         step("2027 Draft board", college_draft.main)
         # Save this year's real NCAA bracket for the Tournament Simulator once the tournament is over
         # (no network and instant outside mid-March..April, or once data/college/brackets/<year>.json exists).
@@ -627,6 +627,8 @@ def run():
         step("College leaders", college_leaders.main)
         # Recent results + next 7 days of D-I games for the College home page (ESPN scoreboard, ~10 small requests).
         step("College schedule", college_schedule.main)
+        # "Most similar college seasons" for player pages (local data only, ~35 s, ~9 MB).
+        step("Similar college seasons", college_similar.main)
         _freshness(steps)
         if not steps[1]["ok"]:                  # as before: a broken Draft board fails the run (the other steps only warn)
             raise RuntimeError(f"2027 Draft board failed: {steps[1].get('note')}")
