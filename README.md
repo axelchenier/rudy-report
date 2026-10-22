@@ -221,6 +221,11 @@ chances fit on 2008-2023 college seasons, with a back-test and a method note) an
 rule-based strengths/weaknesses with numbers, most similar past drafted players, NBA Draft Combine data when it exists,
 college career). No scouting opinions and no outside rankings.
 
+**College what-if sliders** (team pages, labeled *Model estimate*): change adjusted offense, adjusted defense, 3P% or
+opponents' 3P% and see AdjEM, Barthag (Torvik's formula, exponent 11.5), an estimated T-Rank, expected wins against the same
+strength of schedule (log5 vs Torvik's SOS; preseason uses the opponent strength that reproduces Torvik's projected record),
+and the win chance against the best other team. 3P% converts to points with 3-point attempts per possession from Torvik's four factors.
+
 **Conferences** (`#/college/conferences`, `#/college/conference/<code>`): every conference ranked by average adjusted
 efficiency margin (plus top-4 AdjEM, offense, defense, tempo, best team, and NCAA bids/wins/best run when a real bracket exists),
 and one page per conference with standings (by conference win %), rating cards, player leaders (points, rebounds, assists, BPM,
@@ -247,6 +252,7 @@ Nightly college job (Torvik refresh + ESPN games + reports + draft board):
 | `pipeline/college_bracket.py` | Real NCAA brackets (ESPN) → `data/college/brackets/<year>.json`. |
 | `js/pages/college_tourney.js` | Tournament Simulator page. |
 | `js/pages/college_conf.js` | Conference pages (all conferences + one conference). |
+| `js/pages/college_whatif.js` | What-if sliders on college team pages. |
 | `js/pages/college_reports.js`, `college_predictor.js`, `draft.js` | Those pages. |
 | `js/nav.js` | Top-nav dropdowns (College, More) and the mobile menu. |
 

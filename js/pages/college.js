@@ -3,6 +3,7 @@
 import { STATS, fmt } from "../stats.js";
 import { renderTable, esc, rankOf, percentile, PALETTE, chartTheme } from "../ui.js";
 import { CCOLUMNS } from "../college/cstats.js";
+import { renderCollegeWhatIf } from "./college_whatif.js";
 import { loadCMeta, CMETA, cload, cseasonFromQuery, currentCSeason, cseasonSelectHTML, seasonInfo, addRecords, careerOf,
   TORVIK_CREDIT, C_QUAL_MIN_PCT, playedSeasons, CSEASONS } from "../college/cdata.js";
 
@@ -182,6 +183,7 @@ export async function collegeTeamPage(app, id, query = "") {
         </tbody></table></div></div>
       <div><h2>${esc(t.CONF)} standings</h2><div id="conf"></div><p class="small"><a href="#/college/conference/${encodeURIComponent(t.CONF)}?season=${season}">Full ${esc(t.CONF)} page: standings, leaders, history →</a></p></div>
     </div>
+    <div id="cwhatif"></div>
     <h2>Roster · ${pre ? playedSeasons()[0] + " (last season's team)" : season}</h2>
     <div id="roster"></div>
     <h2>Season by season</h2>
@@ -190,6 +192,7 @@ export async function collegeTeamPage(app, id, query = "") {
     ${creditLine()}`;
   app.querySelector("#page-season").addEventListener("change", (e) => { location.hash = `#/college/team/${id}?season=${e.target.value}`; });
 
+  renderCollegeWhatIf(app.querySelector("#cwhatif"), t, all, season, pre);
   renderTable(app.querySelector("#conf"), { rows: conf, entity: "teams", sortKey: pre ? "TRANK" : "W_PCT", sortAsc: pre, pageSize: 30,
     columns: [{ key: "TEAM_NAME", label: "Team", left: true, html: cTeamLink }, ccol("CONF_REC"), ccol("REC"), ccol("TRANK"), ccol("ADJEM")] });
 
