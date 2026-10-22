@@ -4,12 +4,23 @@
 // Data: data/index/playoffs.json (every series since 1996-97), data/index/franchises.json (NBA.com FranchiseHistory),
 //       data/<season>/playoffs.json (playoff player game lines) - all made by the pipeline (fetch_playoffs.py, build_indexes.py).
 import { esc } from "../ui.js";
+import { loadCMeta, cload, playedSeasons } from "../college/cdata.js";
 
 const cache = new Map();
 const getJSON = (p) => { if (!cache.has(p)) cache.set(p, fetch(p).then((r) => { if (!r.ok) throw new Error(p); return r.json(); })); return cache.get(p); };
 const rowsOf = (c) => c.rows.map((r) => Object.fromEntries(c.cols.map((k, i) => [k, r[i]])));
 const TRIGGER = /\b(finals?|champions?|championships?|titles?|rings?|playoffs?|postseason|swept|sweep)\b/;
-const COLLEGE = /\b(college|ncaa|march madness|final four|ncaam|tournament)\b/;
+const COLLEGE = /\b(college|ncaa|march madness|final fours?|ncaam|tournament|national (?:champ\w*|titles?)|elite (?:eight|8)|sweet (?:16|sixteen))\b/;
+// Common short names for schools that aren't their Torvik team names, so "UConn titles" defers to College Ask.
+const SCHOOL_NICKS = ["uconn", "unc", "nova", "zags", "lsu", "unlv", "byu", "vcu", "smu", "tcu", "utep", "uk", "osu", "msu", "ole miss", "pitt", "cuse"];
+let schools = null;
+async function collegeTeamIn(q) {
+  if (SCHOOL_NICKS.some((n) => new RegExp(`\\b${n}\\b`).test(q))) return true;
+  try {
+    if (!schools) schools = loadCMeta().then(() => cload("teams", playedSeasons()[0])).then((rows) => rows.map((t) => t.TEAM_NAME.toLowerCase().replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
+    return (await schools).some((n) => n.length > 3 && new RegExp(`\\b${n}\\b`).test(q));
+  } catch { return false; }
+}
 const ROUND = ["", "first round", "conference semifinals", "conference finals", "NBA Finals"];
 const NICK_EXTRA = { "sixers": "76ers", "cavs": "Cavaliers", "mavs": "Mavericks", "wolves": "Timberwolves", "blazers": "Trail Blazers", "knicks": "Knicks", "dubs": "Warriors" };
 const SRC = ["NBA.com LeagueGameLog (Playoffs)", "NBA.com FranchiseHistory"];
@@ -41,6 +52,7 @@ export async function playoffAnswer(question) {
   const abbrs = new Map(S.flatMap((r) => [[r.WIN.toLowerCase(), r.WIN_ID], [r.LOSE.toLowerCase(), r.LOSE_ID]]));
   const team = teams.find((t) => t.words.some((w) => w.length > 2 && new RegExp(`\\b${w.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`).test(q)))
     || teams.find((t) => [...abbrs].some(([a, id]) => id === t.id && new RegExp(`\\b${a}\\b`).test(q)));
+  if (!team && await collegeTeamIn(q)) return null;      // a college school and no NBA team: College Ask answers it
   const season = seasonFrom(q, seasons);
   const link = (id, abbr, s) => `<a href="#/team/${id}${s ? `?season=${s}` : ""}">${esc(abbr)}</a>`;
   const full = (id, abbr, s) => `<a href="#/team/${id}${s ? `?season=${s}` : ""}">${esc(teams.find((t) => t.id === id)?.name || abbr)}</a>`;
