@@ -233,3 +233,11 @@ published on NBA.com/stats (`SynergyPlayTypes`, from 2015-16), saved to `data/<s
 - **WOWY explorer** (`#/wowy?team=…`): click players ON or OFF and see the team's ratings in exactly those minutes.
   This asks the free [PBP Stats API](https://www.pbpstats.com) live (credited on the page) and caches each answer in the
   browser for 12 hours, so the hobby server isn't hammered. If it's down, the page says so.
+
+## What if… sliders (Model estimate)
+
+Player and team pages have a **What if** tab: change 3P%, 3PA, 2P%, FT% or FTA per game and see points, TS%, eFG%,
+team net rating and Pythagorean wins move. It's labeled **Model estimate** because it changes one number and holds
+everything else fixed (no extra rebounds off misses, no defensive or usage changes). Points → net rating uses the team's
+possessions per game; wins use the same Pythagorean formula (exponent 13.91) as the Standings page. A player's effect is
+spread over only the games he played.

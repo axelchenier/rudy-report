@@ -269,3 +269,11 @@ span.loss { color: var(--bad); font-weight: 700; }
 .chip.on { border-color: var(--good); background: color-mix(in srgb, var(--good) 18%, var(--panel)); font-weight: 600; }
 .chip.off { border-color: var(--bad); background: color-mix(in srgb, var(--bad) 15%, var(--panel)); font-weight: 600; text-decoration: line-through; }
 input[type=range] { vertical-align: middle; accent-color: var(--accent); }
+
+/* ---------- What-if sliders ---------- */
+.wi-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; align-items: start; }
+.wi-slider { display: grid; grid-template-columns: 110px 1fr 64px auto; gap: 8px; align-items: center; margin: 10px 0; font-size: 14px; }
+.wi-slider b { text-align: right; font-variant-numeric: tabular-nums; }
+.wi-check { display: block; margin: -4px 0 6px 118px; }
+.btn.tiny { padding: 2px 8px; font-size: 12px; }
+@media (max-width: 860px) { .wi-grid { grid-template-columns: 1fr; } .wi-slider { grid-template-columns: 90px 1fr 56px; } .wi-slider .btn { display: none; } .wi-check { margin-left: 0; } }
