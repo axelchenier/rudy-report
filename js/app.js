@@ -44,7 +44,7 @@ const routes = [
   [/^#\/player\/(\d+)(?:\?(.*))?$/, playerPage, "players"],
   [/^#\/team\/(\d+)(?:\?(.*))?$/, teamPage, "teams"],
   [/^#\/game\/(\d{10})$/, gamePage, "teams"],
-  [/^#\/history(?:\/(trends|leaders|playoffs))?(?:\?(.*))?$/, historyPage, "hubs"],
+  [/^#\/history(?:\/(trends|leaders|playoffs|awards))?(?:\?(.*))?$/, historyPage, "hubs"],
   [/^#\/standings(?:\?(.*))?$/, standingsPage, "standings"],
   [/^#\/hubs(?:\/(clutch|hustle|tracking|playtypes))?(?:\?(.*))?$/, hubsPage, "hubs"],
   [/^#\/glossary(?:\?(.*))?$/, glossaryPage, "glossary"],

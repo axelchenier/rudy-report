@@ -1,6 +1,7 @@
 // history.js (page) - the league over time, 1996-97 to now (NBA.com data only).
 //   #/history/trends    league-wide averages by season: pace, 3-point volume, efficiency... (data/index/league_trends.json)
 //   #/history/leaders   every season's statistical leaders (data/index/player_seasons.json - the same file Ask uses)
+//   #/history/awards    MVP, DPOY, ROY, 6MOY, MIP, Finals MVP, All-NBA... by season (data/index/awards.json, pipeline/fetch_awards.py)
 //   #/history/playoffs  every postseason bracket + champions (data/index/playoffs.json, made by pipeline/fetch_playoffs.py)
 import { META, loadPlayerSeasons, loadPlayerIndex, seasonGames, QUALIFY_SHARE } from "../data.js";
 import { esc, renderTable, chartTheme, PALETTE } from "../ui.js";
@@ -21,7 +22,7 @@ const TRENDS = [
   ["AST_RATE", "Assisted %", "Assists per made field goal", "pct"],
 ];
 const f = (v, kind) => (v == null ? "–" : kind === "pct" ? (100 * v).toFixed(1) : Number(v).toFixed(kind));
-const tabs = (k) => `<nav class="page-tabs">${[["trends", "League trends"], ["leaders", "Season leaders"], ["playoffs", "Playoffs & champions"]].map(([x, l]) =>
+const tabs = (k) => `<nav class="page-tabs">${[["trends", "League trends"], ["leaders", "Season leaders"], ["playoffs", "Playoffs & champions"], ["awards", "Awards"]].map(([x, l]) =>
   `<a href="#/history/${x}" class="${x === k ? "active" : ""}">${l}</a>`).join("")}</nav>`;
 
 export async function historyPage(app, kind = "trends", query = "") {
@@ -32,6 +33,7 @@ export async function historyPage(app, kind = "trends", query = "") {
   const box = app.querySelector("#hist");
   if (kind === "leaders") return leaders(box, params);
   if (kind === "playoffs") return playoffs(box, params);
+  if (kind === "awards") return awards(box, params);
   return trends(box, params);
 }
 
@@ -186,4 +188,43 @@ async function playoffs(box, params) {
     { key: "LOSE", label: "Runner-up", left: true, html: (r) => `${esc(r.LOSE)} ${seed(r.LOSE_SEED)}` },
     { key: "WIN_W", label: "Finals", left: true, html: (r) => `${r.WIN_W}-${r.LOSE_W}` },
   ] });
+}
+
+// ---------------------------------------------------------------- awards
+export const AWARDS = [["MVP", "Most Valuable Player"], ["DPOY", "Defensive Player of the Year"], ["ROY", "Rookie of the Year"],
+  ["6MOY", "Sixth Man of the Year"], ["MIP", "Most Improved Player"], ["CPOY", "Clutch Player of the Year"], ["FMVP", "Finals MVP"]];
+const TEAMS_OF = [["ALL_NBA", "All-NBA"], ["ALL_DEF", "All-Defensive"], ["ALL_ROOKIE", "All-Rookie"]];
+async function awards(box, params) {
+  const [d, idx] = await Promise.all([fetch("data/index/awards.json").then((r) => (r.ok ? r.json() : null)).catch(() => null), loadPlayerIndex()]);
+  if (!d || !d.rows.length) { box.innerHTML = `<p class="callout">Awards haven't been loaded yet.</p>`; return; }
+  const names = new Map(idx.map((r) => [r.PLAYER_ID, r.PLAYER_NAME]));
+  const rows = d.rows.map((r) => Object.fromEntries(d.cols.map((c, i) => [c, r[i]]))).map((r) => ({ ...r, NAME: names.get(r.PLAYER_ID) || r.PLAYER_NAME }));
+  const seasons = [...new Set(rows.map((r) => r.SEASON))].sort().reverse();
+  const season = seasons.includes(params.get("season")) ? params.get("season") : seasons[0];
+  const who = (r, s) => `<a href="#/player/${r.PLAYER_ID}?season=${s}">${esc(r.NAME)}</a>`;
+  const cell = (s, a) => rows.filter((r) => r.SEASON === s && r.AWARD === a).map((r) => who(r, s)).join(", ") || (a === "CPOY" && s < "2022-23" ? '<span class="muted" title="First awarded in 2022-23">–</span>'
+    : '<span class="muted" title="Not filled in on this site yet">not in yet</span>');
+  const mine = rows.filter((r) => r.SEASON === season);
+  const teamBlock = ([k, label]) => {
+    const t = mine.filter((r) => r.AWARD === k);
+    if (!t.length) return "";
+    const nums = [...new Set(t.map((r) => r.TEAM_NUMBER || 1))].sort();
+    const partial = k === "ALL_NBA" ? d.missing?.[season]?.includes(k) : t.length < 10;
+    return `<div class="card"><h3>${esc(label)}</h3>${partial ? `<p class="muted small">Still being filled in: ${t.length} of ${k === "ALL_NBA" ? 15 : 10} players so far.</p>` : ""}${nums.map((n) => `<p class="small"><b>${["", "1st", "2nd", "3rd"][n] || n} team:</b> ${t.filter((r) => (r.TEAM_NUMBER || 1) === n).map((r) => who(r, season)).join(", ")}</p>`).join("")}</div>`;
+  };
+  const count = (a) => { const m = new Map(); for (const r of rows.filter((x) => x.AWARD === a)) m.set(r.PLAYER_ID, { r, n: (m.get(r.PLAYER_ID)?.n || 0) + 1 }); return [...m.values()].sort((x, y) => y.n - x.n); };
+  const miss = Object.entries(d.missing || {});
+  box.innerHTML = `
+    <div class="toolbar"><label>Season <select id="aw-season">${seasons.map((s) => `<option ${s === season ? "selected" : ""}>${s}</option>`).join("")}</select></label></div>
+    <div class="grid lead-grid">${AWARDS.map(([k, l]) => `<div class="card"><div class="muted small">${esc(l)}</div><b>${cell(season, k)}</b></div>`).join("")}</div>
+    <div class="grid lead-grid" style="margin-top:12px">${TEAMS_OF.map(teamBlock).join("")}</div>
+    <h2 style="margin-top:22px">Every season</h2><div id="aw-table"></div>
+    <p class="small" style="margin-top:12px">Most MVPs since ${esc(seasons[seasons.length - 1])}: ${count("MVP").slice(0, 5).map((x) => `${esc(x.r.NAME)} ${x.n}`).join(" · ")}.
+      Most All-NBA selections: ${count("ALL_NBA").slice(0, 5).map((x) => `${esc(x.r.NAME)} ${x.n}`).join(" · ")}.</p>
+    ${miss.length ? `<p class="callout small">Still being filled in for ${miss.length} season${miss.length === 1 ? "" : "s"} (NBA.com lists awards per player, so the site checks players one by one): ${miss.slice(0, 6).map(([s, m]) => `${esc(s)} ${esc(m.join("/"))}`).join("; ")}${miss.length > 6 ? "…" : ""}.</p>` : ""}
+    <p class="muted small">Source: ${esc(d.source)}. The Clutch Player of the Year started in 2022-23.</p>`;
+  box.querySelector("#aw-season").addEventListener("change", (e) => { location.hash = `#/history/awards?season=${e.target.value}`; });
+  renderTable(box.querySelector("#aw-table"), { rows: seasons.map((s) => ({ SEASON: s })), entity: "players", rank: false, pageSize: 40, sortKey: "SEASON", columns: [
+    { key: "SEASON", label: "Season", left: true, html: (r) => `<a href="#/history/awards?season=${r.SEASON}">${esc(r.SEASON)}</a>` },
+    ...AWARDS.filter(([k]) => k !== "CPOY").map(([k]) => ({ key: k, label: k, left: true, html: (r) => cell(r.SEASON, k) }))] });
 }
