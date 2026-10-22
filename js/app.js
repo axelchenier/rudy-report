@@ -29,6 +29,7 @@ import { draftTranslationPage } from "./pages/draft_translation.js";
 import { draftMockPage } from "./pages/draft_mock.js";
 import { collegeTransferPage } from "./pages/college_transfer.js";
 import { collegeLeadersPage } from "./pages/college_leaders.js";
+import { collegeHomePage } from "./pages/college_home.js";
 import { setFooter } from "./footer.js";
 
 const app = document.getElementById("app");
@@ -49,7 +50,8 @@ const routes = [
   [/^#\/wowy(?:\?(.*))?$/, wowyPage, "teams"],
   [/^#\/compare(?:\?(.*))?$/, comparePage, "compare"],
   [/^#\/tools(?:\/(\w+))?(?:\?(.*))?$/, toolsPage, "tools"],
-  [/^#\/college\/?(?:teams)?(?:\?(.*))?$/, collegeTeamsPage, "college"],
+  [/^#\/college\/?(?:\?.*)?$/, collegeHomePage, "college"],
+  [/^#\/college\/teams(?:\?(.*))?$/, collegeTeamsPage, "college"],
   [/^#\/college\/players(?:\?(.*))?$/, collegePlayersPage, "college"],
   [/^#\/college\/team\/([\w-]+)(?:\?(.*))?$/, collegeTeamPage, "college"],
   [/^#\/college\/player\/(\d+)$/, collegePlayerPage, "college"],

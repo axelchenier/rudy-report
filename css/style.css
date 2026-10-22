@@ -428,3 +428,13 @@ table.mock td.small { white-space: nowrap; }
 /* Compare bar-chart stat picker: label and select stay on one line */
 label.bar-pick { display: flex; align-items: center; gap: 8px; width: 100%; white-space: nowrap; }
 label.bar-pick select { flex: 1 1 auto; min-width: 0; max-width: 100%; }
+
+/* College home */
+.ch-grid { grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); align-items: start; }
+@media (max-width: 900px) { .ch-grid { grid-template-columns: minmax(0, 1fr); } }
+.ch-days { margin-bottom: 0; width: auto; max-width: 100%; }
+.ch-days button { white-space: nowrap; flex: 0 0 auto; }
+.ch-table td { vertical-align: top; }
+.ch-table td.left { white-space: normal; min-width: 70px; }
+.ch-hit { color: var(--good, #16a34a); }
+.ch-miss { color: #c2410c; font-size: 11px; font-weight: 600; text-transform: uppercase; }

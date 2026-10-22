@@ -32,7 +32,7 @@ function markCurrent() {
   // Detail pages map to the list page they belong to (#/college/conference/B10 -> Conferences, #/college/player/1 -> Players).
   const h = (location.hash || "#/").split("?")[0]
     .replace(/^#\/college\/conference\/.*/, "#/college/conferences").replace(/^#\/college\/player\/.*/, "#/college/players")
-    .replace(/^#\/college\/teams$/, "#/college").replace(/^#\/draft\/\d+$/, "#/draft");
+    .replace(/^#\/college\/team\/.*/, "#/college/teams").replace(/^#\/draft\/\d+$/, "#/draft");
   const links = [...document.querySelectorAll(".nav-menu a")];
   links.forEach((a) => a.classList.remove("current"));
   const hits = links.filter((a) => { const href = a.getAttribute("href"); return h === href || h.startsWith(href + "/"); });

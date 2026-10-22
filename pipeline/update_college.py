@@ -625,6 +625,12 @@ def run():
             college_leaders.main()
         except Exception as e:  # noqa: BLE001
             print(f"WARNING: college leaders update failed: {e}")
+        # Recent results + next 7 days of D-I games for the College home page (ESPN scoreboard, ~10 small requests).
+        import college_schedule
+        try:
+            college_schedule.main()
+        except Exception as e:  # noqa: BLE001
+            print(f"WARNING: college schedule update failed: {e}")
 
 
 if __name__ == "__main__":

@@ -280,6 +280,12 @@ scores: margin chart with a 5-game average, game table with opponent T-Rank, pos
 (points per 100 possessions, not opponent-adjusted), and splits (home/away as ESPN lists them, conference/non-conference, vs top-25
 and top-100, vs non-D-I, postseason, close games, by month). `data/college/gamelogs/<season>/teams.json` (~1.2 MB per season).
 
+**College home** (`#/college`; the Teams list moved to `#/college/teams`): recent results and the next D-I games by day ("Top games" =
+best matchups by combined T-Rank, or all games), each with T-Ranks and a **Model estimate** win chance and margin (Game Predictor
+method, ratings of that game's season, preseason ratings before tip-off; finals show whether the favorite won), the top 25 by T-Rank,
+and a card for every College and Draft tool. Schedule: `pipeline/college_schedule.py` → `data/college/schedule.json` (~60 KB) from
+ESPN's public scoreboard (last 2 days + next 7; out of season it looks ahead to opening day), run nightly; scores are not live.
+
 **College Compare across seasons**: `#/college/compare?type=players&ids=<pid>@<season>,...` compares players (or teams) from
 different seasons (e.g. Zion 2018-19 vs Anthony Davis 2011-12). Changing the season keeps your picks so you can add someone from
 another year; percentiles are against each one's own season. Old links with plain ids still work (they mean the page's season).
@@ -327,6 +333,7 @@ Nightly college job (Torvik refresh + ESPN games + reports + draft board):
 | `pipeline/update_college.py` | Nightly job → `data/college/reports/` (and runs `college_draft.py`). |
 | `pipeline/college_draft.py` | Draft model + prospect reports → `data/draft/`. |
 | `pipeline/college_gamelogs.py` | College player game logs (ESPN box scores) → `data/college/gamelogs/`. |
+| `pipeline/college_schedule.py` | Recent results + next 7 days of D-I games (ESPN scoreboard) → `data/college/schedule.json` for the College home. |
 | `pipeline/college_leaders.py` | All-time single-season and career college leaderboards (2007-08+) → `data/college/leaders.json`. |
 | `pipeline/college_transfer.py` | Fits the Transfer what-if's player→team link and transfer carryover → `data/college/transfer_model.json`. |
 | `pipeline/college_nba.py` | Draft classes 2008-2026 + college-to-NBA data → `data/draft/history/`, `data/draft/translation.json`. |
