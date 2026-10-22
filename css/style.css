@@ -327,3 +327,21 @@ input[type=range] { vertical-align: middle; accent-color: var(--accent); }
 
 /* Ask bar on phones: let the input shrink so the Ask button stays on screen (390px). */
 .ask-form input { min-width: 0; }
+
+/* College Tournament Simulator: played-out bracket (scrolls sideways inside its box on small screens). */
+.bracket-wrap { overflow-x: auto; }
+.bk-region { margin: 10px 0 16px; }
+.bk-region h4 { margin: 4px 0 6px; }
+.bk-cols { display: grid; grid-template-columns: repeat(4, minmax(150px, 1fr)); gap: 8px; min-width: 640px; }
+.bk-col { display: flex; flex-direction: column; }
+.bk-games { flex: 1; display: flex; flex-direction: column; justify-content: space-around; gap: 6px; }
+.bk-head { font-size: 11px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
+.bk-game { border: 1px solid var(--border); border-radius: 6px; font-size: 12px; overflow: hidden; }
+.bk-game.upset { border-color: var(--accent); }
+.bk-team { padding: 3px 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--muted); }
+.bk-team.win { color: var(--text); font-weight: 600; }
+.bk-seed { display: inline-block; min-width: 16px; color: var(--muted); font-weight: 400; }
+.bk-p { float: right; font-weight: 400; color: var(--muted); }
+.page-season #field { max-width: calc(100vw - 90px); }
+/* Grid cards may shrink below their content width (wide tables scroll inside .table-wrap instead of widening the page). */
+.two-col > * { min-width: 0; }

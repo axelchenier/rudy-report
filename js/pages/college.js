@@ -17,7 +17,8 @@ export const ccol = (key, extra = {}) => STRING_KEYS.has(key)
 // Sub-navigation shared by every College page.
 export function collegeNav(active) {
   const items = [["teams", "Teams", "#/college/teams"], ["players", "Players", "#/college/players"], ["compare", "Compare", "#/college/compare"],
-    ["reports", "Reports", "#/college/reports"], ["predictor", "Predictor", "#/college/predictor"], ["draft", "2027 Draft", "#/draft"]];
+    ["reports", "Reports", "#/college/reports"], ["predictor", "Predictor", "#/college/predictor"],
+    ["tournament", "Tournament sim", "#/college/tournament"], ["draft", "2027 Draft", "#/draft"]];
   return `<div class="tabs" style="margin-bottom:12px;flex-wrap:wrap">${items.map(([k, l, h]) =>
     `<a class="tab-link ${k === active ? "active" : ""}" href="${h}">${l}</a>`).join("")}</div>`;
 }

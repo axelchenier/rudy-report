@@ -221,6 +221,15 @@ chances fit on 2008-2023 college seasons, with a back-test and a method note) an
 rule-based strengths/weaknesses with numbers, most similar past drafted players, NBA Draft Combine data when it exists,
 college career). No scouting opinions and no outside rankings.
 
+**Tournament Simulator** (`#/college/tournament`, labeled *Model estimate*): pick a field, either a **real NCAA bracket**
+(2008-2026, seeds/regions/results from ESPN's scoreboard, saved by `pipeline/college_bracket.py`) or a **model-seeded field**
+(each conference's best T-Rank team + the best remaining teams, seeded 1-16 by T-Rank on an S-curve) for any season, including
+2026-27 preseason. It plays the bracket 20,000 times with the Game Predictor's model (neutral court) and shows every team's odds to
+reach each round, a one-click simulated bracket, the real results with the model's pre-game chances, and a back-test. "Edit the field"
+swaps teams in/out or adds rating points ("what if Minnesota were 5 points better?"). Refresh brackets after a tournament:
+
+    .venv/bin/python pipeline/college_bracket.py --years 2027
+
 Nightly college job (Torvik refresh + ESPN games + reports + draft board):
 
     .venv/bin/python pipeline/update_college.py
@@ -229,6 +238,8 @@ Nightly college job (Torvik refresh + ESPN games + reports + draft board):
 |---|---|
 | `pipeline/update_college.py` | Nightly job → `data/college/reports/` (and runs `college_draft.py`). |
 | `pipeline/college_draft.py` | Draft model + prospect reports → `data/draft/`. |
+| `pipeline/college_bracket.py` | Real NCAA brackets (ESPN) → `data/college/brackets/<year>.json`. |
+| `js/pages/college_tourney.js` | Tournament Simulator page. |
 | `js/pages/college_reports.js`, `college_predictor.js`, `draft.js` | Those pages. |
 | `js/nav.js` | Top-nav dropdowns (College, More) and the mobile menu. |
 
