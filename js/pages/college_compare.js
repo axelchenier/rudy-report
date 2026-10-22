@@ -28,7 +28,7 @@ export async function collegeComparePage(app, query = "") {
     ${collegeNav("compare")}
     <div class="page-head"><div><h1>Compare (College)</h1>
       <p class="sub">${season} · pick up to ${MAX} ${type} · best value in each row is green</p></div>
-      <div style="display:flex;gap:8px;align-items:center">${cseasonSelectHTML(season)}
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">${cseasonSelectHTML(season)}
       <div class="tabs"><button data-type="players" class="${type === "players" ? "active" : ""}">Players</button>
         <button data-type="teams" class="${type === "teams" ? "active" : ""}">Teams</button></div></div></div>
     <div class="card"><div class="picker-row">

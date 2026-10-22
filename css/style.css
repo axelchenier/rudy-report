@@ -345,3 +345,5 @@ input[type=range] { vertical-align: middle; accent-color: var(--accent); }
 .page-season #field { max-width: calc(100vw - 90px); }
 /* Grid cards may shrink below their content width (wide tables scroll inside .table-wrap instead of widening the page). */
 .two-col > * { min-width: 0; }
+.charts > * { min-width: 0; }
+#barstat { max-width: calc(100vw - 160px); }
