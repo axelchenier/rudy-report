@@ -29,6 +29,8 @@ It's a **static site**: plain HTML, CSS and JavaScript files with no server code
 | `vendor/chart.umd.min.js` | Chart.js, the chart library, saved locally. |
 | `pipeline/fetch_data.py` | Python script that downloads player and team stats from NBA.com. |
 | `pipeline/fetch_extras.py` | Python script that downloads game logs, player tracking, and Basketball-Reference advanced stats. |
+| `pipeline/fetch_more.py` | Python script that downloads standings, full game logs, clutch, hustle and more tracking stats (NBA.com). |
+| `pipeline/update_reports.py` | The nightly script: refreshes the current season, writes the Reports, and runs `fetch_more.py` for the current season. |
 | `pipeline/cache/` | Saved copies of Basketball-Reference pages, so they aren't downloaded twice. |
 | `data/<season>/` | The JSON data files the website reads, one folder per season. |
 | `data/meta.json` | Which seasons are loaded, where the data came from, and when it was pulled. Shown in the footer. |
@@ -40,7 +42,9 @@ It's a **static site**: plain HTML, CSS and JavaScript files with no server code
   - player and team stats (basic and advanced)
   - per game, totals, per 36 minutes, and per 100 possessions
   - team and player game logs (for home/road splits and opening day)
-  - player-tracking numbers (touches, catch-and-shoot, pull-ups, drives)
+  - player-tracking numbers (touches, catch-and-shoot, pull-ups, drives, passing, rebounding chances, rim defense, speed and distance)
+  - standings (`LeagueStandingsV3`), clutch stats (`LeagueDashPlayerClutch` / `LeagueDashTeamClutch`),
+    hustle stats (`LeagueHustleStatsPlayer` / `LeagueHustleStatsTeam`) and defended shots (`LeagueDashPtDefend`)
 - **Basketball-Reference.com**: the season "Advanced" tables, for Box Plus/Minus (BPM, OBPM, DBPM), PER, Win Shares and VORP.
   These are downloaded slowly (one page every 4 seconds, under their 20-per-minute limit) and cached.
 - **Seasons:** the 10 regular seasons from 2016-17 through 2025-26.
@@ -62,7 +66,17 @@ python3 -m venv .venv                       # one time: make a private Python fo
 .venv/bin/pip install -r requirements.txt   # one time: install the libraries
 .venv/bin/python pipeline/fetch_data.py     # about 2 minutes: player and team stats
 .venv/bin/python pipeline/fetch_extras.py   # about 3 minutes: game logs, tracking, Basketball-Reference
+.venv/bin/python pipeline/fetch_more.py     # about 4 minutes: standings, game logs, clutch, hustle, more tracking
 ```
+
+During the season you only need the nightly command (it refreshes the current season, including `fetch_more.py`):
+
+```bash
+.venv/bin/python pipeline/update_reports.py
+```
+
+Player game logs are stored in 40 small files per season (`data/<season>/gamelogs/p_00.json` … `p_39.json`, chosen by
+player ID), so a player page downloads only about 80 KB instead of the whole league's 3 MB.
 
 To change which seasons are loaded, edit `SEASONS` at the top of `pipeline/fetch_data.py`.
 To fetch Basketball-Reference again, delete the matching file in `pipeline/cache/`.

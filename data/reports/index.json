@@ -1,12 +1,12 @@
 {
- "generated_at": "2026-10-22 04:15 UTC",
+ "generated_at": "2026-10-22 04:59 UTC",
  "daily": [
   {
    "file": "daily/2026-10-21.json",
    "name": "2026-10-21",
    "start": "2026-10-21",
    "end": "2026-10-21",
-   "games": 8,
+   "games": 10,
    "title": "Daily Report \u2014 Oct 21, 2026"
   }
  ],
@@ -16,7 +16,7 @@
    "name": "latest",
    "start": "2026-10-20",
    "end": "2026-10-21",
-   "games": 11,
+   "games": 13,
    "title": "Weekly Report \u2014 Oct 15, 2026 to Oct 21, 2026"
   },
   {
@@ -34,7 +34,7 @@
    "name": "latest",
    "start": "2026-10-20",
    "end": "2026-10-21",
-   "games": 11,
+   "games": 13,
    "title": "Monthly Report \u2014 Sep 22, 2026 to Oct 21, 2026"
   },
   {

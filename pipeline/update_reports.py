@@ -18,7 +18,9 @@ WHAT IT DOES
        Monthly = the last 30 days          compared with the 30 days before
      If the comparison period has no games (season just started / offseason), the report compares
      against LAST SEASON's averages instead and says so.
-  3. Saves them as JSON:
+  3. Saves them as JSON (see below).
+  4. Updates the current season's standings, game logs, clutch, hustle and tracking files (pipeline/fetch_more.py).
+  Reports are saved as:
        data/reports/daily/<date>.json          (one per game day, kept forever)
        data/reports/weekly/latest.json         (rolling, rebuilt every run)
        data/reports/weekly/<date>.json         (archived copy: on Mondays, or with --archive)
@@ -686,6 +688,7 @@ def main():
         teams_all, players_all, rookies = load_cached(season)
     else:
         teams_all, players_all, rookies = refresh(season)
+    teams_raw, players_raw = teams_all.copy(), players_all.copy()     # every game, for fetch_more.py
     if teams_all.empty:
         raise RuntimeError(f"No {season} games found.")
 
@@ -717,6 +720,13 @@ def main():
         write(monthly, "monthly", end)
 
     rebuild_index()
+
+    # 4. Standings, game logs, clutch, hustle and extra tracking for the current season (pipeline/fetch_more.py).
+    #    Runs last so a problem here can't stop the reports; it still makes the script exit with an error.
+    if "--no-refresh" not in args:
+        import fetch_more
+        print(f"Updating {season} standings / game logs / clutch / hustle / tracking ...")
+        fetch_more.update_season(season, team_log=teams_raw, player_log=players_raw)
     print("Done.")
 
 

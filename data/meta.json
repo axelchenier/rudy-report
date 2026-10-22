@@ -6,7 +6,7 @@
   "seasons": [
     {
       "season": "2026-27",
-      "players": 246,
+      "players": 271,
       "teams": 22,
       "max_team_games": 1,
       "in_progress": true
@@ -81,5 +81,5 @@
   },
   "current_season": "2026-27",
   "default_season": "2025-26",
-  "current_pulled_at_utc": "2026-10-22 04:13 UTC"
+  "current_pulled_at_utc": "2026-10-22 04:59 UTC"
 }
