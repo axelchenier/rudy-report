@@ -224,3 +224,12 @@ Player and team pages have a **Play types** tab: how often each play type is use
 spot-up, transition, …), points per possession, the difference from league average, and NBA.com's percentile.
 Teams (and players) also have a defense view. Leaderboards: `#/hubs/playtypes`. Data: Synergy Sports play types as
 published on NBA.com/stats (`SynergyPlayTypes`, from 2015-16), saved to `data/<season>/playtypes.json`.
+
+## Lineups, on/off and WOWY
+
+- Team pages → **Lineups & on/off**: 5-man lineups and 2-man pairs (NBA.com `LeagueDashLineups`) with a minimum-minutes
+  slider, plus every player's team net rating on vs off the floor (`TeamPlayerOnOffSummary`).
+- Player pages → **Lineups & on/off**: his on/off card and most-used lineups.
+- **WOWY explorer** (`#/wowy?team=…`): click players ON or OFF and see the team's ratings in exactly those minutes.
+  This asks the free [PBP Stats API](https://www.pbpstats.com) live (credited on the page) and caches each answer in the
+  browser for 12 hours, so the hobby server isn't hammered. If it's down, the page says so.

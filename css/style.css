@@ -262,3 +262,10 @@ span.loss { color: var(--bad); font-weight: 700; }
 .pt-freq b { position: relative; padding-left: 8px; font-size: 12px; line-height: 22px; }
 .pt-vs { font-size: 12px; }
 @media (max-width: 860px) { .pt-row { grid-template-columns: 1fr 1fr 70px 44px; } .pt-row .pt-vs, .pt-row > span:last-child { display: none; } }
+
+/* ---------- Lineups / WOWY ---------- */
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { border: 1px solid var(--border); background: var(--panel); border-radius: 999px; padding: 5px 12px; cursor: pointer; font-size: 14px; }
+.chip.on { border-color: var(--good); background: color-mix(in srgb, var(--good) 18%, var(--panel)); font-weight: 600; }
+.chip.off { border-color: var(--bad); background: color-mix(in srgb, var(--bad) 15%, var(--panel)); font-weight: 600; text-decoration: line-through; }
+input[type=range] { vertical-align: middle; accent-color: var(--accent); }
