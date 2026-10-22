@@ -2,7 +2,7 @@
 //   { headline, notes: [...], tables: [{ title, rows, columns, entity, highlight, sortKey, sortAsc }], html, sources: [...] }
 // All numbers come from the JSON files in /data (NBA.com, plus the credited Basketball-Reference BPM column). Nothing is made up.
 
-import { load, loadCareer, META, seasonGames, QUALIFY_SHARE, dataStatus } from "../data.js";
+import { load, loadCareer, loadPlayerSeasons, loadPlayerIndex, META, seasonGames, QUALIFY_SHARE, dataStatus } from "../data.js";
 import { STATS, fmt } from "../stats.js";
 import { esc, playerLink, teamLink, teamAbbrLink, percentile, rankOf } from "../ui.js";
 
@@ -54,17 +54,28 @@ const isCounting = (k) => SUMMABLE.includes(k) && k !== "GP";
 // Several seasons -> one row per player: season totals added up; per-game = total / games;
 // percentages recalculated from makes/attempts; advanced stats averaged, weighted by minutes played.
 async function playerRowsSpan(seasons, statKeys) {
-  const totals = await loadSeasons("players_totals", seasons);
-  const perGame = (await Promise.all(seasons.map((s) => playerRows(s, statKeys)))).flat();
+  // Season totals + per-game minutes/advanced for every player-season come from ONE small file
+  // (data/index/player_seasons.json, built by pipeline/build_indexes.py from the same season files).
+  const bySeason = new Map(seasons.map((se) => [se, []]));
+  for (const r of await loadPlayerSeasons()) bySeason.get(r.SEASON)?.push(r);
+  const idx = seasons.flatMap((se) => bySeason.get(se));              // same row order as the per-season files (keeps ties stable)
+  const names = new Map((await loadPlayerIndex()).map((r) => [r.PLAYER_ID, r.PLAYER_NAME]));
   const byId = new Map();
-  for (const t of totals) {
-    const e = byId.get(t.PLAYER_ID) || { PLAYER_ID: t.PLAYER_ID, PLAYER_NAME: t.PLAYER_NAME, TEAM_ID: t.TEAM_ID, TEAM_ABBREVIATION: t.TEAM_ABBREVIATION,
+  for (const t of idx) {
+    const e = byId.get(t.PLAYER_ID) || { PLAYER_ID: t.PLAYER_ID, PLAYER_NAME: names.get(t.PLAYER_ID), TEAM_ID: t.TEAM_ID, TEAM_ABBREVIATION: t.TEAM_ABBREVIATION,
       SEASONS_N: 0, MIN_TOT: 0, latest: "", _w: {} , T: Object.fromEntries(SUMMABLE.map((k) => [k, 0])) };
-    e.SEASONS_N += 1; e.MIN_TOT += t.MIN || 0;
+    e.SEASONS_N += 1; e.MIN_TOT += t.MIN_TOT || 0;
     for (const k of SUMMABLE) e.T[k] += t[k] || 0;
-    if (t.SEASON > e.latest) { e.latest = t.SEASON; e.PLAYER_NAME = t.PLAYER_NAME; e.TEAM_ID = t.TEAM_ID; e.TEAM_ABBREVIATION = t.TEAM_ABBREVIATION; }
+    if (t.SEASON > e.latest) { e.latest = t.SEASON; e.TEAM_ID = t.TEAM_ID; e.TEAM_ABBREVIATION = t.TEAM_ABBREVIATION; }
     byId.set(t.PLAYER_ID, e);
   }
+  // Per-game rows for the weighted averages: NBA.com advanced numbers are in the same file; tracking / hustle / BPM
+  // still come from their season files, and only for the seasons that have them.
+  const kinds = [...new Set(statKeys.map((k) => ({ tracking: "tracking", hustle: "hustle", bbref: "bpm" }[STATS[k]?.source])).filter(Boolean))];
+  const extraSeasons = seasons.filter((se) => kinds.some((k) => dataStatus(k, se).ok));
+  const extraSet = new Set(extraSeasons);
+  const perGame = idx.filter((r) => !extraSet.has(r.SEASON)).map((r) => ({ ...r, GP: r.PG_GP, MIN: r.PG_MIN }))
+    .concat((await Promise.all(extraSeasons.map((se) => playerRows(se, statKeys)))).flat());
   // Minutes-weighted averages for advanced / BBRef / tracking stats.
   const weighted = statKeys.filter((k) => !SUMMABLE.includes(k) && !["FG_PCT", "FG3_PCT", "FT_PCT", "MIN", "TS_PCT", "EFG_PCT"].includes(k));
   for (const r of perGame) {

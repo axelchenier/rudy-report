@@ -10,6 +10,9 @@ Writes:
   data/careers/<kind>/p_NN.json       every season row of every player, split into 40 files by PLAYER_ID % 40
                                       (kind = pergame / totals / per36; a player page loads 3 small files)
   data/index/similar.json             the inputs of the Similar Players tool for every player-season with 10+ minutes per game
+  data/index/player_seasons.json      every player-season: season TOTALS (from players_totals.json) + per-game minutes and
+                                      NBA.com advanced numbers (from players.json). The Ask bar's multi-season / all-time
+                                      questions add these up instead of downloading two files for every season.
 """
 import json
 from pathlib import Path
@@ -18,6 +21,33 @@ DATA = Path(__file__).resolve().parent.parent / "data"
 SHARDS = 40
 SIM_COLS = ["PLAYER_ID", "PLAYER_NAME", "TEAM_ABBREVIATION", "SEASON", "AGE", "GP", "MIN", "PTS", "REB", "AST", "STL", "BLK", "TOV", "PF",
             "FGA", "FG3A", "FG3M", "FTA", "FG3_PCT", "USG_PCT", "TS_PCT", "AST_PCT", "OREB_PCT", "DREB_PCT"]
+
+
+SUMMABLE = ["GP", "PTS", "REB", "OREB", "DREB", "AST", "STL", "BLK", "TOV", "PF", "FGM", "FGA", "FG3M", "FG3A", "FTM", "FTA", "PLUS_MINUS", "DD2", "TD3"]
+ADV = ["OFF_RATING", "DEF_RATING", "NET_RATING", "AST_PCT", "AST_TO", "AST_RATIO", "OREB_PCT", "DREB_PCT", "REB_PCT", "TM_TOV_PCT",
+       "EFG_PCT", "TS_PCT", "USG_PCT", "PACE", "PIE", "POSS"]
+
+
+def player_seasons(seasons):
+    """One row per player-season (names: data/index/players.json): totals + per-game minutes/games + advanced (same numbers the Ask engine used to load)."""
+    cols = ["SEASON", "PLAYER_ID", "TEAM_ID", "TEAM_ABBREVIATION", "MIN_TOT"] + SUMMABLE + ["PG_GP", "PG_MIN"] + ADV
+    rows = []
+    for s in seasons:
+        tp, pp = DATA / s / "players_totals.json", DATA / s / "players.json"
+        if not tp.exists() or not pp.exists():
+            continue
+        per = {r["PLAYER_ID"]: r for r in json.loads(pp.read_text())}
+        for t in json.loads(tp.read_text()):
+            g = per.get(t["PLAYER_ID"], {})
+            row = {"SEASON": s, "PLAYER_ID": t["PLAYER_ID"], "PLAYER_NAME": t["PLAYER_NAME"], "TEAM_ID": t["TEAM_ID"],
+                   "TEAM_ABBREVIATION": t["TEAM_ABBREVIATION"], "MIN_TOT": round(t["MIN"], 1) if t.get("MIN") is not None else None, "PG_GP": g.get("GP"), "PG_MIN": g.get("MIN")}
+            for k in SUMMABLE:
+                v = t.get(k)
+                row[k] = int(round(v)) if isinstance(v, (int, float)) and k != "PLUS_MINUS" else v
+            for k in ADV:
+                row[k] = g.get(k)
+            rows.append(row)
+    return compact(rows, cols)
 
 
 def compact(rows, cols=None):
@@ -58,6 +88,7 @@ def main():
             if r.get(k) is not None:
                 r[k] = round(r[k], 1)
     write(DATA / "index" / "similar.json", compact(sim, SIM_COLS))
+    write(DATA / "index" / "player_seasons.json", player_seasons(seasons))
     print(f"players {len(people)}, similar rows {len(sim)}, seasons {seasons[0]}..{seasons[-1]}")
 
 

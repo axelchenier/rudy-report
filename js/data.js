@@ -85,6 +85,7 @@ export async function loadCareer(kind, playerId) {
   return unpackRows(await getJSON(`data/careers/${dir}/p_${String(playerId % 40).padStart(2, "0")}.json`));
 }
 export const loadPlayerIndex = async () => unpackRows(await getJSON("data/index/players.json"));
+export const loadPlayerSeasons = async () => unpackRows(await getJSON("data/index/player_seasons.json"));
 export const loadSimilarPool = async () => unpackRows(await getJSON("data/index/similar.json"));
 
 // ---- "Not tracked in this era" ----
