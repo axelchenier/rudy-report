@@ -123,6 +123,10 @@ def shots(season):
         frames.append(res[0])
         league = res[1] if league is None or len(res[1]) > len(league) else league
     s = pd.concat(frames, ignore_index=True)
+    lost = int(s[["LOC_X", "LOC_Y"]].isna().any(axis=1).sum())
+    if lost:                              # a few older shots have no court location: they can't go on a chart
+        print(f"  {season}: {lost} shots without a location left out", flush=True)
+        s = s.dropna(subset=["LOC_X", "LOC_Y"]).reset_index(drop=True)
     if s.empty:
         print(f"  {season}: no shots yet")
         return 0
