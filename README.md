@@ -207,3 +207,13 @@ Sports-Reference is **not** used (its terms don't allow building a database from
 Refresh college data (current season; add `--seasons 2008-2027` to rebuild everything):
 
     .venv/bin/python pipeline/college_fetch.py --seasons 2027
+
+## Shot charts
+
+Every player and team page has a **Shot chart** tab (NBA.com `ShotChartDetail`, all seasons loaded):
+- **Heat map**: hexagons sized by how many shots came from that spot and colored by FG% compared with the
+  league average *from the same zones* (green = better, red = worse, gray = fewer than 5 shots). "Every shot" shows each make/miss.
+- **Shot diet**: share of shots at the rim, in the paint, mid-range, corner 3 and above-the-break 3, against the league.
+- Team charts can switch to **opponents' shots** (colors flip: green = good defense).
+- Data: `data/<season>/shots/p_NN.json` (40 files, by player ID) and `data/<season>/shot_zones.json`
+  (league zone averages + team hexagons), made by `pipeline/fetch_advanced.py` (also run nightly by `update_reports.py`).

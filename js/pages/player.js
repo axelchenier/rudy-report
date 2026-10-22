@@ -6,6 +6,7 @@ import { load, loadAllSeasons, currentSeason, qualifies, QUALIFY_SHARE, seasonGa
 import { STATS, COLUMNS, fmt } from "../stats.js";
 import { renderTable, esc, teamAbbrLink, chartTheme, PALETTE } from "../ui.js";
 import { statCard, profileHTML, tabBar, renderGameLog } from "./shared.js";
+import { renderShotChart } from "./shotview.js";
 import { playerLog } from "../gamelog.js";
 import { HUBS, hubRows, inPool, existsFor, FIRST_SEASON } from "../hubs.js";
 
@@ -45,7 +46,7 @@ export async function playerPage(app, id, query = "") {
       </div>
       <div class="head-tools">${seasonPick}<a class="btn" href="#/compare?type=players&ids=${id}">Compare →</a></div>
     </div>
-    ${tabBar(base, [["overview", "Overview"], ["gamelog", "Game log & splits"], ["more", "Clutch · Hustle · Tracking"]], tab)}
+    ${tabBar(base, [["overview", "Overview"], ["gamelog", "Game log & splits"], ["shots", "Shot chart"], ["more", "Clutch · Hustle · Tracking"]], tab)}
     <div id="tab"></div>`;
   app.querySelectorAll(".page-tabs a").forEach((a) => a.href += `&season=${season}`);
   app.querySelector("#pl-season").addEventListener("change", (e) => { location.hash = `${base}?tab=${tab}&season=${e.target.value}`; });
@@ -55,6 +56,12 @@ export async function playerPage(app, id, query = "") {
     const games = await playerLog(season, id).catch(() => []);
     box.innerHTML = `<h2>${season} game log</h2><div id="gl"></div>`;
     renderGameLog(box.querySelector("#gl"), games, { isTeam: false, chartKeys: ["PTS", "REB", "AST", "GAME_SCORE", "FG3M", "MIN"] });
+    return;
+  }
+
+  if (tab === "shots") {
+    box.innerHTML = `<h2>${season} shot chart</h2><div id="sc"></div>`;
+    await renderShotChart(box.querySelector("#sc"), { season, playerId: id });
     return;
   }
 

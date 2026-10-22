@@ -235,3 +235,20 @@ span.loss { color: var(--bad); font-weight: 700; }
   .prow { grid-template-columns: minmax(100px, 1.4fr) 50px 1fr 36px; }
   .prow .pavg { display: none; }
 }
+
+/* ---------- Shot charts ---------- */
+.shot-wrap { display: grid; grid-template-columns: minmax(320px, 560px) 1fr; gap: 12px; align-items: start; }
+.shot-court { width: 100%; height: auto; display: block; }
+.shot-court .court { stroke: var(--muted); stroke-width: 1.6; opacity: .7; }
+.shot-court .made { fill: none; stroke: var(--good); stroke-width: 1.6; }
+.shot-court .miss { stroke: var(--bad); stroke-width: 1.6; opacity: .75; }
+.shot-court path[fill] { stroke: var(--panel); stroke-width: .8; }
+.shot-legend { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; font-size: 12px; margin-top: 6px; }
+.shot-legend i { display: inline-block; width: 16px; height: 10px; border-radius: 2px; }
+.shot-legend i.dot { width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--good); }
+.shot-legend i.dot.miss { border-color: var(--bad); border-radius: 2px; }
+.diet { display: flex; height: 26px; border-radius: 8px; overflow: hidden; margin-top: 6px; }
+.diet span { color: #fff; font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+.diet-legend { display: flex; flex-wrap: wrap; gap: 10px; font-size: 12px; margin-top: 6px; color: var(--muted); }
+.diet-legend i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 4px; vertical-align: -1px; }
+@media (max-width: 860px) { .shot-wrap { grid-template-columns: 1fr; } }

@@ -19,7 +19,8 @@ WHAT IT DOES
      If the comparison period has no games (season just started / offseason), the report compares
      against LAST SEASON's averages instead and says so.
   3. Saves them as JSON (see below).
-  4. Updates the current season's standings, game logs, clutch, hustle and tracking files (pipeline/fetch_more.py).
+  4. Updates the current season's standings, game logs, clutch, hustle and tracking files (pipeline/fetch_more.py)
+     and its shots, play types, lineups and on/off files (pipeline/fetch_advanced.py).
   Reports are saved as:
        data/reports/daily/<date>.json          (one per game day, kept forever)
        data/reports/weekly/latest.json         (rolling, rebuilt every run)
@@ -727,6 +728,9 @@ def main():
         import fetch_more
         print(f"Updating {season} standings / game logs / clutch / hustle / tracking ...")
         fetch_more.update_season(season, team_log=teams_raw, player_log=players_raw)
+        import fetch_advanced
+        print(f"Updating {season} shots / play types / lineups / on-off ...")
+        fetch_advanced.update_season(season)
     print("Done.")
 
 
