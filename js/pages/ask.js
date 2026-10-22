@@ -9,6 +9,7 @@ import { answer } from "../ask/engine.js";
 import { AI_ENABLED, askAI } from "../ask/ai.js";
 import { collegeAnswer } from "../ask/college.js";
 import { playoffAnswer } from "../ask/playoffs.js";
+import { awardAnswer } from "../ask/awards.js";
 
 // Clickable example questions (the first five are Axel's own test questions).
 const EXAMPLES = [
@@ -27,6 +28,7 @@ const EXAMPLES = [
   "Top college scorers",
   "Top 2027 draft prospects",
   "Who won the 2016 Finals?",
+  "Most MVPs since 2000",
   "Hit rate for picks 11-20",
   "Who was drafted 5th in 2019?",
   "Duke vs UNC prediction",
@@ -94,7 +96,8 @@ async function showAnswer(box, question) {
   let intent = parseQuestion(question, ctx);
   // College questions ("college", "NCAA", a college team or player) are answered from the College data; NBA stays the default.
   // NBA playoff / championship questions ("who won the 2016 finals", "how many titles do the Spurs have").
-  const college = await playoffAnswer(question).catch((e) => { console.warn(e); return null; })
+  const college = await awardAnswer(question).catch((e) => { console.warn(e); return null; })
+    || await playoffAnswer(question).catch((e) => { console.warn(e); return null; })
     || await collegeAnswer(question, intent).catch((e) => { console.warn(e); return null; });
   if (college) {
     const r = college.result;
