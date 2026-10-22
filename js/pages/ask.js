@@ -1,6 +1,6 @@
 // ask.js - the home page: a big "Ask a question" search bar (StatMuse-style).
 // Flow: question -> parser.js (rules) -> intent -> engine.js -> headline + tables.
-import { load, loadAllSeasons, currentSeason, SEASONS, META, completeSeasons } from "../data.js";
+import { load, loadAllSeasons, loadPlayerIndex, currentSeason, SEASONS, META, completeSeasons } from "../data.js";
 import { STATS } from "../stats.js";
 import { esc, renderTable } from "../ui.js";
 import { buildNameIndex } from "../ask/names.js";
@@ -31,7 +31,7 @@ const EXAMPLES = [
 
 let nameIndex = null;           // built once: every player and team name we know
 async function getIndex() {
-  if (!nameIndex) nameIndex = buildNameIndex(await loadAllSeasons("players"), await load("teams", completeSeasons()[0]));
+  if (!nameIndex) nameIndex = buildNameIndex((await loadPlayerIndex()).map((r) => ({ PLAYER_ID: r.PLAYER_ID, PLAYER_NAME: r.PLAYER_NAME, MIN: r.MINUTES, GP: 1 })), await load("teams", completeSeasons()[0]));
   return nameIndex;
 }
 

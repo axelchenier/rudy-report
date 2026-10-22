@@ -2,7 +2,7 @@
 // Every player-season with 500+ minutes, described by 15 numbers from NBA.com/stats (data/<season>/players.json).
 // Each number is turned into a z-score WITHIN its own season (so a 2017 and a 2026 season are compared against their own league),
 // then the closest player-seasons by weighted distance are listed. Similarity = 100 x exp(-distance / 4) (100 = identical profile).
-import { load, SEASONS, META } from "../data.js";
+import { loadSimilarPool, SEASONS, META } from "../data.js";
 import { esc, modelBadge } from "../ui.js";
 
 const per36 = (k) => (p) => p.MIN ? (p[k] / p.MIN) * 36 : null;
@@ -36,9 +36,10 @@ let POOL = null;      // every qualifying player-season, with z-scores
 async function pool() {
   if (POOL) return POOL;
   const seasons = SEASONS();
-  const lists = await Promise.all(seasons.map((s) => load("players", s).catch(() => [])));
+  const bySeason = new Map(seasons.map((s) => [s, []]));
+  for (const r of await loadSimilarPool()) bySeason.get(r.SEASON)?.push(r);      // data/index/similar.json (10+ MPG rows)
   POOL = [];
-  lists.forEach((rows, si) => {
+  [...bySeason.values()].forEach((rows, si) => {
     const season = seasons[si];
     const inProgress = META.seasons.find((x) => x.season === season)?.in_progress;
     const keep = rows.filter((p) => p.GP * p.MIN >= (inProgress ? 0 : MIN_MINUTES) && p.MIN >= (inProgress ? 15 : 0));

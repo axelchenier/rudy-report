@@ -28,9 +28,12 @@ It's a **static site**: plain HTML, CSS and JavaScript files with no server code
 | `js/data.js`, `js/ui.js` | Loading the data files, plus shared pieces like the sortable table. |
 | `vendor/chart.umd.min.js` | Chart.js, the chart library, saved locally. |
 | `pipeline/fetch_data.py` | Python script that downloads player and team stats from NBA.com. |
-| `pipeline/fetch_extras.py` | Python script that downloads game logs, player tracking, and Basketball-Reference advanced stats. |
+| `pipeline/fetch_extras.py` | Python script that downloads game logs, player tracking, and the Basketball-Reference BPM column (the only BBRef number used; credited on the site). |
+| `pipeline/build_history.py` | Builds 1996-97 to 2015-16 from cached NBA.com data (dashboards, game logs) plus one NBA.com standings request per season. |
+| `pipeline/build_indexes.py` | Combined player files (careers, Ask name index, Similar Players inputs). Run nightly by `update_reports.py`. |
+| `pipeline/fetch_schedule.py` | NBA.com schedule for the Playoff Odds / Draft Lottery tools. Run nightly by `update_reports.py`. |
 | `pipeline/fetch_more.py` | Python script that downloads standings, full game logs, clutch, hustle and more tracking stats (NBA.com). |
-| `pipeline/update_reports.py` | The nightly script: refreshes the current season, writes the Reports, and runs `fetch_more.py` for the current season. |
+| `pipeline/update_reports.py` | The nightly script: refreshes the current season, writes the Reports, rebuilds the combined player files, and runs `fetch_more.py`, `fetch_schedule.py` and `fetch_advanced.py` for the current season. |
 | `pipeline/cache/` | Saved copies of Basketball-Reference pages, so they aren't downloaded twice. |
 | `data/<season>/` | The JSON data files the website reads, one folder per season. |
 | `data/meta.json` | Which seasons are loaded, where the data came from, and when it was pulled. Shown in the footer. |
@@ -65,7 +68,7 @@ Then open <http://localhost:8000> in your browser. (Double-clicking `index.html`
 python3 -m venv .venv                       # one time: make a private Python for this project
 .venv/bin/pip install -r requirements.txt   # one time: install the libraries
 .venv/bin/python pipeline/fetch_data.py     # about 2 minutes: player and team stats
-.venv/bin/python pipeline/fetch_extras.py   # about 3 minutes: game logs, tracking, Basketball-Reference
+.venv/bin/python pipeline/fetch_extras.py   # about 3 minutes: game logs, tracking, Basketball-Reference BPM
 .venv/bin/python pipeline/fetch_more.py     # about 4 minutes: standings, game logs, clutch, hustle, more tracking
 ```
 

@@ -36,12 +36,12 @@ function findSeasons(q, all, current) {
   }
   if (/past decade|last decade|last ten|past ten/.test(q)) return { seasons: all.slice(0, 10), label: "past 10 seasons", asked: 10 };
   if (/all time|ever\b|career|in history|of all/.test(q)) return { seasons: all, label: "all loaded seasons", asked: Infinity };
-  const since = q.match(/since (?:the )?(20\d\d)/);
+  const since = q.match(/since (?:the )?((?:19|20)\d\d)/);
   if (since) { const ss = all.filter((s) => +s.slice(0, 4) >= +since[1]); return { seasons: ss, label: `since ${since[1]}-${String(+since[1] + 1).slice(2)}` }; }
-  const range = q.match(/(20\d\d)[\s\/-]+(\d\d)\b/);            // "2023-24" (the dash may have become a space)
+  const range = q.match(/((?:19|20)\d\d)[\s\/-]+(\d\d)\b/);            // "2023-24" (the dash may have become a space)
   if (range) { const s = `${range[1]}-${range[2]}`; if (all.includes(s)) return { seasons: [s], label: s }; }
-  const year = q.match(/\b(?:in )?(20\d\d)\b/);                   // "in 2024" -> the season that ENDED in 2024
-  if (year) { const s = all.find((x) => 2000 + +x.slice(5) === +year[1]); if (s) return { seasons: [s], label: s }; }
+  const year = q.match(/\b(?:in )?((?:19|20)\d\d)\b/);                   // "in 2024" -> the season that ENDED in 2024
+  if (year) { const s = all.find((x) => +x.slice(0, 4) + 1 === +year[1]); if (s) return { seasons: [s], label: s }; }
   if (/this season|current season|so far/.test(q) && current) return { seasons: [current], label: `${current} (in progress)` };
   if (/last season|this past season/.test(q)) return { seasons: [all[0]], label: all[0] };
   return null;

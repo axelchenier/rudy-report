@@ -360,3 +360,5 @@ input[type=range] { vertical-align: middle; accent-color: var(--accent); }
 }
 /* Percentile profile on phones: cards fit the screen (minmax 380px was wider than a 390px phone). */
 .profile { grid-template-columns: repeat(auto-fill, minmax(min(380px, 100%), 1fr)); }
+.seeded8 tbody tr:nth-child(8) td { border-bottom: 2px solid var(--accent); }
+.not-tracked { border-left: 3px solid var(--muted); }

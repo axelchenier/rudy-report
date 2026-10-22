@@ -20,7 +20,7 @@ WHAT IT DOES
      against LAST SEASON's averages instead and says so.
   3. Saves them as JSON (see below).
   4. Updates the current season's standings, game logs, clutch, hustle and tracking files (pipeline/fetch_more.py)
-     its schedule for the Playoff Odds simulator (pipeline/fetch_schedule.py)
+     the combined player files (pipeline/build_indexes.py), its schedule for the Playoff Odds simulator (pipeline/fetch_schedule.py)
      and its shots, play types, lineups and on/off files (pipeline/fetch_advanced.py).
   Reports are saved as:
        data/reports/daily/<date>.json          (one per game day, kept forever)
@@ -722,6 +722,10 @@ def main():
         write(monthly, "monthly", end)
 
     rebuild_index()
+
+    # Combined player files (careers, Ask name index, Similar Players inputs) from every season's files.
+    import build_indexes
+    build_indexes.main()
 
     # 4. Standings, game logs, clutch, hustle and extra tracking for the current season (pipeline/fetch_more.py).
     #    Runs last so a problem here can't stop the reports; it still makes the script exit with an error.

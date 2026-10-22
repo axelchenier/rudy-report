@@ -72,8 +72,10 @@ export async function standingsPage(app, query = "") {
   const sections = view === "league" ? [["League", rows, null]]
     : view === "division" ? [...new Set(rows.map((r) => r.Division))].sort().map((d) => [d, rows.filter((r) => r.Division === d), "DivisionGamesBack"])
     : ["East", "West"].map((c) => [`${c}ern Conference`, rows.filter((r) => r.Conference === c), "ConferenceGamesBack"]);
-  box.innerHTML = sections.map((s, i) => `<h2>${esc(s[0])}</h2><div id="st-${i}" class="${view === "conference" ? "seeded" : ""}"></div>`).join("") +
-    (view === "conference" ? `<p class="muted small">Seeds 1-6 make the playoffs; 7-10 go to the Play-In Tournament (lines under 6 and 10).</p>` : "");
+  const playIn = season >= "2020-21";
+  box.innerHTML = sections.map((s, i) => `<h2>${esc(s[0])}</h2><div id="st-${i}" class="${view === "conference" ? (playIn ? "seeded" : "seeded8") : ""}"></div>`).join("") +
+    (view === "conference" ? (playIn ? `<p class="muted small">Seeds 1-6 make the playoffs; 7-10 go to the Play-In Tournament (lines under 6 and 10).</p>`
+      : `<p class="muted small">${season === "2019-20" ? "2019-20: the top 8 made the playoffs, after the season was cut short (COVID-19); the West's No. 8 seed was decided in a one-off play-in in the Orlando bubble." : "Seeds 1-8 made the playoffs (line under 8). The Play-In Tournament started in 2020-21."}</p>`) : "");
   sections.forEach(([, list], i) => renderTable(box.querySelector(`#st-${i}`), {
     rows: list, columns: cols(sections[i][2]), entity: "teams", rank: false, pageSize: 40,
     sortKey: view === "league" ? "WinPCT" : view === "division" ? "DivisionRank" : "PlayoffRank", sortAsc: view !== "league",

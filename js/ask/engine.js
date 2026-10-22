@@ -2,7 +2,7 @@
 //   { headline, notes: [...], tables: [{ title, rows, columns, entity, highlight, sortKey, sortAsc }], html, sources: [...] }
 // All numbers come from the JSON files in /data (NBA.com, plus the credited Basketball-Reference BPM column). Nothing is made up.
 
-import { load, META, seasonGames, QUALIFY_SHARE } from "../data.js";
+import { load, loadCareer, META, seasonGames, QUALIFY_SHARE, dataStatus } from "../data.js";
 import { STATS, fmt } from "../stats.js";
 import { esc, playerLink, teamLink, teamAbbrLink, percentile, rankOf } from "../ui.js";
 
@@ -30,14 +30,15 @@ const onlyStats = (t) => { const { GP, G, MIN, PLAYER_NAME, TEAM_ID, TEAM_ABBREV
 async function playerRows(season, statKeys = []) {
   const rows = (await load("players", season)).map((r) => ({ ...r }));
   const byId = new Map(rows.map((r) => [r.PLAYER_ID, r]));
-  if (statKeys.some((k) => STATS[k]?.source === "tracking")) {
+  const has = (kind) => dataStatus(kind, season).ok;
+  if (has("tracking") && statKeys.some((k) => STATS[k]?.source === "tracking")) {
     for (const t of await load("players_tracking", season).catch(() => [])) Object.assign(byId.get(t.PLAYER_ID) || {}, t);
     for (const t of await load("tracking_more", season).catch(() => [])) Object.assign(byId.get(t.PLAYER_ID) || {}, onlyStats(t));
   }
-  if (statKeys.some((k) => STATS[k]?.source === "hustle")) {
+  if (has("hustle") && statKeys.some((k) => STATS[k]?.source === "hustle")) {
     for (const t of await load("hustle_players", season).catch(() => [])) Object.assign(byId.get(t.PLAYER_ID) || {}, onlyStats(t));
   }
-  if (statKeys.some((k) => STATS[k]?.source === "bbref")) {
+  if (has("bpm") && statKeys.some((k) => STATS[k]?.source === "bbref")) {
     for (const b of await load("bbref_advanced", season).catch(() => [])) {
       const r = byId.get(b.PLAYER_ID);
       if (r) r.BPM = b.BPM;           // the only Basketball-Reference number we use (credited)
@@ -152,6 +153,16 @@ async function leaders(intent) {
 
   // ---------------- PLAYERS ----------------
   const keys = [stat, ...filters.map((f) => f.stat)];
+  // Stats that didn't exist (or aren't loaded) in some of the asked seasons: say which seasons count.
+  for (const k of new Set(keys)) {
+    const eraKind = { tracking: "tracking", hustle: "hustle", bbref: "bpm" }[STATS[k]?.source];
+    const missing = eraKind ? seasons.filter((se) => !dataStatus(eraKind, se).ok) : [];
+    if (missing.length) {
+      const era = missing.filter((se) => dataStatus(eraKind, se).era), notLoaded = missing.filter((se) => !dataStatus(eraKind, se).era);
+      const why = [era.length ? `not tracked in ${seasonText(era)}` : "", notLoaded.length ? `not loaded on this site for ${seasonText(notLoaded)}` : ""].filter(Boolean).join("; ");
+      notes.push(`${esc(label(k))} is ${why}, so ${missing.length === seasons.length ? "there is nothing to rank" : "only the other seasons count"}.`);
+    }
+  }
   const games = seasons.reduce((n, se) => n + seasonGames(se), 0);
   const span = seasons.length > 1;
   let rows = span ? await playerRowsSpan(seasons, keys) : await playerRows(seasons[0], keys);
@@ -195,7 +206,7 @@ async function leaders(intent) {
     if (showAverage && top) headline += ` Per game, ${B(top.PLAYER_NAME)} leads at ${B(fmt(top[stat], stat, "players"))} ${STATS[stat].label}.`;
   } else if (top) {
     const verb = span ? "had the" : "led the league with the";
-    headline = `${B(top.PLAYER_NAME)} ${asc ? "had the lowest" : verb.replace("the", "the")} ${asc ? "" : "highest "}${label(stat)}${span ? " per game" : ""} — ${B(fmt(top[stat], stat, "players") + unit)} — in ${seasonText(seasons)}.`
+    headline = `${B(top.PLAYER_NAME)} ${asc ? "had the lowest" : verb.replace("the", "the")} ${asc ? "" : "highest "}${label(stat)}${span && !/per game/.test(label(stat)) ? " per game" : ""} — ${B(fmt(top[stat], stat, "players") + unit)} — in ${seasonText(seasons)}.`
       .replace("led the league with the highest", "led the league in").replace("had the highest", "had the highest");
   } else headline = "No players match those filters.";
   if (s.source === "bbref") notes.push(`${label(stat)} is a Basketball-Reference stat (not on NBA.com). Names were matched to NBA.com players automatically.`);
@@ -227,13 +238,16 @@ async function lookup(intent) {
   }
   // A player
   const keys = intent.stats.length ? intent.stats : ["PTS", "REB", "AST", "TS_PCT"];
-  const rowsAll = (await Promise.all(META.seasons.map((s) => playerRows(s.season, keys)))).flat().filter((r) => r.PLAYER_ID === item.id);
+  // His seasons from the small career file; extra sources (tracking, BPM...) joined only for the seasons he played.
+  const career = (await loadCareer("players", item.id)).filter((r) => r.PLAYER_ID === item.id).reverse();      // newest first
+  const extra = keys.some((k) => STATS[k]?.source && STATS[k].source !== "nba");
+  const rowsAll = extra ? await Promise.all(career.map(async (r) => (await playerRows(r.SEASON, keys)).find((x) => x.PLAYER_ID === item.id) || r)) : career;
   const inSpan = rowsAll.filter((r) => intent.seasons.includes(r.SEASON));
-  const p = inSpan[0] || rowsAll[0];
+  const p = inSpan[0] || rowsAll.find((r) => keys.every((k) => r[k] != null)) || rowsAll[0];
   if (!p) return { headline: `I couldn't find ${esc(item.name)} in the loaded seasons.`, notes, tables, sources: [] };
   const league = (await playerRows(p.SEASON, keys)).filter((x) => x.GP >= Math.ceil(seasonGames(p.SEASON) * QUALIFY_SHARE));
   const parts = keys.map((k) => {
-    const rk = league.some((x) => x.PLAYER_ID === p.PLAYER_ID) ? ` (#${rankOf(p[k], league.map((x) => x[k]), STATS[k].lowerBetter)} of ${league.length} qualified)` : "";
+    const rk = p[k] != null && league.some((x) => x.PLAYER_ID === p.PLAYER_ID) ? ` (#${rankOf(p[k], league.map((x) => x[k]), STATS[k].lowerBetter)} of ${league.length} qualified)` : "";
     return `${label(k)} ${B(fmt(p[k], k, "players") + (STATS[k].fmt === "pct" ? "%" : ""))}${rk}`;
   });
   tables.push({ title: "Season by season", rows: rowsAll, entity: "players", sortKey: "SEASON", rank: false, highlight: keys[0],

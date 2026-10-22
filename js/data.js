@@ -76,3 +76,46 @@ export function seasonSelectHTML(season, id = "page-season") {
   return `<label class="page-season">Season <select id="${id}">${SEASONS().map((s) =>
     `<option value="${s}" ${s === season ? "selected" : ""}>${label(s)}</option>`).join("")}</select></label>`;
 }
+
+// ---- Combined files (pipeline/build_indexes.py), so pages don't download all 31 seasons ----
+const unpackRows = (c) => c.rows.map((r) => Object.fromEntries(c.cols.map((k, i) => [k, r[i]])));
+// Every season row of one player. kind = "players" | "players_totals" | "players_per36" (same names as the season files).
+export async function loadCareer(kind, playerId) {
+  const dir = { players: "pergame", players_totals: "totals", players_per36: "per36" }[kind];
+  return unpackRows(await getJSON(`data/careers/${dir}/p_${String(playerId % 40).padStart(2, "0")}.json`));
+}
+export const loadPlayerIndex = async () => unpackRows(await getJSON("data/index/players.json"));
+export const loadSimilarPool = async () => unpackRows(await getJSON("data/index/similar.json"));
+
+// ---- "Not tracked in this era" ----
+// First season each kind of NBA.com data exists. Before that NBA.com didn't track it at all.
+export const ERA = {
+  tracking: ["2013-14", "Player tracking (camera data)"],
+  hustle: ["2015-16", "Hustle stats"],
+  playtypes: ["2015-16", "Synergy play types"],
+  lineups: ["2007-08", "Lineup and on/off data"],
+  shots: ["1996-97", "Shot location data"],
+  clutch: ["1996-97", "Clutch stats"],
+  gamelogs: ["1996-97", "Game logs"],
+  bpm: ["2016-17", "Box Plus/Minus"],
+};
+const HISTORY_FILES = new Set(["gamelogs"]);       // the only optional kinds built for 1996-97..2015-16 (pipeline/build_history.py)
+/**
+ * Is this kind of data available for this season?
+ *   { ok: true } or { ok: false, era: true, html }  (NBA.com didn't track it then)
+ *               or { ok: false, era: false, html } (it exists, but this site hasn't loaded it for that season)
+ */
+export function dataStatus(kind, season) {
+  const [first, what] = ERA[kind] || ["1996-97", kind];
+  if (kind === "bpm" && META.seasons.find((s) => s.season === season)?.in_progress) return { ok: false, era: false,
+    html: `<p class="callout">Box Plus/Minus isn't loaded for the season in progress (${season}).</p>` };
+  if (kind === "bpm") return season >= first ? { ok: true } : { ok: false, era: false,
+    html: `<p class="callout">Not available here for ${season}: this site only uses Basketball-Reference's credited BPM column for ${first} onward.</p>` };
+  if (season < first) return { ok: false, era: true,
+    html: `<p class="callout not-tracked"><b>Not tracked in this era.</b> ${esc(what)} on NBA.com start in ${first}, so there is nothing for ${season}.</p>` };
+  const info = META.seasons.find((s) => s.season === season);
+  if (info?.era === "history" && !HISTORY_FILES.has(kind)) return { ok: false, era: false,
+    html: `<p class="callout">${esc(what)} exist on NBA.com for ${season}, but this site hasn't loaded them for seasons before 2016-17 yet.</p>` };
+  return { ok: true };
+}
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));

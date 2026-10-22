@@ -2,7 +2,7 @@
 //   Overview          record, stat cards with percentile chips + league averages, percentile profile, roster, season history
 //   Game log & splits every game: score, margin, per-game ratings, rolling 5/10-game averages, splits
 //   Clutch · Hustle   the team's numbers in those NBA.com datasets
-import { load, loadAllSeasons, currentSeason, SEASONS, seasonGames } from "../data.js";
+import { load, loadAllSeasons, currentSeason, SEASONS, seasonGames , dataStatus } from "../data.js";
 import { COLUMNS, fmt } from "../stats.js";
 import { renderTable, esc, rankOf, playerLink } from "../ui.js";
 import { statCard, profileHTML, tabBar, renderGameLog } from "./shared.js";
@@ -53,18 +53,24 @@ export async function teamPage(app, id, query = "") {
   }
 
   if (tab === "shots") {
+    const st = dataStatus("shots", season);
+    if (!st.ok) { box.innerHTML = `<h2>${season} shot chart</h2>${st.html}`; return; }
     box.innerHTML = `<h2>${season} shot chart</h2><div id="sc"></div>`;
     await renderShotChart(box.querySelector("#sc"), { season, teamId: id });
     return;
   }
 
   if (tab === "playtypes") {
+    const st = dataStatus("playtypes", season);
+    if (!st.ok) { box.innerHTML = `<h2>${season} play types</h2>${st.html}`; return; }
     box.innerHTML = `<h2>${season} play types</h2><div id="pt"></div>`;
     await renderPlayTypes(box.querySelector("#pt"), { season, teamId: id });
     return;
   }
 
   if (tab === "lineups") {
+    const st = dataStatus("lineups", season);
+    if (!st.ok) { box.innerHTML = `<h2>${season} lineups & on/off</h2>${st.html}`; return; }
     box.innerHTML = `<h2>${season} lineups & on/off</h2><div id="lu"></div>`;
     await renderTeamLineups(box.querySelector("#lu"), { season, teamId: id });
     return;
@@ -80,7 +86,8 @@ export async function teamPage(app, id, query = "") {
     let html = "";
     for (const kind of ["clutch", "hustle"]) {
       const hub = HUBS[kind];
-      if (!existsFor(kind, season)) { html += `<h2>${hub.title}</h2><p class="muted">Not tracked in this era (starts ${FIRST_SEASON[kind]}).</p>`; continue; }
+      const st = dataStatus(kind, season);
+      if (!st.ok) { html += `<h2>${hub.title}</h2>${st.html}`; continue; }
       const rows = await hubRows(kind, "teams", season).catch(() => []);
       const me = rows.find((r) => r.TEAM_ID === id);
       html += `<h2>${hub.title} <a class="small" href="#/hubs/${kind}?entity=teams&season=${season}">leaderboard →</a></h2>`;

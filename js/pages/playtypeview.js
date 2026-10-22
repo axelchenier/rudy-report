@@ -1,6 +1,6 @@
 // playtypeview.js - the "Play types" tab (player + team pages) and the play-type leaderboard hub.
 import { renderTable, esc, pctChip, playerLink, teamAbbrLink } from "../ui.js";
-import { withSeason } from "../data.js";
+import { withSeason, dataStatus } from "../data.js";
 import { PLAY_TYPES, PT_ORDER, FIRST_PLAYTYPE_SEASON, playtypeRows, leaguePPP, profile } from "../playtypes.js";
 
 const p1 = (v) => v == null ? "–" : (100 * v).toFixed(1);
@@ -70,7 +70,7 @@ export async function playtypeHub(box, { season, params }) {
   const side = params.get("side") === "def" ? "def" : "off";
   const entity = params.get("entity") === "teams" ? "teams" : "players";
   const min = Number(params.get("min") || (entity === "players" ? 100 : 0));
-  if (season < FIRST_PLAYTYPE_SEASON) { box.innerHTML = `<p class="callout">Not tracked in this era: play-type data starts in ${FIRST_PLAYTYPE_SEASON}.</p>`; return; }
+  if (!dataStatus("playtypes", season).ok) { box.innerHTML = dataStatus("playtypes", season).html; return; }
   let rows;
   try { rows = await playtypeRows(season); } catch { box.innerHTML = `<p class="muted">No play-type data for ${season} yet.</p>`; return; }
   const link = (extra) => withSeason("#/hubs/playtypes", season, { type, side, entity, min, ...extra });

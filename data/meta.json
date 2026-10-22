@@ -70,6 +70,146 @@
       "players": 486,
       "teams": 30,
       "max_team_games": 82
+    },
+    {
+      "season": "2015-16",
+      "players": 476,
+      "teams": 30,
+      "max_team_games": 82,
+      "era": "history"
+    },
+    {
+      "season": "2014-15",
+      "players": 492,
+      "teams": 30,
+      "max_team_games": 82,
+      "era": "history"
+    },
+    {
+      "season": "2013-14",
+      "players": 482,
+      "teams": 30,
+      "max_team_games": 82,
+      "era": "history"
+    },
+    {
+      "season": "2012-13",
+      "players": 469,
+      "teams": 30,
+      "max_team_games": 82,
+      "era": "history"
+    },
+    {
+      "season": "2011-12",
+      "players": 478,
+      "teams": 30,
+      "max_team_games": 66,
+      "era": "history"
+    },
+    {
+      "season": "2010-11",
+      "players": 452,
+      "teams": 30,
+      "max_team_games": 82,
+      "era": "history"
+    },
+    {
+      "season": "2009-10",
+      "players": 442,
+      "teams": 30,
+      "max_team_games": 82,
+      "era": "history"
+    },
+    {
+      "season": "2008-09",
+      "players": 445,
+      "teams": 30,
+      "max_team_games": 82,
+      "era": "history"
+    },
+    {
+      "season": "2007-08",
+      "players": 451,
+      "teams": 30,
+      "max_team_games": 82,
+      "era": "history"
+    },
+    {
+      "season": "2006-07",
+      "players": 458,
+      "teams": 30,
+      "max_team_games": 82,
+      "era": "history"
+    },
+    {
+      "season": "2005-06",
+      "players": 458,
+      "teams": 30,
+      "max_team_games": 82,
+      "era": "history"
+    },
+    {
+      "season": "2004-05",
+      "players": 464,
+      "teams": 30,
+      "max_team_games": 82,
+      "era": "history"
+    },
+    {
+      "season": "2003-04",
+      "players": 442,
+      "teams": 29,
+      "max_team_games": 82,
+      "era": "history"
+    },
+    {
+      "season": "2002-03",
+      "players": 428,
+      "teams": 29,
+      "max_team_games": 82,
+      "era": "history"
+    },
+    {
+      "season": "2001-02",
+      "players": 440,
+      "teams": 29,
+      "max_team_games": 82,
+      "era": "history"
+    },
+    {
+      "season": "2000-01",
+      "players": 441,
+      "teams": 29,
+      "max_team_games": 82,
+      "era": "history"
+    },
+    {
+      "season": "1999-00",
+      "players": 439,
+      "teams": 29,
+      "max_team_games": 82,
+      "era": "history"
+    },
+    {
+      "season": "1998-99",
+      "players": 440,
+      "teams": 29,
+      "max_team_games": 50,
+      "era": "history"
+    },
+    {
+      "season": "1997-98",
+      "players": 439,
+      "teams": 29,
+      "max_team_games": 82,
+      "era": "history"
+    },
+    {
+      "season": "1996-97",
+      "players": 441,
+      "teams": 29,
+      "max_team_games": 82,
+      "era": "history"
     }
   ],
   "extras": {
@@ -77,7 +217,8 @@
     "nba_game_logs": "NBA.com/stats LeagueGameLog (team and player game logs)",
     "nba_tracking": "NBA.com/stats LeagueDashPtStats (Second Spectrum player tracking)",
     "bbref": "Basketball-Reference.com season advanced tables: the BPM (Box Plus/Minus) column only, credited wherever it appears",
-    "bbref_url": "https://www.basketball-reference.com/"
+    "bbref_url": "https://www.basketball-reference.com/",
+    "history": "1996-97 to 2015-16: NBA.com/stats dashboards, game logs and standings (pipeline/build_history.py)"
   },
   "current_season": "2026-27",
   "default_season": "2025-26",

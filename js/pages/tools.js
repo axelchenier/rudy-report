@@ -13,7 +13,7 @@ import { draw, entriesFrom, checkOdds, GROUPS, OFFICIAL, LOTTERY_SOURCES, FLOOR 
 
 const TOOLS = [
   ["odds", "Playoff odds", "Simulate the rest of the season 10,000 times: playoff, Play-In, seed and title chances. Nudge any team up or down to test a scenario."],
-  ["similar", "Similar players", "Find the player-seasons (2016-17 to now) whose stat profile is closest to any player's, era-adjusted."],
+  ["similar", "Similar players", "Find the player-seasons (1996-97 to now) whose stat profile is closest to any player's, era-adjusted."],
   ["lineup", "Lineup builder", "Pick any five from a roster: their real NBA.com results together, a pair-based net rating estimate, and lineup traits."],
   ["lottery", "Draft lottery", "The new 3-2-1 Lottery (official NBA rules for 2027): every team's chances at each pick, plus draw the lottery yourself."],
 ];

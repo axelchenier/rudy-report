@@ -2,7 +2,7 @@
 //   Overview          headline cards with percentile chips + league averages, a percentile profile, season-by-season tables
 //   Game log & splits every game of a season, rolling 5/10-game averages, home/road, rest, month and opponent splits
 //   Clutch · Hustle · Tracking   the player's numbers in those NBA.com datasets, with percentiles
-import { load, loadAllSeasons, currentSeason, qualifies, QUALIFY_SHARE, seasonGames, META } from "../data.js";
+import { load, loadAllSeasons, currentSeason, qualifies, QUALIFY_SHARE, seasonGames, META , dataStatus, loadCareer } from "../data.js";
 import { STATS, COLUMNS, fmt } from "../stats.js";
 import { renderTable, esc, teamAbbrLink, chartTheme, PALETTE } from "../ui.js";
 import { statCard, profileHTML, tabBar, renderGameLog } from "./shared.js";
@@ -25,7 +25,7 @@ export async function playerPage(app, id, query = "") {
   id = Number(id);
   const params = new URLSearchParams(query);
   const tab = params.get("tab") || "overview";
-  const history = (await loadAllSeasons("players")).filter((p) => p.PLAYER_ID === id)
+  const history = (await loadCareer("players", id)).filter((p) => p.PLAYER_ID === id)
     .sort((a, b) => a.SEASON.localeCompare(b.SEASON));
   if (!history.length) { app.innerHTML = `<p>Player not found in the loaded seasons.</p>`; return; }
 
@@ -63,18 +63,24 @@ export async function playerPage(app, id, query = "") {
   }
 
   if (tab === "shots") {
+    const st = dataStatus("shots", season);
+    if (!st.ok) { box.innerHTML = `<h2>${season} shot chart</h2>${st.html}`; return; }
     box.innerHTML = `<h2>${season} shot chart</h2><div id="sc"></div>`;
     await renderShotChart(box.querySelector("#sc"), { season, playerId: id });
     return;
   }
 
   if (tab === "playtypes") {
+    const st = dataStatus("playtypes", season);
+    if (!st.ok) { box.innerHTML = `<h2>${season} play types</h2>${st.html}`; return; }
     box.innerHTML = `<h2>${season} play types</h2><div id="pt"></div>`;
     await renderPlayTypes(box.querySelector("#pt"), { season, playerId: id });
     return;
   }
 
   if (tab === "lineups") {
+    const st = dataStatus("lineups", season);
+    if (!st.ok) { box.innerHTML = `<h2>${season} lineups & on/off</h2>${st.html}`; return; }
     box.innerHTML = `<h2>${season} lineups & on/off</h2><div id="lu"></div>`;
     await renderPlayerLineups(box.querySelector("#lu"), { season, playerId: id, teamId: p.TEAM_ID });
     return;
@@ -91,7 +97,8 @@ export async function playerPage(app, id, query = "") {
     let html = "";
     for (const kind of ["clutch", "hustle", "tracking"]) {
       const hub = HUBS[kind];
-      if (!existsFor(kind, season)) { html += `<h2>${hub.title}</h2><p class="muted">Not tracked in this era (NBA.com ${kind} data starts in ${FIRST_SEASON[kind]}).</p>`; continue; }
+      const st = dataStatus(kind, season);
+      if (!st.ok) { html += `<h2>${hub.title}</h2>${st.html}`; continue; }
       const rows = await hubRows(kind, "players", season).catch(() => []);
       const me = rows.find((r) => r.PLAYER_ID === id);
       const pool = rows.filter((r) => inPool(kind, r, minGP));
@@ -126,7 +133,7 @@ export async function playerPage(app, id, query = "") {
 
   async function drawHistory(mode) {
     const file = mode === "advanced" ? "players" : mode;
-    const rows = (await loadAllSeasons(file)).filter((x) => x.PLAYER_ID === id);
+    const rows = (await loadCareer(file, id)).filter((x) => x.PLAYER_ID === id);
     const cols = mode === "advanced" ? COLUMNS.playersAdvanced : mode === "players_totals" ? COLUMNS.playersTotals : COLUMNS.playersBasic;
     renderTable(box.querySelector("#hist"), {
       rows, entity: "players", sortKey: "SEASON", sortAsc: true, rank: false,

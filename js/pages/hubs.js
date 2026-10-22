@@ -1,6 +1,6 @@
 // hubs.js (page) - leaderboards for Clutch, Hustle and Tracking stats.
 // Address: #/hubs/<clutch|hustle|tracking>?entity=players|teams&season=2025-26&group=0
-import { seasonFromQuery, seasonSelectHTML, withSeason, seasonGames, QUALIFY_SHARE } from "../data.js";
+import { seasonFromQuery, seasonSelectHTML, withSeason, seasonGames, QUALIFY_SHARE, dataStatus } from "../data.js";
 import { renderTable, esc, playerLink, teamAbbrLink } from "../ui.js";
 import { HUBS, hubRows, inPool, existsFor, FIRST_SEASON } from "../hubs.js";
 import { CLUTCH_NOTE } from "../glossary.js";
@@ -44,7 +44,8 @@ export async function hubsPage(app, kind = "clutch", query = "") {
 
   app.querySelector("#hub-season").addEventListener("change", (e) => { location.hash = withSeason(location.hash, e.target.value); });
   const box = app.querySelector("#hub");
-  if (!existsFor(kind, season)) { box.innerHTML = `<p class="callout">Not tracked in this era: NBA.com ${kind} data starts in ${FIRST_SEASON[kind]}.</p>`; return; }
+  const st = dataStatus(kind, season);
+  if (!st.ok) { box.innerHTML = st.html; return; }
   const rows = await hubRows(kind, entity, season).catch(() => []);
   if (!rows.length) { box.innerHTML = `<p class="muted">No ${hub.title.toLowerCase()} data for ${season} yet.</p>`; return; }
 
