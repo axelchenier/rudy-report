@@ -317,3 +317,5 @@ input[type=range] { vertical-align: middle; accent-color: var(--accent); }
 .po-slider { grid-template-columns: auto 160px 48px; margin: 0; }
 .odds { display: inline-block; min-width: 38px; padding: 1px 4px; border-radius: 4px; font-variant-numeric: tabular-nums;
   background: linear-gradient(90deg, color-mix(in srgb, var(--accent) 35%, transparent) var(--o), transparent var(--o)); }
+.pick-heat { display: inline-flex; gap: 1px; }
+.pick-heat i { width: 9px; height: 14px; border-radius: 2px; background: var(--accent); }
