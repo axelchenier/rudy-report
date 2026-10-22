@@ -56,6 +56,19 @@ export async function seasonInputs() {
   return { season, prior, schedule, prep };
 }
 
+// Players an injury scenario can remove: this season's rosters, valued with last complete season's BPM (the only
+// Basketball-Reference column on the site; it isn't loaded for the season in progress) and minutes per game played.
+// Value = (BPM − replacement −2.0) × minutes ÷ 48 = points per game his team loses while he's out (same method as the Trade what-if).
+export async function injuryPlayers(season, prior, prep) {
+  const [now, last, bpmRows] = await Promise.all([load("players", season).catch(() => []), load("players", prior), load("bbref_advanced", prior)]);
+  const bpm = new Map(bpmRows.map((b) => [b.PLAYER_ID, b.BPM])), team = new Map(now.map((p) => [p.PLAYER_ID, p.TEAM_ID]));
+  const idx = new Map(prep.teams.map((t, i) => [t.id, i]));
+  return last.filter((p) => bpm.get(p.PLAYER_ID) != null && p.GP >= 20 && p.MIN >= 15).map((p) => {
+    const teamIdx = idx.get(team.get(p.PLAYER_ID) ?? p.TEAM_ID), b = bpm.get(p.PLAYER_ID);
+    return { PLAYER_ID: p.PLAYER_ID, PLAYER_NAME: p.PLAYER_NAME, teamIdx, BPM: b, MIN: p.MIN, value: (b + 2) * p.MIN / 48 };
+  }).filter((p) => p.teamIdx != null && p.value > 0).sort((a, b) => b.value - a.value).filter((p, i, a) => a.filter((x) => x.teamIdx === p.teamIdx).indexOf(p) < 8);
+}
+
 export function oddsMethod(model, prior) {
   return `<div class="card method"><b>${modelBadge("")} How the Playoff Odds model works.</b>
     <p class="small"><b>1. Team strength</b> = expected point differential per game against an average team. Before the season it is last season's
@@ -68,7 +81,11 @@ export function oddsMethod(model, prior) {
       are played against an average opponent on a neutral floor.</p>
     <p class="small"><b>3. Seeding and playoffs:</b> seeds by wins (ties broken by coin flip, not the NBA's full tiebreaker rules), the real Play-In format,
       then four best-of-7 rounds with the better seed (better record in the Finals) at home in games 1, 2, 5 and 7.
-      It does not know about injuries, trades, rest or schedule fatigue. These are estimates of what could happen, not predictions.</p>
+      It does not know about real injuries, trades, rest or schedule fatigue. These are estimates of what could happen, not predictions.</p>
+    <p class="small"><b>4. Injury scenario (optional):</b> pick a player and how many games he misses. While he's out his team is
+      (BPM − (−2.0)) × his minutes per game ÷ 48 points per game weaker: his ${esc(prior)} Box Plus/Minus (Basketball-Reference, the site's only BBRef column) above a
+      replacement-level player (−2.0), for the minutes he plays. That applies to his team's next N games on the schedule, and to the Play-In and playoffs if you tick the box.
+      Same method as the Trade what-if. It ignores who really takes his minutes and any rust when he returns.</p>
     <p class="muted small">Data: NBA.com/stats standings, team stats and game logs, NBA.com schedule (ScheduleLeagueV2) via nba_api.</p></div>`;
 }
 
@@ -89,11 +106,24 @@ async function oddsTool(box, params) {
       <span class="muted small">points per game vs the model (your own what-if: an injury, a trade, a breakout)</span>
       <button class="btn primary" id="po-run">Run simulation</button>
     </div>
+    <div class="card toolbar sim-controls" id="po-inj-bar">
+      <label>Injury: <select id="po-inj"><option value="">(no injury)</option></select></label>
+      <label>out for <input type="number" id="po-inj-n" min="1" max="82" value="20" style="width:4.5em"> games</label>
+      <label class="small"><input type="checkbox" id="po-inj-po"> and the playoffs</label>
+      <span class="muted small" id="po-inj-info">${modelBadge("BPM × minutes vs a replacement player, same method as the Trade what-if")} his team plays those games without him</span>
+    </div>
     ${played < 15 ? `<p class="callout">Early season: strengths are still mostly last season's point differential × ${prep.model.carryover}, so these odds will move a lot as real games come in.</p>` : ""}
     <div id="po-out"><p class="muted">Simulating…</p></div>
     ${oddsMethod(prep.model, prior)}`;
 
   const team = box.querySelector("#po-team"), adj = box.querySelector("#po-adj");
+  const inj = await injuryPlayers(season, prior, prep).catch(() => []);
+  const injSel = box.querySelector("#po-inj");
+  if (!inj.length) box.querySelector("#po-inj-bar").innerHTML = `<span class="muted small">Injury scenarios need ${esc(prior)} Box Plus/Minus, which isn't loaded.</span>`;
+  else injSel.innerHTML += [...new Set(inj.map((p) => p.teamIdx))].sort((a, b) => prep.teams[a].name.localeCompare(prep.teams[b].name)).map((ti) =>
+    `<optgroup label="${esc(prep.teams[ti].name)}">${inj.filter((p) => p.teamIdx === ti).map((p) => `<option value="${p.PLAYER_ID}">${esc(p.PLAYER_NAME)} (${sgn(-p.value)} pts/g)</option>`).join("")}</optgroup>`).join("");
+  if (params.get("injury")) injSel.value = params.get("injury");
+  if (params.get("out")) box.querySelector("#po-inj-n").value = params.get("out");
   if (params.get("team")) { const i = prep.teams.findIndex((t) => String(t.id) === params.get("team")); if (i >= 0) team.value = i; }
   adj.addEventListener("input", () => { box.querySelector("#po-adj-v").textContent = sgn(+adj.value); });
 
@@ -104,12 +134,14 @@ async function oddsTool(box, params) {
       const t0 = performance.now();
       const n = +box.querySelector("#po-n").value;
       const adjust = team.value !== "" && +adj.value ? { [team.value]: +adj.value } : {};
-      const base = Object.keys(adjust).length ? simulate(prep, { n }) : null;
-      const res = simulate(prep, { n, adjust });
+      const ip = inj.find((p) => String(p.PLAYER_ID) === injSel.value);
+      const injury = ip ? { team: ip.teamIdx, delta: -ip.value, games: Math.max(1, Math.min(82, +box.querySelector("#po-inj-n").value || 1)), playoffs: box.querySelector("#po-inj-po").checked } : null;
+      const base = Object.keys(adjust).length || injury ? simulate(prep, { n }) : null;
+      const res = simulate(prep, { n, adjust, injury });
       const ms = Math.round(performance.now() - t0);
       const delta = (r, k) => base ? base[r.idx][k] : null;
       const cols = [
-        { key: "name", label: "Team", left: true, html: (r) => `<a href="#/team/${r.id}?season=${season}">${esc(r.name)}</a>${adjust[r.idx] ? ` <span class="model-badge">${sgn(adjust[r.idx])}</span>` : ""}` },
+        { key: "name", label: "Team", left: true, html: (r) => `<a href="#/team/${r.id}?season=${season}">${esc(r.name)}</a>${adjust[r.idx] ? ` <span class="model-badge">${sgn(adjust[r.idx])}</span>` : ""}${injury && injury.team === r.idx ? ` <span class="model-badge" title="${esc(ip.PLAYER_NAME)} out ${injury.games} games${injury.playoffs ? " + playoffs" : ""}">${esc(ip.PLAYER_NAME.split(" ").slice(-1)[0])} out</span>` : ""}` },
         { key: "W", label: "Now", title: "Actual record so far (NBA.com)", html: (r) => `${r.W}-${r.L}` },
         { key: "rating", label: "Strength", title: "Model strength: expected point differential per game vs an average team (before your scenario change)", html: (r) => `<span title="prior ${sgn(r.prior)}, this season ${r.pd == null ? "no games" : sgn(r.pd)}, ±${r.ratingSd.toFixed(1)}">${sgn(r.rating)}</span>` },
         { key: "projW", label: "Proj W", title: "Average wins across all simulations", html: (r) => r.projW.toFixed(1) },
@@ -124,7 +156,10 @@ async function oddsTool(box, params) {
         { key: "title", label: "Title", html: (r) => pctCell(r.title, 1) + (base ? ` <span class="small ${r.title - delta(r, "title") >= 0 ? "pos" : "neg"}">${sgn(100 * (r.title - delta(r, "title")))}</span>` : "") },
       ];
       out.innerHTML = `<p class="muted small">${n.toLocaleString()} simulated seasons in ${ms} ms. All percentages are ${modelBadge("")} chances.
-        ${base ? "Small colored numbers = change in percentage points from your scenario." : ""}</p>` +
+        ${base ? "Small colored numbers = change in percentage points from your scenario." : ""}
+        ${injury ? `<br>Injury scenario: <b>${esc(ip.PLAYER_NAME)}</b> out for his team's next ${injury.games} games${injury.playoffs ? " and the playoffs" : ""}:
+          ${sgn(-ip.value)} points per game while he's out (${esc(prior)} BPM ${sgn(ip.BPM)}, ${ip.MIN.toFixed(1)} min/game, replaced by a −2.0 BPM player).
+          Projected wins ${sgn(res[injury.team].projW - base[injury.team].projW)}.${ip.value > 6 ? " For a star this big, treat it as an upper bound: real teams lose less than a straight replacement-level swap." : ""}` : ""}</p>` +
         ["East", "West"].map((c) => `<h2>${c}ern Conference</h2><div id="po-${c}"></div>`).join("");
       for (const c of ["East", "West"]) renderTable(out.querySelector(`#po-${c}`), {
         rows: res.filter((r) => r.conf === c), columns: cols, entity: "teams", sortKey: "projW", pageSize: 15 });

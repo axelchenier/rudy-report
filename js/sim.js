@@ -60,9 +60,11 @@ export function prepare({ teams, schedule, playedIds, seasonLength = 82 }) {
 
 /**
  * Run n simulated seasons. adjust = { teamIndex: +points } (scenario slider).
+ * injury = { team: teamIndex, delta: -points, games: N, playoffs: bool }: the team is `delta` points per game weaker in its
+ *   next N remaining games (schedule order; unscheduled Cup games last), and in the playoffs too if `playoffs`.
  * onSeason(result) is called after each season with { wins, seeds: {East: [idx...], West: [...]}, playIn } (used by the lottery).
  */
-export function simulate(prep, { n = 10000, seed = 2027, adjust = {}, onSeason } = {}) {
+export function simulate(prep, { n = 10000, seed = 2027, adjust = {}, injury = null, onSeason } = {}) {
   const { teams, games, model } = prep;
   const T = teams.length, R = rng(seed), sd = model.margin_sd, edge = model.home_edge;
   const z = (diff) => phi(diff / sd);
@@ -83,8 +85,17 @@ export function simulate(prep, { n = 10000, seed = 2027, adjust = {}, onSeason }
       strength[i] = teams[i].rating + teams[i].ratingSd * R.normal() + (adjust[i] || 0);
       wins[i] = teams[i].W;
     }
-    for (const [h, a] of games) homeWin(h, a) ? wins[h]++ : wins[a]++;
-    for (let i = 0; i < T; i++) for (let k = 0; k < teams[i].unknown; k++) if (R() < z(strength[i])) wins[i]++;
+    let out = injury ? injury.games : 0;           // games the injured player still misses in this simulated season
+    const it = injury ? injury.team : -1;
+    for (const [h, a] of games) {
+      if (out > 0 && (h === it || a === it)) { strength[it] += injury.delta; homeWin(h, a) ? wins[h]++ : wins[a]++; strength[it] -= injury.delta; out--; }
+      else homeWin(h, a) ? wins[h]++ : wins[a]++;
+    }
+    for (let i = 0; i < T; i++) for (let k = 0; k < teams[i].unknown; k++) {
+      const d = i === it && out > 0 ? (out--, injury.delta) : 0;
+      if (R() < z(strength[i] + d)) wins[i]++;
+    }
+    if (injury?.playoffs) strength[it] += injury.delta;
     let top = 0; for (let i = 1; i < T; i++) if (wins[i] > wins[top] || (wins[i] === wins[top] && R() < 0.5)) top = i;
     acc[top].bestRecord++;
 
