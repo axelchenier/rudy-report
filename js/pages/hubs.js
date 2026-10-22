@@ -11,7 +11,7 @@ export async function hubsPage(app, kind = "clutch", query = "") {
   const params = new URLSearchParams(query);
   const season = seasonFromQuery(query);
   const tabs = `<nav class="page-tabs">${[...Object.entries(HUBS).map(([k, h]) => [k, h.title]), ["playtypes", "Play types"]].map(([k, t]) =>
-      `<a href="${withSeason(`#/hubs/${k}`, season)}" class="${k === kind ? "active" : ""}">${t}</a>`).join("")}</nav>`;
+      `<a href="${withSeason(`#/hubs/${k}`, season)}" class="${k === kind ? "active" : ""}">${t}</a>`).join("")}<a href="#/history/trends">League trends</a><a href="#/history/leaders">Season leaders</a></nav>`;
   if (kind === "playtypes") {
     app.innerHTML = `<div class="page-head"><div><h1>Stat hubs</h1><p class="sub">Play-type leaderboards (Synergy data via NBA.com/stats).</p></div>
       ${seasonSelectHTML(season, "hub-season")}</div>${tabs}<div id="hub"></div>`;

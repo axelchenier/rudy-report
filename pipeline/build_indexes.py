@@ -50,6 +50,37 @@ def player_seasons(seasons):
     return compact(rows, cols)
 
 
+def league_trends(meta):
+    """League-wide averages per season (all 30 teams added up) from teams_totals.json + teams.json (NBA.com)."""
+    rows = []
+    for m in sorted(meta["seasons"], key=lambda x: x["season"]):
+        s = m["season"]
+        tp, ap = DATA / s / "teams_totals.json", DATA / s / "teams.json"
+        if not tp.exists() or not ap.exists():
+            continue
+        tot, adv = json.loads(tp.read_text()), {t["TEAM_ID"]: t for t in json.loads(ap.read_text())}
+        S = {k: sum(t.get(k) or 0 for t in tot) for k in ("GP", "PTS", "FGM", "FGA", "FG3M", "FG3A", "FTM", "FTA", "OREB", "DREB", "AST", "TOV", "STL", "BLK", "PF")}
+        poss = sum(adv.get(t["TEAM_ID"], {}).get("POSS") or 0 for t in tot)
+        gp_pace = [(t["GP"], adv[t["TEAM_ID"]]["PACE"]) for t in tot if adv.get(t["TEAM_ID"], {}).get("PACE") is not None]
+        if not S["GP"] or not S["FGA"] or not poss:
+            continue
+        g, r4 = S["GP"], lambda v: round(v, 4)
+        rows.append({
+            "SEASON": s, "IN_PROGRESS": bool(m.get("in_progress")), "TEAMS": len(tot), "TEAM_GAMES": g,
+            "PACE": round(sum(a * b for a, b in gp_pace) / sum(a for a, _ in gp_pace), 2),
+            "ORTG": round(100 * S["PTS"] / poss, 2),
+            "PTS": round(S["PTS"] / g, 2), "FGA": round(S["FGA"] / g, 2), "FG3A": round(S["FG3A"] / g, 2), "FG3M": round(S["FG3M"] / g, 2),
+            "FTA": round(S["FTA"] / g, 2), "AST": round(S["AST"] / g, 2), "TOV": round(S["TOV"] / g, 2), "OREB": round(S["OREB"] / g, 2),
+            "STL": round(S["STL"] / g, 2), "BLK": round(S["BLK"] / g, 2), "PF": round(S["PF"] / g, 2),
+            "FG3A_PER100": round(100 * S["FG3A"] / poss, 2), "FG3A_RATE": r4(S["FG3A"] / S["FGA"]),
+            "FG_PCT": r4(S["FGM"] / S["FGA"]), "FG3_PCT": r4(S["FG3M"] / S["FG3A"]) if S["FG3A"] else None, "FT_PCT": r4(S["FTM"] / S["FTA"]) if S["FTA"] else None,
+            "EFG_PCT": r4((S["FGM"] + 0.5 * S["FG3M"]) / S["FGA"]), "TS_PCT": r4(S["PTS"] / (2 * (S["FGA"] + 0.44 * S["FTA"]))),
+            "FT_RATE": r4(S["FTA"] / S["FGA"]), "TOV_PCT": r4(S["TOV"] / (S["FGA"] + 0.44 * S["FTA"] + S["TOV"])),
+            "OREB_PCT": r4(S["OREB"] / (S["OREB"] + S["DREB"])), "AST_RATE": r4(S["AST"] / S["FGM"]),
+        })
+    return {"source": "NBA.com team totals + advanced (LeagueDashTeamStats), summed over every team", "rows": rows}
+
+
 def compact(rows, cols=None):
     cols = cols or list(dict.fromkeys(k for r in rows for k in r))
     return {"cols": cols, "rows": [[r.get(c) for c in cols] for r in rows]}
@@ -89,6 +120,7 @@ def main():
                 r[k] = round(r[k], 1)
     write(DATA / "index" / "similar.json", compact(sim, SIM_COLS))
     write(DATA / "index" / "player_seasons.json", player_seasons(seasons))
+    write(DATA / "index" / "league_trends.json", league_trends(meta))
     print(f"players {len(people)}, similar rows {len(sim)}, seasons {seasons[0]}..{seasons[-1]}")
 
 
