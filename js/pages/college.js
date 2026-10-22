@@ -5,6 +5,7 @@ import { renderTable, esc, rankOf, percentile, PALETTE, chartTheme } from "../ui
 import { CCOLUMNS } from "../college/cstats.js";
 import { renderProgramHistory, renderPlayerExtras } from "./college_extras.js";
 import { renderCollegeGameLog } from "./college_gamelog.js";
+import { renderCollegeTeamLog } from "./college_teamlog.js";
 import { renderCollegeWhatIf } from "./college_whatif.js";
 import { loadCMeta, CMETA, cload, cseasonFromQuery, currentCSeason, cseasonSelectHTML, seasonInfo, addRecords, careerOf,
   TORVIK_CREDIT, C_QUAL_MIN_PCT, playedSeasons, CSEASONS } from "../college/cdata.js";
@@ -186,6 +187,7 @@ export async function collegeTeamPage(app, id, query = "") {
       <div><h2>${esc(t.CONF)} standings</h2><div id="conf"></div><p class="small"><a href="#/college/conference/${encodeURIComponent(t.CONF)}?season=${season}">Full ${esc(t.CONF)} page: standings, leaders, history →</a></p></div>
     </div>
     <div id="cwhatif"></div>
+    <div id="cteamlog"></div>
     <h2>Roster · ${pre ? playedSeasons()[0] + " (last season's team)" : season}</h2>
     <div id="roster"></div>
     <h2>Season by season</h2>
@@ -195,6 +197,7 @@ export async function collegeTeamPage(app, id, query = "") {
     ${creditLine()}`;
   app.querySelector("#page-season").addEventListener("change", (e) => { location.hash = `#/college/team/${id}?season=${e.target.value}`; });
   renderProgramHistory(app.querySelector("#cprogram"), id, t.TEAM_NAME).catch((e) => console.warn(e));
+  renderCollegeTeamLog(app.querySelector("#cteamlog"), id, pre ? playedSeasons()[0] : season).catch((e) => console.warn(e));
 
   renderCollegeWhatIf(app.querySelector("#cwhatif"), t, all, season, pre);
   renderTable(app.querySelector("#conf"), { rows: conf, entity: "teams", sortKey: pre ? "TRANK" : "W_PCT", sortAsc: pre, pageSize: 30,

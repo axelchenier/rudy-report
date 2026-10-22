@@ -274,6 +274,11 @@ averages, the game table (opponents link to their team pages; postseason tagged)
 postseason, vs top-50 T-Rank, by month). Built by `pipeline/college_gamelogs.py` into `data/college/gamelogs/<season>/g_NN.json`
 (about 7.6 MB per season; run `college_gamelogs.py 2023 2024` for older seasons).
 
+**College team schedule & results** (team pages): every game of 2024-25 / 2025-26 (+ current season nightly) from ESPN team box
+scores: margin chart with a 5-game average, game table with opponent T-Rank, possessions and per-game offensive/defensive rating
+(points per 100 possessions, not opponent-adjusted), and splits (home/away as ESPN lists them, conference/non-conference, vs top-25
+and top-100, vs non-D-I, postseason, close games, by month). `data/college/gamelogs/<season>/teams.json` (~1.2 MB per season).
+
 **College what-if sliders** (team pages, labeled *Model estimate*): change adjusted offense, adjusted defense, 3P% or
 opponents' 3P% and see AdjEM, Barthag (Torvik's formula, exponent 11.5), an estimated T-Rank, expected wins against the same
 strength of schedule (log5 vs Torvik's SOS; preseason uses the opponent strength that reproduces Torvik's projected record),

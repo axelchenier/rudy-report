@@ -32,7 +32,7 @@ export async function renderCollegeGameLog(box, pid, careerSeasons) {
     body.innerHTML = `<div class="card"><div class="toolbar"><div class="tabs" id="cgl-k">${KEYS.map(([k, l], i) => `<button data-k="${k}" class="${i === 0 ? "active" : ""}">${l}</button>`).join("")}</div>
       <span class="muted small">Bars = each game (green = win) · lines = rolling 5- and 10-game averages</span></div><div class="chart-box"><canvas id="cgl-chart"></canvas></div></div>
       <h3 style="margin-top:16px">Games</h3><div id="cgl-table"></div><h3 style="margin-top:16px">Splits</h3><div id="cgl-splits"></div>
-      <p class="muted small">ESPN box scores via sportsdataverse. Game score = Hollinger's formula from the box score. Postseason = conference and national tournaments (ESPN season type 3).</p>`;
+      <p class="muted small">ESPN box scores via sportsdataverse. Game score = Hollinger's formula from the box score. Postseason = NCAA tournament and other national postseason games (ESPN season type 3); conference tournaments count as regular season. At neutral sites ESPN still lists one team as home.</p>`;
     let chart;
     const draw = (k) => {
       const vals = games.map((g) => g[k]), th = chartTheme();
@@ -61,7 +61,7 @@ export async function renderCollegeGameLog(box, pid, careerSeasons) {
         AST: (s("AST") / n).toFixed(1), TOV: (s("TOV") / n).toFixed(1), FG: pct(s("FGM"), s("FGA")), FG3: pct(s("FG3M"), s("FG3A")), FT: pct(s("FTM"), s("FTA")), TS: tsa ? (100 * s("PTS") / tsa).toFixed(1) : "–" };
     };
     const months = [...new Set(games.map((g) => g.DATE.slice(0, 7)))];
-    const rows = [agg("All games", games), agg("Home", games.filter((g) => g.HA === "H")), agg("Away / neutral", games.filter((g) => g.HA === "A")),
+    const rows = [agg("All games", games), agg("Home (as listed by ESPN)", games.filter((g) => g.HA === "H")), agg("Away (as listed by ESPN)", games.filter((g) => g.HA === "A")),
       agg("Wins", games.filter((g) => g.WL === "W")), agg("Losses", games.filter((g) => g.WL === "L")), agg("Started", games.filter((g) => g.GS)), agg("Off the bench", games.filter((g) => !g.GS)),
       agg("Regular season", games.filter((g) => g.TYPE === 2)), agg("Postseason", games.filter((g) => g.TYPE === 3)),
       agg("vs top-50 T-Rank teams", games.filter((g) => g.OPP_TID && (tmap.get(g.OPP_TID)?.TRANK ?? 999) <= 50)),
