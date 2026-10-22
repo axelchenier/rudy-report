@@ -324,3 +324,6 @@ input[type=range] { vertical-align: middle; accent-color: var(--accent); }
 .lb-grid { display: grid; grid-template-columns: 300px 1fr; gap: 12px; align-items: start; }
 .lb-roster label { display: flex; gap: 8px; align-items: baseline; padding: 4px 0; flex-wrap: wrap; }
 @media (max-width: 860px) { .lb-grid { grid-template-columns: 1fr; } }
+
+/* Ask bar on phones: let the input shrink so the Ask button stays on screen (390px). */
+.ask-form input { min-width: 0; }

@@ -92,6 +92,9 @@ There's no paid AI. `parser.js` recognizes common patterns:
 - **Home/road:** "best home court advantage in the past 5 years", "worst road team"
 - **Opening day:** "highest average points on opening days"
 - **Fit report:** "will Anthony Edwards and LaMelo Ball be a good pairing"
+- **2027 Draft** (`js/ask/draft.js`): "top 2027 draft prospects", "top 5 SEC draft prospects", "youngest draft prospects",
+  "first round odds for Tyler Tanner", "most similar drafted player to Tyler Tanner" (answers from `data/draft/`, Model estimate)
+- **College game prediction:** "Duke vs UNC prediction", "Kansas at Duke", "who would win Houston or Purdue" (the Game Predictor's model)
 
 Every answer shows grey tags explaining how the question was understood, plus its data source.
 If a question isn't understood, the page shows examples and opens the **Question builder**.

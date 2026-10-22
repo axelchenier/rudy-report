@@ -6,6 +6,8 @@ import { esc } from "../ui.js";
 import { normalize } from "./names.js";
 import { CSTAT_WORDS, CTEAM_ONLY } from "../college/cstats.js";
 import { loadCMeta, CMETA, cload, CSEASONS, playedSeasons, seasonInfo, addRecords, C_QUAL_MIN_PCT } from "../college/cdata.js";
+import { draftAnswer } from "./draft.js";
+import { predictGame, seasonAverages, SIGMA, HOME_EDGE } from "../pages/college_predictor.js";
 
 const KEYWORDS = /\b(college|colleges|ncaa|ncaab|ncaam|cbb|march madness|final four|d1|d 1|d i|division i|division 1|freshm[ae]n|sophomores?|juniors?|seniors?|mid majors?|t rank|trank|torvik|kenpom|barthag|adjusted efficiency|adj ?[oed]m?\b|wab)\b/;
 // College teams that share a name with an NBA city/team: only treated as college with a college keyword.
@@ -78,6 +80,8 @@ function findSeason(q) {
 /** Returns { result, tags } for a college question, or null to let the NBA answer it. */
 export async function collegeAnswer(question, nbaIntent) {
   const q = key(question);
+  const draft = await draftAnswer(question, !!(nbaIntent?.item || nbaIntent?.items?.length || nbaIntent?.players?.length || nbaIntent?.player));          // "top 2027 draft prospects", "first round odds for X", "most similar drafted player to X"
+  if (draft) return draft;
   const confHit = findAll(q, CONFS.filter(([w]) => !["mac", "summit", "horizon", "patriot", "colonial", "southland", "ivy"].includes(w)).map(([w]) => ({ w: key(w) })));
   const explicit = KEYWORDS.test(q) || confHit.length > 0;      // "best offense in the Big Ten" is a college question
   const nbaFoundName = !!(nbaIntent?.item || nbaIntent?.items?.length || nbaIntent?.players?.length || nbaIntent?.team || nbaIntent?.player);
@@ -118,6 +122,35 @@ export async function collegeAnswer(question, nbaIntent) {
   const tagBase = ["College (NCAA D-I)"];
   const sources = ["Bart Torvik T-Rank (barttorvik.com)", ...(seasonInfo(season).has_box ? ["ESPN box scores via sportsdataverse"] : [])];
   const footer = `Data pulled ${esc(CMETA.pulled_at_utc)}.`;
+
+  // ---------- game prediction: "Duke vs UNC prediction", "Kansas at Duke", "who would win Houston or Purdue" ----------
+  const PREDICT = /\b(vs|versus|predict\w*|who (?:would|will|wins)|would win|will win|beat|odds|chances?|spread|projected score|game|matchup|neutral)\b/;
+  // NBA-city schools (Houston, Memphis...) count here when another named school makes it clearly a college game.
+  const gameTeams = teams.length >= 2 ? teams : [...new Map(findAll(q, await teamNames()).filter((t) => !playersFound.some((p) => t.start >= p.start && t.end <= p.end)).map((t) => [t.team, t])).values()];
+  if (gameTeams.length >= 2 && (teams.length >= 2 || explicit || gameTeams.some((t) => !NBA_CITIES.has(t.w))) &&
+      (PREDICT.test(q) || /@/.test(question) || /\bat\b/.test(q.slice(gameTeams[0].end, gameTeams[1].start))) && !/\bcompare\b/.test(q)) {
+    const teams = gameTeams;
+    const pSeason = findSeason(q) || CSEASONS()[0];
+    const all = (await cload("teams", pSeason)).filter((t) => t.ADJOE != null && t.ADJDE != null && t.ADJT != null);
+    const A = all.find((r) => r.TEAM_NAME === teams[0].team), B = all.find((r) => r.TEAM_NAME === teams[1].team);
+    if (A && B) {
+      const between = q.slice(teams[0].end, teams[1].start), raw = question.toLowerCase();
+      const venue = /neutral/.test(q) ? "n" : /\bat\b/.test(between) || /@/.test(raw) ? "b" : /\bat home\b|\bhosts?\b|\bhosting\b/.test(q) ? "a" : "n";
+      const p = predictGame(A, B, venue, seasonAverages(all));
+      const fav = p.margin >= 0 ? A : B, pf = fav === A ? p.pA : 1 - p.pA, dog = fav === A ? B : A;
+      const pre = seasonInfo(pSeason).preseason;
+      const where = venue === "n" ? "on a neutral court" : `at ${esc((venue === "a" ? A : B).TEAM_NAME)}`;
+      const pNotes = [...(pre ? [`${pSeason} hasn't tipped off, so this uses Torvik's <b>preseason projected</b> ratings. Expect bigger misses.`] : []),
+        `Method: points = adjusted offense × opponent's adjusted defense ÷ D-I average × possessions; home court is worth ${HOME_EDGE} points; win chance assumes real margins scatter with a ${SIGMA}-point standard deviation. Ignores injuries and lineup changes.`,
+        "Say “A at B” for a road game, or “neutral” for a neutral site (the default)."];
+      return { tags: [...tagBase, "Game prediction", "Model estimate", `${esc(A.TEAM_NAME)} vs ${esc(B.TEAM_NAME)}`, venue === "n" ? "Neutral site" : `Home: ${esc((venue === "a" ? A : B).TEAM_NAME)}`, `Ratings: ${pSeason}${pre ? " preseason" : ""}`],
+        result: { headline: `<span class="model-badge">Model estimate</span> ${where}: <b>${esc(fav.TEAM_NAME)}</b> by ${Math.abs(p.margin).toFixed(1)}, a <b>${(pf * 100).toFixed(0)}%</b> win chance
+            (estimated score ${esc(A.TEAM_NAME)} ${Math.round(p.ptsA)}, ${esc(B.TEAM_NAME)} ${Math.round(p.ptsB)}; ${esc(dog.TEAM_NAME)} ${((1 - pf) * 100).toFixed(0)}%).`,
+          html: `<p><a class="btn" href="#/college/predictor?a=${encodeURIComponent(A.TEAM_ID)}&b=${encodeURIComponent(B.TEAM_ID)}&venue=${venue}&season=${pSeason}">Open in the Game Predictor →</a></p>`,
+          tables: [{ rows: [A, B].map(addRecords), entity: "teams", rank: false, columns: [nameCol("teams"), col("CONF"), ...["TRANK", "ADJEM", "ADJOE", "ADJDE", "ADJT"].map(col)] }],
+          notes: pNotes, sources: ["Bart Torvik T-Rank adjusted efficiencies (barttorvik.com)", "Rudy Report game predictor (model estimate)"], footer } };
+    }
+  }
 
   // ---------- compare ----------
   if (teams.length >= 2 || players.length >= 2) {

@@ -24,6 +24,8 @@ const EXAMPLES = [
   "Best defensive rating among teams in 2023-24",
   "Best offense in college basketball",
   "Top college scorers",
+  "Top 2027 draft prospects",
+  "Duke vs UNC prediction",
   "Most triple doubles in the past 5 years",
 ];
 
