@@ -72,7 +72,7 @@ export async function playerPage(app, id, query = "") {
       const okRank = pool.some((r) => r.PLAYER_ID === id);
       html += `<p class="muted small">${esc(hub.note)} Percentiles among ${pool.length} players
         ${kind === "clutch" ? "with 20+ clutch minutes" : `with ${minGP}+ games`}${okRank ? "" : " (he isn't in that group, so no percentiles)"}.</p>`;
-      html += profileHTML(hub.groups, me, pool, "players", { ranked: okRank });
+      html += profileHTML(hub.groups, me, pool, "players", { ranked: okRank, ints: hub.ints });
     }
     box.innerHTML = html + `<p class="muted small">Source: NBA.com/stats (clutch, hustle and Second Spectrum tracking dashboards) via nba_api.</p>`;
     return;

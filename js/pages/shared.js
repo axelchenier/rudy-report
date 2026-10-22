@@ -18,7 +18,9 @@ export function statCard(key, row, pool, entity, { ranked = true, avgLabel = "Lg
 }
 
 // Horizontal percentile bars for groups of stats.
-export function profileHTML(groups, row, pool, entity, { ranked = true } = {}) {
+// ints = stat codes to show as whole numbers (e.g. clutch season totals).
+const showVal = (v, k, entity, ints) => ints?.includes(k) && v != null ? (k === "PLUS_MINUS" && v > 0 ? "+" : "") + Math.round(v).toLocaleString() : fmt(v, k, entity);
+export function profileHTML(groups, row, pool, entity, { ranked = true, ints = null } = {}) {
   const hasStyle = groups.some(([, keys]) => keys.some((k) => STATS[k]?.style));
   return (hasStyle ? `<p class="muted small"><i class="legend-ps"></i> Blue bars are "style" stats (how much, not how good). Other bars run from red (poor) to green (top 10%).</p>` : "") + `<div class="profile">${groups.map(([title, keys]) => {
     const items = keys.filter((k) => row[k] !== undefined).map((k) => {
@@ -26,7 +28,7 @@ export function profileHTML(groups, row, pool, entity, { ranked = true } = {}) {
       const p = ranked && row[k] != null ? percentile(row[k], pool.map((x) => x[k]), lb) : null;
       return `<div class="prow">
         <span class="pname">${statLabel(k, STATS[k]?.name ? cap(STATS[k].name) : k)}</span>
-        <span class="pval">${fmt(row[k], k, entity)}</span>
+        <span class="pval">${showVal(row[k], k, entity, ints)}</span>
         <span class="pavg muted">avg ${fmt(avgOf(pool, k), k, entity)}</span>
         <span class="pbar" title="${STATS[k]?.style ? "Style stat: the bar shows how much, not how good" : "Percentile, 100 = best"}"><i class="${STATS[k]?.style ? "ps" : pctClass(p)}" style="width:${p ?? 0}%"></i></span>
         <span class="ppct">${p == null ? "–" : ordinal(p)}</span></div>`;

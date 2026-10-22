@@ -57,7 +57,7 @@ export async function teamPage(app, id, query = "") {
       const me = rows.find((r) => r.TEAM_ID === id);
       html += `<h2>${hub.title} <a class="small" href="#/hubs/${kind}?entity=teams&season=${season}">leaderboard →</a></h2>`;
       if (!me) { html += `<p class="muted">No ${hub.title.toLowerCase()} file for ${season} yet.</p>`; continue; }
-      html += `<p class="muted small">${esc(hub.note)} Percentiles among all ${rows.length} teams.</p>` + profileHTML(hub.groups, me, rows, "teams");
+      html += `<p class="muted small">${esc(hub.note)} Percentiles among all ${rows.length} teams.</p>` + profileHTML(hub.groups, me, rows, "teams", { ints: hub.ints });
     }
     box.innerHTML = html + `<p class="muted small">Source: NBA.com/stats clutch and hustle dashboards via nba_api.</p>`;
     return;

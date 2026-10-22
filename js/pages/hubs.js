@@ -44,7 +44,8 @@ export async function hubsPage(app, kind = "clutch", query = "") {
     ? [{ key: "PLAYER_NAME", label: "Player", left: true, html: playerLink }, { key: "TEAM_ABBREVIATION", label: "Team", left: true, html: teamAbbrLink }]
     : [{ key: "TEAM_NAME", label: "Team", left: true, html: (r) => `<a href="#/team/${r.TEAM_ID}?tab=more&season=${season}">${esc(r.TEAM_NAME)}</a>` }];
   const extra = kind === "clutch" ? [] : [{ key: "GP" }, { key: "MIN" }];
-  const columns = [...nameCols, ...extra, ...keys.map((key) => ({ key }))];
+  const whole = (k) => (r) => r[k] == null ? "–" : (k === "PLUS_MINUS" && r[k] > 0 ? "+" : "") + Math.round(r[k]).toLocaleString();
+  const columns = [...nameCols, ...extra, ...keys.map((key) => hub.ints?.includes(key) ? { key, html: whole(key) } : { key })];
   const sortKey = keys.includes(hub.sort) ? hub.sort : keys.find((k) => !["GP", "MIN", "W", "L"].includes(k)) || keys[0];
 
   const draw = () => {

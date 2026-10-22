@@ -13,6 +13,8 @@ export const HUBS = {
     groups: [["Clutch scoring", ["GP", "MIN", "PTS", "FGM", "FGA", "FG_PCT", "FG3M", "FG3A", "FG3_PCT", "FTM", "FTA", "FT_PCT", "TS_PCT"]],
       ["Clutch impact", ["W", "L", "PLUS_MINUS", "OFF_RATING", "DEF_RATING", "NET_RATING", "AST", "TOV", "REB", "STL", "BLK"]]],
     sort: "PTS",
+    // Clutch numbers are season TOTALS, so counting stats are whole numbers.
+    ints: ["GP", "W", "L", "PTS", "FGM", "FGA", "FG3M", "FG3A", "FTM", "FTA", "REB", "AST", "TOV", "STL", "BLK", "PLUS_MINUS"],
   },
   hustle: {
     title: "Hustle", file: { players: "hustle_players", teams: "hustle_teams" },
