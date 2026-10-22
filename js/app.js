@@ -14,6 +14,7 @@ import { hubsPage } from "./pages/hubs.js";
 import { glossaryPage } from "./pages/glossary.js";
 import { wowyPage } from "./pages/lineups.js";
 import { toolsPage } from "./pages/tools.js";
+import { gamePage } from "./pages/game.js";
 // College (NCAA men's D-I) section: its own pages and data (data/college/).
 import { collegeTeamsPage, collegePlayersPage, collegeTeamPage, collegePlayerPage } from "./pages/college.js";
 import { collegeComparePage } from "./pages/college_compare.js";
@@ -39,6 +40,7 @@ const routes = [
   [/^#\/teams(?:\?(.*))?$/, teamsPage, "teams"],
   [/^#\/player\/(\d+)(?:\?(.*))?$/, playerPage, "players"],
   [/^#\/team\/(\d+)(?:\?(.*))?$/, teamPage, "teams"],
+  [/^#\/game\/(\d{10})$/, gamePage, "teams"],
   [/^#\/standings(?:\?(.*))?$/, standingsPage, "standings"],
   [/^#\/hubs(?:\/(clutch|hustle|tracking|playtypes))?(?:\?(.*))?$/, hubsPage, "hubs"],
   [/^#\/glossary(?:\?(.*))?$/, glossaryPage, "glossary"],

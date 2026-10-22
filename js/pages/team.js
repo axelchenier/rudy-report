@@ -2,7 +2,7 @@
 //   Overview          record, stat cards with percentile chips + league averages, percentile profile, roster, season history
 //   Game log & splits every game: score, margin, per-game ratings, rolling 5/10-game averages, splits
 //   Clutch · Hustle   the team's numbers in those NBA.com datasets
-import { load, loadAllSeasons, currentSeason, SEASONS, seasonGames , dataStatus } from "../data.js";
+import { load, loadAllSeasons, currentSeason, SEASONS, seasonGames , dataStatus, META } from "../data.js";
 import { COLUMNS, fmt } from "../stats.js";
 import { renderTable, esc, rankOf, playerLink } from "../ui.js";
 import { statCard, profileHTML, tabBar, renderGameLog } from "./shared.js";
@@ -47,8 +47,20 @@ export async function teamPage(app, id, query = "") {
 
   if (tab === "gamelog") {
     const games = await teamLog(season, id).catch(() => []);
-    box.innerHTML = `<h2>${season} game log</h2><div id="gl"></div>`;
+    box.innerHTML = `<h2>${season} game log</h2><div id="up"></div><div id="gl"></div>`;
     renderGameLog(box.querySelector("#gl"), games, { isTeam: true, chartKeys: ["MARGIN", "PTS", "OPP_PTS", "NET_RATING", "FG3M"] });
+    // Season still going: the rest of the schedule (NBA.com ScheduleLeagueV2, made by pipeline/fetch_schedule.py).
+    const sched = !META.seasons.find((x) => x.season === season)?.in_progress ? null : await fetch(`data/${season}/schedule.json`).then((r) => (r.ok ? r.json() : null)).catch(() => null);
+    if (sched) {
+      const played = new Set(games.map((g) => g.GAME_ID)), abbr = new Map(all.map((x) => [x.TEAM_ID, x.TEAM_ABBREVIATION]));
+      const left = sched.games.filter(([gid, , h, a]) => (h === id || a === id) && !played.has(gid));
+      if (left.length) {
+        const cells = left.map(([, date, h, a]) => `<span class="sched-game"><b>${esc(date.slice(5))}</b> ${h === id ? "vs" : "@"} <a href="#/team/${h === id ? a : h}?season=${season}">${esc(abbr.get(h === id ? a : h) || "?")}</a></span>`);
+        box.querySelector("#up").innerHTML = `<details class="card" ${games.length ? "" : "open"}><summary><b>Remaining schedule</b> · ${left.length} games
+          (next: ${esc(left[0][1])})</summary><div class="sched-list">${cells.join("")}</div>
+          <p class="muted small">Source: NBA.com schedule, pulled ${esc(String(sched.pulled_at_utc || "").slice(0, 10))}.</p></details>`;
+      }
+    }
     return;
   }
 

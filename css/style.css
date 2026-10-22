@@ -396,3 +396,6 @@ table.mock td.small { white-space: nowrap; }
 .ld-list li > span.ld-n { display: inline-block; max-width: calc(100% - 56px); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; vertical-align: bottom; }
 .ld-list li > b { float: right; font-variant-numeric: tabular-nums; }
 #ld-stat, #ld-cstat, #ld-conf { max-width: 100%; }
+/* Team page: remaining schedule chips */
+.sched-list { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.sched-game { font-size: 12px; padding: 3px 8px; border: 1px solid var(--border, #30363d); border-radius: 999px; white-space: nowrap; }

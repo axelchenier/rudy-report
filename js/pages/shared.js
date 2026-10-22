@@ -56,7 +56,7 @@ export function renderGameLog(box, games, { isTeam, chartKeys }) {
       <div class="chart-box"><canvas id="gl-chart"></canvas></div>
     </div>
     ${small ? `<p class="callout">Only ${games.length} game${games.length === 1 ? "" : "s"} so far: averages and splits are a small sample.</p>` : ""}
-    <h3 style="margin-top:18px">Games</h3>
+    <h3 style="margin-top:18px">Games <span class="muted small">· click a date for the box score</span></h3>
     <div id="gl-table"></div>
     <h3 style="margin-top:18px">Splits</h3>
     <div class="tabs" id="gl-split"></div>
@@ -90,7 +90,7 @@ export function renderGameLog(box, games, { isTeam, chartKeys }) {
   const whole = (k) => (r) => r[k] == null ? "–" : Math.round(r[k]);
   const res = (r) => `<span class="${r.WL === "W" ? "win" : "loss"}">${r.WL}</span>${isTeam ? ` ${r.PTS}-${r.OPP_PTS}` : ""}`;
   const cols = [
-    { key: "GAME_DATE", label: "Date", left: true }, { key: "OPP", label: "Opp", left: true, html: (r) => `${r.HOME ? "vs" : "@"} ${esc(r.OPP)}` },
+    { key: "GAME_DATE", label: "Date", left: true, html: (r) => r.GAME_ID ? `<a href="#/game/${r.GAME_ID}" title="Box score">${esc(r.GAME_DATE)}</a>` : esc(r.GAME_DATE) }, { key: "OPP", label: "Opp", left: true, html: (r) => `${r.HOME ? "vs" : "@"} ${esc(r.OPP)}` },
     { key: "WL", label: "Result", left: true, html: res },
     ...(isTeam ? [{ key: "MARGIN", html: (r) => (r.MARGIN > 0 ? "+" : "") + r.MARGIN }, { key: "OFF_RATING" }, { key: "DEF_RATING" }, { key: "NET_RATING" }] : [{ key: "MIN", html: whole("MIN") }]),
     ...["PTS", "REB", "AST", "STL", "BLK", "TOV"].map((key) => ({ key, html: whole(key) })),
