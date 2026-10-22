@@ -29,7 +29,10 @@ window.addEventListener("hashchange", closeMenus);
 
 // Highlight the dropdown item for the current page (longest matching link wins, e.g. #/college/reports over #/college).
 function markCurrent() {
-  const h = (location.hash || "#/").split("?")[0];
+  // Detail pages map to the list page they belong to (#/college/conference/B10 -> Conferences, #/college/player/1 -> Players).
+  const h = (location.hash || "#/").split("?")[0]
+    .replace(/^#\/college\/conference\/.*/, "#/college/conferences").replace(/^#\/college\/player\/.*/, "#/college/players")
+    .replace(/^#\/college\/teams$/, "#/college");
   const links = [...document.querySelectorAll(".nav-menu a")];
   links.forEach((a) => a.classList.remove("current"));
   const hits = links.filter((a) => { const href = a.getAttribute("href"); return h === href || h.startsWith(href + "/"); });
