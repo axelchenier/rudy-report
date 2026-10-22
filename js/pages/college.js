@@ -16,9 +16,10 @@ export const ccol = (key, extra = {}) => STRING_KEYS.has(key)
 
 // Sub-navigation shared by every College page.
 export function collegeNav(active) {
-  const items = [["teams", "Teams"], ["players", "Players"], ["compare", "Compare"]];
-  return `<div class="tabs" style="margin-bottom:12px">${items.map(([k, l]) =>
-    `<a class="tab-link ${k === active ? "active" : ""}" href="#/college/${k}">${l}</a>`).join("")}</div>`;
+  const items = [["teams", "Teams", "#/college/teams"], ["players", "Players", "#/college/players"], ["compare", "Compare", "#/college/compare"],
+    ["reports", "Reports", "#/college/reports"], ["predictor", "Predictor", "#/college/predictor"], ["draft", "2027 Draft", "#/draft"]];
+  return `<div class="tabs" style="margin-bottom:12px;flex-wrap:wrap">${items.map(([k, l, h]) =>
+    `<a class="tab-link ${k === active ? "active" : ""}" href="${h}">${l}</a>`).join("")}</div>`;
 }
 const creditLine = () => `<p class="muted small">College data: ${TORVIK_CREDIT} bulk CSV files (ratings, four factors, player stats incl. BPM) and ESPN box scores
   (turnovers, fouls, starts, home/away records) via the free <code>sportsdataverse</code> package. Pulled ${esc(CMETA.pulled_at_utc)}.

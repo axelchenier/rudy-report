@@ -16,6 +16,7 @@ import { wowyPage } from "./pages/lineups.js";
 // College (NCAA men's D-I) section: its own pages and data (data/college/).
 import { collegeTeamsPage, collegePlayersPage, collegeTeamPage, collegePlayerPage } from "./pages/college.js";
 import { collegeComparePage } from "./pages/college_compare.js";
+import { collegeReportsPage } from "./pages/college_reports.js";
 
 const app = document.getElementById("app");
 
@@ -37,6 +38,7 @@ const routes = [
   [/^#\/college\/team\/([\w-]+)(?:\?(.*))?$/, collegeTeamPage, "college"],
   [/^#\/college\/player\/(\d+)$/, collegePlayerPage, "college"],
   [/^#\/college\/compare(?:\?(.*))?$/, collegeComparePage, "college"],
+  [/^#\/college\/reports\/?(daily|weekly|monthly)?\/?([\w-]*)$/, collegeReportsPage, "college"],
   [/^#\/reports(?:\/(daily|weekly|monthly))?(?:\/([\w-]+))?$/, reportsPage, "reports"],
 ];
 
