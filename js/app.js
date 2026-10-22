@@ -10,6 +10,7 @@ import { teamPage } from "./pages/team.js";
 import { comparePage } from "./pages/compare.js";
 import { reportsPage } from "./pages/reports.js";
 import { standingsPage } from "./pages/standings.js";
+import { hubsPage } from "./pages/hubs.js";
 import { glossaryPage } from "./pages/glossary.js";
 
 const app = document.getElementById("app");
@@ -23,6 +24,7 @@ const routes = [
   [/^#\/player\/(\d+)(?:\?(.*))?$/, playerPage, "players"],
   [/^#\/team\/(\d+)(?:\?(.*))?$/, teamPage, "teams"],
   [/^#\/standings(?:\?(.*))?$/, standingsPage, "standings"],
+  [/^#\/hubs(?:\/(clutch|hustle|tracking))?(?:\?(.*))?$/, hubsPage, "hubs"],
   [/^#\/glossary(?:\?(.*))?$/, glossaryPage, "glossary"],
   [/^#\/compare(?:\?(.*))?$/, comparePage, "compare"],
   [/^#\/reports(?:\/(daily|weekly|monthly))?(?:\/([\w-]+))?$/, reportsPage, "reports"],

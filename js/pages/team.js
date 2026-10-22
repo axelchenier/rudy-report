@@ -7,6 +7,7 @@ import { COLUMNS, fmt } from "../stats.js";
 import { renderTable, esc, rankOf, playerLink } from "../ui.js";
 import { statCard, profileHTML, tabBar, renderGameLog } from "./shared.js";
 import { teamLog } from "../gamelog.js";
+import { HUBS, hubRows, existsFor, FIRST_SEASON } from "../hubs.js";
 
 const CARD_STATS = ["W_PCT", "OFF_RATING", "DEF_RATING", "NET_RATING", "PACE", "PTS", "FG3A_PER100", "FG3_PCT", "TS_PCT", "TM_TOV_PCT"];
 const PROFILE = [
@@ -34,7 +35,7 @@ export async function teamPage(app, id, query = "") {
         `<option ${s === season ? "selected" : ""}>${s}</option>`).join("")}</select></label>
         <a class="btn" href="#/compare?type=teams&ids=${id}">Compare →</a></div>
     </div>
-    ${tabBar(base, [["overview", "Overview"], ["gamelog", "Game log & splits"]], tab)}
+    ${tabBar(base, [["overview", "Overview"], ["gamelog", "Game log & splits"], ["more", "Clutch · Hustle"]], tab)}
     <div id="tab"></div>`;
   app.querySelectorAll(".page-tabs a").forEach((a) => a.href += `&season=${season}`);
   app.querySelector("#tm-season").addEventListener("change", (e) => { location.hash = `${base}?tab=${tab}&season=${e.target.value}`; });
@@ -44,6 +45,21 @@ export async function teamPage(app, id, query = "") {
     const games = await teamLog(season, id).catch(() => []);
     box.innerHTML = `<h2>${season} game log</h2><div id="gl"></div>`;
     renderGameLog(box.querySelector("#gl"), games, { isTeam: true, chartKeys: ["MARGIN", "PTS", "OPP_PTS", "NET_RATING", "FG3M"] });
+    return;
+  }
+
+  if (tab === "more") {
+    let html = "";
+    for (const kind of ["clutch", "hustle"]) {
+      const hub = HUBS[kind];
+      if (!existsFor(kind, season)) { html += `<h2>${hub.title}</h2><p class="muted">Not tracked in this era (starts ${FIRST_SEASON[kind]}).</p>`; continue; }
+      const rows = await hubRows(kind, "teams", season).catch(() => []);
+      const me = rows.find((r) => r.TEAM_ID === id);
+      html += `<h2>${hub.title} <a class="small" href="#/hubs/${kind}?entity=teams&season=${season}">leaderboard →</a></h2>`;
+      if (!me) { html += `<p class="muted">No ${hub.title.toLowerCase()} file for ${season} yet.</p>`; continue; }
+      html += `<p class="muted small">${esc(hub.note)} Percentiles among all ${rows.length} teams.</p>` + profileHTML(hub.groups, me, rows, "teams");
+    }
+    box.innerHTML = html + `<p class="muted small">Source: NBA.com/stats clutch and hustle dashboards via nba_api.</p>`;
     return;
   }
 

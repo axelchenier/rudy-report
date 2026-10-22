@@ -155,3 +155,28 @@ Running it twice gives the same result. If anything fails it prints `ERROR: ...`
 `--no-refresh` rebuilds the reports from already-downloaded data.
 
 Team ratings for date ranges (ORtg, DRtg, Net, Pace, 3PA/100) are estimated from box scores. The formula is possessions = FGA + 0.44×FTA − OREB + TOV, averaged between the two teams. Last-season comparisons use the same formula.
+
+## Percentiles, glossary, standings, game logs and stat hubs
+
+- **Percentile chips** (player and team pages): each headline stat shows its percentile (100 = best, red → gray → green),
+  its rank, and the league average. Players are compared with "qualified" players (70%+ of the season's games), teams with all teams.
+  The **percentile profile** shows bars for every stat; blue bars are "style" stats (how much, not how good).
+- **Glossary** (`#/glossary`, file `js/glossary.js`): a definition and formula for every stat. Hover any column header or
+  stat name to see it. Typical ranges on the glossary page are computed from the real data, not typed in.
+- **Standings** (`#/standings`): NBA.com standings plus **model estimates** (purple badge): Pythagorean expected record
+  (PF^13.91 ÷ (PF^13.91 + PA^13.91)), Luck (wins − expected wins), and for an in-progress season, projected wins.
+- **Game log & splits** tab on player and team pages: every game, rolling 5/10-game averages, and splits
+  (home/road, wins/losses, days of rest, month, opponent).
+- **Stat hubs** (`#/hubs/clutch`, `#/hubs/hustle`, `#/hubs/tracking`): leaderboards, plus a "Clutch · Hustle · Tracking"
+  tab on player pages ("Clutch · Hustle" on team pages). Clutch = last 5 minutes, score within 5 (NBA.com's definition).
+  Hustle stats start in 2015-16 and tracking in 2013-14; older seasons say "not tracked in this era".
+- The Ask bar understands the new stats too, e.g. "who leads the league in deflections", "most screen assists",
+  "top 10 players in potential assists", "best rim protectors".
+
+| File | What it is |
+|---|---|
+| `js/glossary.js` | Stat definitions and formulas (tooltips + glossary page). |
+| `js/gamelog.js` | Loads game logs; Game Score, rolling averages, rest days and splits. |
+| `js/hubs.js` | Which files and columns make up the clutch / hustle / tracking sections. |
+| `js/pages/shared.js` | Percentile cards, percentile bars, the game-log view, and page tabs. |
+| `js/pages/standings.js`, `hubs.js`, `glossary.js` | The new pages. |

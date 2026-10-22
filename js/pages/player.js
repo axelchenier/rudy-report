@@ -7,6 +7,7 @@ import { STATS, COLUMNS, fmt } from "../stats.js";
 import { renderTable, esc, teamAbbrLink, chartTheme, PALETTE } from "../ui.js";
 import { statCard, profileHTML, tabBar, renderGameLog } from "./shared.js";
 import { playerLog } from "../gamelog.js";
+import { HUBS, hubRows, inPool, existsFor, FIRST_SEASON } from "../hubs.js";
 
 const CARD_STATS = ["PTS", "REB", "AST", "STL", "BLK", "FG3_PCT", "TS_PCT", "USG_PCT", "NET_RATING", "PIE"];
 const PROFILE = [
@@ -40,11 +41,11 @@ export async function playerPage(app, id, query = "") {
       <div>
         <h1>${esc(p.PLAYER_NAME)}</h1>
         <p class="sub">${season} · <a href="#/team/${p.TEAM_ID}">${esc(p.TEAM_ABBREVIATION)}</a> · age ${p.AGE ?? "–"} ·
-          ${p.GP} games · ${fmt(p.MIN, "MIN")} min/game · team went ${p.W}-${p.L} in his games</p>
+          ${p.GP} game${p.GP === 1 ? "" : "s"} · ${fmt(p.MIN, "MIN")} min/game · team went ${p.W}-${p.L} in his games</p>
       </div>
       <div class="head-tools">${seasonPick}<a class="btn" href="#/compare?type=players&ids=${id}">Compare →</a></div>
     </div>
-    ${tabBar(base, [["overview", "Overview"], ["gamelog", "Game log & splits"]], tab)}
+    ${tabBar(base, [["overview", "Overview"], ["gamelog", "Game log & splits"], ["more", "Clutch · Hustle · Tracking"]], tab)}
     <div id="tab"></div>`;
   app.querySelectorAll(".page-tabs a").forEach((a) => a.href += `&season=${season}`);
   app.querySelector("#pl-season").addEventListener("change", (e) => { location.hash = `${base}?tab=${tab}&season=${e.target.value}`; });
@@ -54,6 +55,26 @@ export async function playerPage(app, id, query = "") {
     const games = await playerLog(season, id).catch(() => []);
     box.innerHTML = `<h2>${season} game log</h2><div id="gl"></div>`;
     renderGameLog(box.querySelector("#gl"), games, { isTeam: false, chartKeys: ["PTS", "REB", "AST", "GAME_SCORE", "FG3M", "MIN"] });
+    return;
+  }
+
+  if (tab === "more") {
+    const minGP = Math.ceil(seasonGames(season) * QUALIFY_SHARE);
+    let html = "";
+    for (const kind of ["clutch", "hustle", "tracking"]) {
+      const hub = HUBS[kind];
+      if (!existsFor(kind, season)) { html += `<h2>${hub.title}</h2><p class="muted">Not tracked in this era (NBA.com ${kind} data starts in ${FIRST_SEASON[kind]}).</p>`; continue; }
+      const rows = await hubRows(kind, "players", season).catch(() => []);
+      const me = rows.find((r) => r.PLAYER_ID === id);
+      const pool = rows.filter((r) => inPool(kind, r, minGP));
+      html += `<h2>${hub.title} <a class="small" href="#/hubs/${kind}?season=${season}">leaderboard →</a></h2>`;
+      if (!me) { html += `<p class="muted">${rows.length ? `No ${hub.title.toLowerCase()} numbers for him in ${season}.` : `No ${hub.title.toLowerCase()} file for ${season} yet.`}</p>`; continue; }
+      const okRank = pool.some((r) => r.PLAYER_ID === id);
+      html += `<p class="muted small">${esc(hub.note)} Percentiles among ${pool.length} players
+        ${kind === "clutch" ? "with 20+ clutch minutes" : `with ${minGP}+ games`}${okRank ? "" : " (he isn't in that group, so no percentiles)"}.</p>`;
+      html += profileHTML(hub.groups, me, pool, "players", { ranked: okRank });
+    }
+    box.innerHTML = html + `<p class="muted small">Source: NBA.com/stats (clutch, hustle and Second Spectrum tracking dashboards) via nba_api.</p>`;
     return;
   }
 

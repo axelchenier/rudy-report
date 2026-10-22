@@ -11,8 +11,9 @@ const SRC = {
   bbref: "Basketball-Reference.com advanced tables",
   logs: "NBA.com/stats game logs (via nba_api)",
   tracking: "NBA.com/stats player tracking (via nba_api)",
+  hustle: "NBA.com/stats hustle stats (via nba_api)",
 };
-const sourceOf = (key) => STATS[key]?.source === "bbref" ? SRC.bbref : STATS[key]?.source === "tracking" ? SRC.tracking : SRC.nba;
+const sourceOf = (key) => SRC[STATS[key]?.source] || SRC.nba;
 const label = (k) => STATS[k]?.name || k;
 const seasonText = (seasons) => seasons.length === 1 ? seasons[0] : `${seasons[seasons.length - 1]} to ${seasons[0]} (${seasons.length} seasons)`;
 const B = (x) => `<b>${esc(x)}</b>`;
@@ -24,11 +25,17 @@ const loadSeasons = async (kind, seasons) => (await Promise.all(seasons.map((s) 
 // Getting PLAYER rows that include every stat a question might ask about.
 // For one season we join: per-game + advanced (NBA.com), tracking (NBA.com), and BBRef (BPM etc).
 // ---------------------------------------------------------------------------
+// Extra files carry their own games/minutes/names; keep the main table's versions.
+const onlyStats = (t) => { const { GP, G, MIN, PLAYER_NAME, TEAM_ID, TEAM_ABBREVIATION, W, L, ...rest } = t; return rest; };
 async function playerRows(season, statKeys = []) {
   const rows = (await load("players", season)).map((r) => ({ ...r }));
   const byId = new Map(rows.map((r) => [r.PLAYER_ID, r]));
   if (statKeys.some((k) => STATS[k]?.source === "tracking")) {
     for (const t of await load("players_tracking", season).catch(() => [])) Object.assign(byId.get(t.PLAYER_ID) || {}, t);
+    for (const t of await load("tracking_more", season).catch(() => [])) Object.assign(byId.get(t.PLAYER_ID) || {}, onlyStats(t));
+  }
+  if (statKeys.some((k) => STATS[k]?.source === "hustle")) {
+    for (const t of await load("hustle_players", season).catch(() => [])) Object.assign(byId.get(t.PLAYER_ID) || {}, onlyStats(t));
   }
   if (statKeys.some((k) => STATS[k]?.source === "bbref")) {
     for (const b of await load("bbref_advanced", season).catch(() => [])) {
@@ -170,7 +177,7 @@ async function leaders(intent) {
   }
 
   // Qualifying rules for per-game / rate leaderboards.
-  const advancedLike = ["bbref", "tracking"].includes(s.source) || ["TS_PCT", "EFG_PCT", "USG_PCT", "AST_PCT", "REB_PCT", "OREB_PCT", "DREB_PCT", "PIE", "OFF_RATING", "DEF_RATING", "NET_RATING", "TM_TOV_PCT", "AST_TO", "AST_RATIO", "PACE"].includes(stat);
+  const advancedLike = ["bbref", "tracking", "hustle"].includes(s.source) || ["TS_PCT", "EFG_PCT", "USG_PCT", "AST_PCT", "REB_PCT", "OREB_PCT", "DREB_PCT", "PIE", "OFF_RATING", "DEF_RATING", "NET_RATING", "TM_TOV_PCT", "AST_TO", "AST_RATIO", "PACE"].includes(stat);
   const minGP = intent.minGP ?? Math.ceil(games * (span ? 0.4 : QUALIFY_SHARE));
   const minMIN = intent.minMIN ?? (advancedLike ? 15 : 0);
   let qualified = rows.filter((r) => r[stat] != null && r.GP >= minGP && (r.MIN || 0) >= minMIN && attemptsOK(r, stat, games, span));
