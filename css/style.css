@@ -319,3 +319,5 @@ input[type=range] { vertical-align: middle; accent-color: var(--accent); }
   background: linear-gradient(90deg, color-mix(in srgb, var(--accent) 35%, transparent) var(--o), transparent var(--o)); }
 .pick-heat { display: inline-flex; gap: 1px; }
 .pick-heat i { width: 9px; height: 14px; border-radius: 2px; background: var(--accent); }
+.sim-table tr.me td { background: color-mix(in srgb, var(--accent) 10%, transparent); }
+.sim-table td, .sim-table th { padding-left: 6px; padding-right: 6px; }
