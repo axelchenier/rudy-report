@@ -279,6 +279,12 @@ scores: margin chart with a 5-game average, game table with opponent T-Rank, pos
 (points per 100 possessions, not opponent-adjusted), and splits (home/away as ESPN lists them, conference/non-conference, vs top-25
 and top-100, vs non-D-I, postseason, close games, by month). `data/college/gamelogs/<season>/teams.json` (~1.2 MB per season).
 
+**College Leaders** (`#/college/leaders`, College menu): season leaders (top 10 in 12 stats; filter by conference and class, e.g.
+freshmen), the best single seasons since 2007-08 (21 stats, all players or freshmen only) and career leaders since 2007-08 (8 stats,
+transfers combined). Qualified = 40%+ of team minutes and 15+ games (Torvik's rule); shooting % lists need 200 FGA / 100 3PA / 100 FTA.
+All-time lists are precomputed by `pipeline/college_leaders.py` → `data/college/leaders.json` (~90 KB, rebuilt nightly by
+`update_college.py`). Torvik counts D-I games only, so totals can sit slightly below official NCAA totals.
+
 **Transfer what-if** (`#/college/transfer?season=&pid=&to=`, College menu, **Model estimate**): move a player to another team
 in the same season and see both teams' AdjO/AdjD/AdjEM, Barthag, estimated T-Rank and record change. Method (fit by
 `pipeline/college_transfer.py` → `data/college/transfer_model.json`, 2 KB): across 6,689 D-I team-seasons, AdjEM = 0.837 ×
@@ -316,6 +322,7 @@ Nightly college job (Torvik refresh + ESPN games + reports + draft board):
 | `pipeline/update_college.py` | Nightly job → `data/college/reports/` (and runs `college_draft.py`). |
 | `pipeline/college_draft.py` | Draft model + prospect reports → `data/draft/`. |
 | `pipeline/college_gamelogs.py` | College player game logs (ESPN box scores) → `data/college/gamelogs/`. |
+| `pipeline/college_leaders.py` | All-time single-season and career college leaderboards (2007-08+) → `data/college/leaders.json`. |
 | `pipeline/college_transfer.py` | Fits the Transfer what-if's player→team link and transfer carryover → `data/college/transfer_model.json`. |
 | `pipeline/college_nba.py` | Draft classes 2008-2026 + college-to-NBA data → `data/draft/history/`, `data/draft/translation.json`. |
 | `pipeline/college_bracket.py` | Real NCAA brackets (ESPN) → `data/college/brackets/<year>.json`. |

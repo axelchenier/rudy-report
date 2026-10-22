@@ -619,6 +619,12 @@ def run():
             college_gamelogs.update_current()
         except Exception as e:  # noqa: BLE001
             print(f"WARNING: college game log update failed: {e}")
+        # All-time (2007-08+) single-season and career leaderboards (local data only, ~90 KB).
+        import college_leaders
+        try:
+            college_leaders.main()
+        except Exception as e:  # noqa: BLE001
+            print(f"WARNING: college leaders update failed: {e}")
 
 
 if __name__ == "__main__":
