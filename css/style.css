@@ -464,3 +464,8 @@ label.bar-pick select { flex: 1 1 auto; min-width: 0; max-width: 100%; }
 .acct-x { position: absolute; top: .4rem; right: .6rem; background: none; border: 0; color: inherit; font-size: 1.4rem; cursor: pointer; }
 .acct-note { min-height: 1.2em; font-size: .9rem; margin: 0; }
 @media (min-width: 1020px) and (max-width: 1259px) { .nav a, .nav-drop { padding: 6px 5px; } .header-row { gap: 6px; } }
+/* 1020-1199px: with search + account + theme icons the header overflowed; show only the ball logo and slimmer icon buttons. */
+@media (min-width: 1020px) and (max-width: 1199px) {
+  .brand > span:not(.brand-ball) { display: none; }
+  .header-tools .icon-btn { padding-left: 8px; padding-right: 8px; min-width: 0; }
+}
