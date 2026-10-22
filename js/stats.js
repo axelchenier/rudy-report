@@ -53,13 +53,6 @@ export const STATS = {
   POSS: { label: "Poss", name: "possessions", fmt: "n0", words: ["possessions"] },
   // ---- Basketball-Reference advanced stats (source: basketball-reference.com) ----
   BPM:  { label: "BPM",  name: "Box Plus/Minus", fmt: "pm", source: "bbref", words: ["box plus minus", "box plus/minus", "box score plus minus", "bpm"] },
-  OBPM: { label: "OBPM", name: "Offensive Box Plus/Minus", fmt: "pm", source: "bbref", words: ["offensive box plus minus", "obpm"] },
-  DBPM: { label: "DBPM", name: "Defensive Box Plus/Minus", fmt: "pm", source: "bbref", words: ["defensive box plus minus", "dbpm"] },
-  PER:  { label: "PER",  name: "Player Efficiency Rating", fmt: "n1", source: "bbref", words: ["player efficiency rating", "efficiency rating"] },
-  WS:   { label: "WS",   name: "Win Shares", fmt: "n1", source: "bbref", words: ["win shares", "winshares"] },
-  WS_48:{ label: "WS/48", name: "Win Shares per 48 minutes", fmt: "n3", source: "bbref", words: ["win shares per 48", "ws/48", "ws per 48"] },
-  VORP: { label: "VORP", name: "Value Over Replacement Player", fmt: "n1", source: "bbref", words: ["value over replacement", "vorp"] },
-  MP:   { label: "MP",   name: "minutes played (season total)", fmt: "n0", source: "bbref", words: [] },
   // ---- NBA.com player tracking (Second Spectrum) ----
   TOUCHES:{ label: "Touches", name: "touches per game", fmt: "n1", source: "tracking", words: ["touches"] },
   TIME_OF_POSS:{ label: "Time of Poss", name: "time of possession (min/game)", fmt: "n1", source: "tracking", style: true, words: ["time of possession"] },

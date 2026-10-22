@@ -1,6 +1,6 @@
 // engine.js - takes an "intent" from parser.js and builds the answer:
 //   { headline, notes: [...], tables: [{ title, rows, columns, entity, highlight, sortKey, sortAsc }], html, sources: [...] }
-// All numbers come from the JSON files in /data (NBA.com and Basketball-Reference). Nothing is made up.
+// All numbers come from the JSON files in /data (NBA.com, plus the credited Basketball-Reference BPM column). Nothing is made up.
 
 import { load, META, seasonGames, QUALIFY_SHARE } from "../data.js";
 import { STATS, fmt } from "../stats.js";
@@ -8,7 +8,7 @@ import { esc, playerLink, teamLink, teamAbbrLink, percentile, rankOf } from "../
 
 const SRC = {
   nba: "NBA.com/stats (via nba_api)",
-  bbref: "Basketball-Reference.com advanced tables",
+  bbref: "Basketball-Reference.com (BPM)",
   logs: "NBA.com/stats game logs (via nba_api)",
   tracking: "NBA.com/stats player tracking (via nba_api)",
   hustle: "NBA.com/stats hustle stats (via nba_api)",
@@ -23,7 +23,7 @@ const loadSeasons = async (kind, seasons) => (await Promise.all(seasons.map((s) 
 
 // ---------------------------------------------------------------------------
 // Getting PLAYER rows that include every stat a question might ask about.
-// For one season we join: per-game + advanced (NBA.com), tracking (NBA.com), and BBRef (BPM etc).
+// For one season we join: per-game + advanced (NBA.com), tracking (NBA.com), and BBRef BPM (the only BBRef column).
 // ---------------------------------------------------------------------------
 // Extra files carry their own games/minutes/names; keep the main table's versions.
 const onlyStats = (t) => { const { GP, G, MIN, PLAYER_NAME, TEAM_ID, TEAM_ABBREVIATION, W, L, ...rest } = t; return rest; };
@@ -40,7 +40,7 @@ async function playerRows(season, statKeys = []) {
   if (statKeys.some((k) => STATS[k]?.source === "bbref")) {
     for (const b of await load("bbref_advanced", season).catch(() => [])) {
       const r = byId.get(b.PLAYER_ID);
-      if (r) Object.assign(r, { BPM: b.BPM, OBPM: b.OBPM, DBPM: b.DBPM, PER: b.PER, WS: b.WS, WS_48: b.WS_48, VORP: b.VORP, MP: b.MP });
+      if (r) r.BPM = b.BPM;           // the only Basketball-Reference number we use (credited)
     }
   }
   return rows;
@@ -70,7 +70,6 @@ async function playerRowsSpan(seasons, statKeys) {
     const e = byId.get(r.PLAYER_ID); if (!e) continue;
     const w = (r.MIN || 0) * (r.GP || 0);
     for (const k of weighted) if (r[k] != null) {
-      if (k === "WS" || k === "VORP") { e._w[k] = e._w[k] || { sum: 0, w: 1 }; e._w[k].sum += r[k]; continue; }     // add up
       e._w[k] = e._w[k] || { sum: 0, w: 0 }; e._w[k].sum += r[k] * w; e._w[k].w += w;
     }
   }

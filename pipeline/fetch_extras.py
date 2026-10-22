@@ -8,7 +8,8 @@ It saves, for every season in fetch_data.SEASONS:
   data/<season>/opening_day.json     every player's line on the season's FIRST game date            (NBA.com game log)
   data/<season>/players_tracking.json  player-tracking numbers: touches, time of possession,
                                        catch-and-shoot vs pull-up shooting, drives                   (NBA.com tracking)
-  data/<season>/bbref_advanced.json  Basketball-Reference advanced stats: BPM, PER, Win Shares, VORP (Basketball-Reference.com)
+  data/<season>/bbref_advanced.json  Basketball-Reference BPM (Box Plus/Minus) column ONLY, credited on the site.
+                                     Their terms forbid building a competing database, so nothing else from BBRef is stored.
 
 Basketball-Reference asks visitors not to send more than 20 requests a minute.
 We wait 4 seconds between pages (15 per minute) and save each page in pipeline/cache/
@@ -91,7 +92,7 @@ def tracking(season):
 
 
 def bbref_advanced(season, nba_players):
-    """Basketball-Reference advanced table for one season (BPM, PER, WS, VORP...)."""
+    """Basketball-Reference BPM column for one season (only SEASON, PLAYER_ID, PLAYER_NAME, TEAM, BPM are kept)."""
     end_year = int(season[:4]) + 1                       # BBRef names seasons by the year they END: 2025-26 -> 2026
     url = f"https://www.basketball-reference.com/leagues/NBA_{end_year}_advanced.html"
     cached = CACHE_DIR / f"bbref_NBA_{end_year}_advanced.html"
@@ -106,16 +107,15 @@ def bbref_advanced(season, nba_players):
     table = table[table["Player"].notna() & (table["Player"] != "League Average") & table["Rk"].notna()]
     # A traded player has one row per team PLUS a combined row (team "2TM", "3TM"...). The combined row comes first.
     table = table.drop_duplicates(subset=["Player", "Age"], keep="first")
-    table = table.rename(columns={"Player": "PLAYER_NAME", "Team": "TEAM", "Pos": "POS", "Age": "AGE", "G": "G", "MP": "MP",
-                                  "PER": "PER", "WS": "WS", "WS/48": "WS_48", "OBPM": "OBPM", "DBPM": "DBPM", "BPM": "BPM", "VORP": "VORP"})
-    table = table[["PLAYER_NAME", "TEAM", "POS", "AGE", "G", "MP", "PER", "WS", "WS_48", "OBPM", "DBPM", "BPM", "VORP"]].copy()
-    for col in ["AGE", "G", "MP", "PER", "WS", "WS_48", "OBPM", "DBPM", "BPM", "VORP"]:
-        table[col] = pd.to_numeric(table[col], errors="coerce")
+    table = table.rename(columns={"Player": "PLAYER_NAME", "Team": "TEAM", "BPM": "BPM"})
+    table = table[["PLAYER_NAME", "TEAM", "BPM"]].copy()          # BPM only (see the note at the top of this file)
+    table["BPM"] = pd.to_numeric(table["BPM"], errors="coerce")
     # Link each BBRef row to the NBA.com player id (by matching simplified names) so the site can link to player pages.
     ids = {simple_name(n): pid for n, pid in zip(nba_players["PLAYER_NAME"], nba_players["PLAYER_ID"])}
     table["PLAYER_ID"] = table["PLAYER_NAME"].map(lambda n: ids.get(simple_name(n)))
+    table["PLAYER_ID"] = table["PLAYER_ID"].astype("Int64")
     table.insert(0, "SEASON", season)
-    return table, url
+    return table[["SEASON", "PLAYER_ID", "PLAYER_NAME", "TEAM", "BPM"]], url
 
 
 def main():
@@ -158,7 +158,7 @@ def main():
         "pulled_at_utc": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC"),
         "nba_game_logs": "NBA.com/stats LeagueGameLog (team and player game logs)",
         "nba_tracking": "NBA.com/stats LeagueDashPtStats (Second Spectrum player tracking)",
-        "bbref": "Basketball-Reference.com season advanced tables (BPM, OBPM, DBPM, PER, WS, VORP)",
+        "bbref": "Basketball-Reference.com season advanced tables: the BPM (Box Plus/Minus) column only, credited wherever it appears",
         "bbref_url": "https://www.basketball-reference.com/",
     }
     meta_path.write_text(json.dumps(meta, indent=2))

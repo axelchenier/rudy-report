@@ -6,6 +6,8 @@ import { STATS } from "../stats.js";
 
 const T = "torvik";    // source tag: Bart Torvik T-Rank (barttorvik.com)
 export const CSTATS = {
+  OBPM:    { label: "OBPM", name: "offensive Box Plus/Minus (Torvik's college version)", fmt: "pm", source: T },
+  DBPM:    { label: "DBPM", name: "defensive Box Plus/Minus (Torvik's college version)", fmt: "pm", source: T },
   TRANK:   { label: "T-Rank", name: "T-Rank (Torvik's overall team ranking)", fmt: "n0", lowerBetter: true, source: T },
   ADJOE:   { label: "AdjO", name: "adjusted offensive efficiency (points per 100 possessions vs an average D-I defense)", fmt: "n1", source: T },
   ADJDE:   { label: "AdjD", name: "adjusted defensive efficiency (points allowed per 100 possessions vs an average D-I offense)", fmt: "n1", lowerBetter: true, source: T },

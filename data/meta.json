@@ -76,7 +76,7 @@
     "pulled_at_utc": "2026-10-22 03:41 UTC",
     "nba_game_logs": "NBA.com/stats LeagueGameLog (team and player game logs)",
     "nba_tracking": "NBA.com/stats LeagueDashPtStats (Second Spectrum player tracking)",
-    "bbref": "Basketball-Reference.com season advanced tables (BPM, OBPM, DBPM, PER, WS, VORP)",
+    "bbref": "Basketball-Reference.com season advanced tables: the BPM (Box Plus/Minus) column only, credited wherever it appears",
     "bbref_url": "https://www.basketball-reference.com/"
   },
   "current_season": "2026-27",

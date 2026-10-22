@@ -51,7 +51,7 @@ export async function askPage(app, query = "") {
     ${builderHTML()}
     <details class="panel card" id="sql-panel"><summary>SQL mode (for power users)</summary>
       <p class="muted small">Runs real SQL in your browser with DuckDB. Tables: <code>players</code> (per game + advanced),
-        <code>player_totals</code>, <code>teams</code>, <code>bbref</code> (Basketball-Reference advanced) — every loaded season, with a <code>SEASON</code> column.
+        <code>player_totals</code>, <code>teams</code>, <code>bbref</code> (Basketball-Reference BPM only: SEASON, PLAYER_ID, PLAYER_NAME, TEAM, BPM) — every loaded season, with a <code>SEASON</code> column.
         The first run downloads DuckDB (~10 MB).</p>
       <textarea class="sql" id="sql">SELECT PLAYER_NAME, TEAM_ABBREVIATION, GP, PTS, AST, TS_PCT
 FROM players
@@ -71,8 +71,20 @@ LIMIT 10;</textarea>
   else app.querySelector("#ask-input").focus();
 }
 
+// PER, Win Shares and VORP are Basketball-Reference stats. We only use BBRef's (credited) BPM column, so these questions
+// are answered with NBA.com's PIE (Player Impact Estimate) instead, and the answer says so.
+const BBREF_ONLY = /player efficiency rating|\bPER\b|win[ -]?shares?|\bws\/48\b|\bvorp\b|value over replacement( player)?/gi;
+const BBREF_ONLY_CASE = (m) => m === "per" || m === "Per" ? null : m;      // "per game" is not PER
+
 async function showAnswer(box, question) {
   box.innerHTML = `<p class="muted">Thinking…</p>`;
+  let swapNote = "";
+  const hits = (question.match(BBREF_ONLY) || []).filter(BBREF_ONLY_CASE);
+  if (hits.length) {
+    question = question.replace(BBREF_ONLY, (m) => BBREF_ONLY_CASE(m) ? "PIE" : m);
+    swapNote = `<p class="callout">${esc(hits[0])} is a Basketball-Reference stat that The Rudy Report doesn't carry (we only use their credited BPM column).
+      Here is NBA.com's <b>PIE</b> (Player Impact Estimate) instead, or try <a href="#/ask?q=${encodeURIComponent(question.replace(/PIE/g, "BPM"))}">the same question with BPM</a>.</p>`;
+  }
   // "past N years" / "all time" use COMPLETE seasons only; the in-progress season is used for "this season".
   const ctx = { index: await getIndex(), seasons: completeSeasons(), current: META.current_season, season: currentSeason() };
   let intent = parseQuestion(question, ctx);
@@ -105,7 +117,7 @@ async function showAnswer(box, question) {
     return;
   }
   const tags = interpretTags(intent);
-  box.innerHTML = `
+  box.innerHTML = `${swapNote}
     <p class="headline">${result.headline}</p>
     <div class="interpreted">${tags.map((t) => `<span class="tag">${t}</span>`).join("")}</div>
     ${result.html || ""}
