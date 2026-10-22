@@ -7,9 +7,10 @@ import { normalize } from "./names.js";
 import { CSTAT_WORDS, CTEAM_ONLY } from "../college/cstats.js";
 import { loadCMeta, CMETA, cload, CSEASONS, playedSeasons, seasonInfo, addRecords, C_QUAL_MIN_PCT } from "../college/cdata.js";
 import { draftAnswer } from "./draft.js";
+import { tourneyAnswer } from "./college_tourney.js";
 import { predictGame, seasonAverages, SIGMA, HOME_EDGE } from "../pages/college_predictor.js";
 
-const KEYWORDS = /\b(college|colleges|ncaa|ncaab|ncaam|cbb|march madness|final four|d1|d 1|d i|division i|division 1|freshm[ae]n|sophomores?|juniors?|seniors?|mid majors?|t rank|trank|torvik|kenpom|barthag|adjusted efficiency|adj ?[oed]m?\b|wab)\b/;
+const KEYWORDS = /\b(college|colleges|ncaa|ncaab|ncaam|cbb|march madness|final fours?|elite eight|elite 8|sweet sixteen|sweet 16|national champions?|national championships?|national titles?|tournament upsets?|upsets? in the (?:20\d\d )?(?:ncaa )?tournament|cinderellas?|1[1-6] seeds?|d1|d 1|d i|division i|division 1|freshm[ae]n|sophomores?|juniors?|seniors?|mid majors?|t rank|trank|torvik|kenpom|barthag|adjusted efficiency|adj ?[oed]m?\b|wab)\b/;
 // College teams that share a name with an NBA city/team: only treated as college with a college keyword.
 const NBA_CITIES = new Set(["charlotte", "denver", "houston", "memphis", "miami", "miami fl", "indiana", "minnesota", "new orleans", "portland",
   "utah", "washington", "boston", "chicago", "detroit", "toronto", "orlando", "phoenix", "sacramento", "atlanta", "dallas", "cleveland",
@@ -101,6 +102,12 @@ export async function collegeAnswer(question, nbaIntent) {
   const teams = [...new Map(teamsFound.filter((t) => !playersFound.some((p) => t.start >= p.start && t.end <= p.end)).map((t) => [t.team, t])).values()];
   const players = [...new Map(playersFound.map((p) => [p.pid, p])).values()];
   if (!explicit && !teams.length && !players.length) return null;
+  // NCAA tournament questions (champions, Final Fours, team tournament history, upsets, seed records) from the saved ESPN brackets.
+  if (!players.length) {
+    const tidx = new Map((await cload("teams", playedSeasons()[0])).map((t) => [t.TEAM_NAME, t.TEAM_ID]));
+    const tour = await tourneyAnswer(q, teams, (n) => tidx.get(n));
+    if (tour) return tour;
+  }
 
   const stats = findAll(q, PHRASES).filter((s) => !teams.some((t) => s.start >= t.start && s.end <= t.end) && !players.some((p) => s.start >= p.start && s.end <= p.end));
   const conf = findAll(q, CONFS.map(([w, c]) => ({ w: key(w), conf: c })))

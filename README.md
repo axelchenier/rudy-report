@@ -280,6 +280,11 @@ scores: margin chart with a 5-game average, game table with opponent T-Rank, pos
 (points per 100 possessions, not opponent-adjusted), and splits (home/away as ESPN lists them, conference/non-conference, vs top-25
 and top-100, vs non-D-I, postseason, close games, by month). `data/college/gamelogs/<season>/teams.json` (~1.2 MB per season).
 
+**Ask: NCAA tournament** (`js/ask/college_tourney.js`, from the saved ESPN brackets 2008-2026): "Who won the 2016 NCAA
+tournament", "2019 Final Four", "NCAA champions since 2010", "Duke NCAA tournament history", "Gonzaga in the 2021 tournament",
+"most Final Fours since 2008", "biggest upsets in the 2023 tournament", "16 seeds that beat a 1 seed", "12 seed vs 5 seed record",
+"how do 1 seeds do in the NCAA tournament". 2020 answers that the tournament was canceled; First Four games aren't counted.
+
 **Data freshness** (site footer, every page): one line with how long ago the NBA, College and Draft data were refreshed, plus
 whether the last College/Draft nightly run's steps all worked; click it for every dataset's UTC time and age (green < 30 h,
 amber 30-54 h, red older). Reads `data/meta.json`, `data/reports/index.json` and `data/college/freshness.json`, which
