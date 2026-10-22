@@ -25,6 +25,8 @@ const EXAMPLES = [
   "Best offense in college basketball",
   "Top college scorers",
   "Top 2027 draft prospects",
+  "Hit rate for picks 11-20",
+  "Who was drafted 5th in 2019?",
   "Duke vs UNC prediction",
   "Most triple doubles in the past 5 years",
 ];
