@@ -595,42 +595,49 @@ def main():
 
 
 def run():
-    main()
+    steps = []                                  # what worked in this run -> data/college/freshness.json (footer "Data freshness")
+
+    def step(name, fn):
+        try:
+            fn()
+            steps.append({"step": name, "ok": True})
+        except Exception as e:  # noqa: BLE001  - one failed step shouldn't stop the others
+            print(f"WARNING: {name} failed: {e}")
+            steps.append({"step": name, "ok": False, "note": str(e)[:200]})
+
+    try:
+        main()
+        steps.append({"step": "College stats & ratings", "ok": True})
+    except Exception as e:  # noqa: BLE001
+        steps.append({"step": "College stats & ratings", "ok": False, "note": str(e)[:200]})
+        _freshness(steps)
+        raise
     # Rebuild the 2027 Draft board from the freshest stats (skipped for archive/test runs).
     if "--season" not in sys.argv and "--out" not in sys.argv:
-        import college_draft
-        college_draft.main()
+        import college_draft, college_bracket, college_nba, college_gamelogs, college_leaders, college_schedule
+        step("2027 Draft board", college_draft.main)
         # Save this year's real NCAA bracket for the Tournament Simulator once the tournament is over
         # (no network and instant outside mid-March..April, or once data/college/brackets/<year>.json exists).
-        import college_bracket
-        try:
-            college_bracket.update_current()
-        except Exception as e:  # noqa: BLE001  - a bracket hiccup shouldn't stop the reports
-            print(f"WARNING: bracket update failed: {e}")
+        step("NCAA bracket", college_bracket.update_current)
         # Draft classes 2008-2026 + college-to-NBA data (NBA.com DraftHistory, refreshed daily; NBA careers from data/careers/).
-        import college_nba
-        try:
-            college_nba.main()
-        except Exception as e:  # noqa: BLE001
-            print(f"WARNING: draft history update failed: {e}")
+        step("Draft classes + college-to-NBA", college_nba.main)
         # College player game logs for the current season (ESPN box scores; no-op May-October).
-        import college_gamelogs
-        try:
-            college_gamelogs.update_current()
-        except Exception as e:  # noqa: BLE001
-            print(f"WARNING: college game log update failed: {e}")
+        step("College game logs", college_gamelogs.update_current)
         # All-time (2007-08+) single-season and career leaderboards (local data only, ~90 KB).
-        import college_leaders
-        try:
-            college_leaders.main()
-        except Exception as e:  # noqa: BLE001
-            print(f"WARNING: college leaders update failed: {e}")
+        step("College leaders", college_leaders.main)
         # Recent results + next 7 days of D-I games for the College home page (ESPN scoreboard, ~10 small requests).
-        import college_schedule
-        try:
-            college_schedule.main()
-        except Exception as e:  # noqa: BLE001
-            print(f"WARNING: college schedule update failed: {e}")
+        step("College schedule", college_schedule.main)
+        _freshness(steps)
+        if not steps[1]["ok"]:                  # as before: a broken Draft board fails the run (the other steps only warn)
+            raise RuntimeError(f"2027 Draft board failed: {steps[1].get('note')}")
+
+
+def _freshness(steps):
+    try:
+        import college_freshness
+        college_freshness.write(steps)
+    except Exception as e:  # noqa: BLE001
+        print(f"WARNING: freshness file failed: {e}")
 
 
 if __name__ == "__main__":

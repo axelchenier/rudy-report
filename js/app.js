@@ -31,6 +31,7 @@ import { collegeTransferPage } from "./pages/college_transfer.js";
 import { collegeLeadersPage } from "./pages/college_leaders.js";
 import { collegeHomePage } from "./pages/college_home.js";
 import { setFooter } from "./footer.js";
+import { renderFreshness } from "./freshness.js";
 
 const app = document.getElementById("app");
 
@@ -94,6 +95,7 @@ async function render() {
 
 async function start() {
   await loadMeta();
+  renderFreshness();               // footer "Data freshness" line (all sections)
 
   // Fill the season dropdown in the header.
   const select = document.getElementById("season-select");

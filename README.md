@@ -280,6 +280,12 @@ scores: margin chart with a 5-game average, game table with opponent T-Rank, pos
 (points per 100 possessions, not opponent-adjusted), and splits (home/away as ESPN lists them, conference/non-conference, vs top-25
 and top-100, vs non-D-I, postseason, close games, by month). `data/college/gamelogs/<season>/teams.json` (~1.2 MB per season).
 
+**Data freshness** (site footer, every page): one line with how long ago the NBA, College and Draft data were refreshed, plus
+whether the last College/Draft nightly run's steps all worked; click it for every dataset's UTC time and age (green < 30 h,
+amber 30-54 h, red older). Reads `data/meta.json`, `data/reports/index.json` and `data/college/freshness.json`, which
+`update_college.py` writes at the end of each run via `pipeline/college_freshness.py` (~1 KB; each step is recorded as OK or failed
+with its error; a failed step now only warns, except the Draft board, which still fails the run as before).
+
 **College home** (`#/college`; the Teams list moved to `#/college/teams`): recent results and the next D-I games by day ("Top games" =
 best matchups by combined T-Rank, or all games), each with T-Ranks and a **Model estimate** win chance and margin (Game Predictor
 method, ratings of that game's season, preseason ratings before tip-off; finals show whether the favorite won), the top 25 by T-Rank,
@@ -333,6 +339,7 @@ Nightly college job (Torvik refresh + ESPN games + reports + draft board):
 | `pipeline/update_college.py` | Nightly job → `data/college/reports/` (and runs `college_draft.py`). |
 | `pipeline/college_draft.py` | Draft model + prospect reports → `data/draft/`. |
 | `pipeline/college_gamelogs.py` | College player game logs (ESPN box scores) → `data/college/gamelogs/`. |
+| `pipeline/college_freshness.py` | When each College/Draft dataset was rebuilt + the last nightly run's step results → `data/college/freshness.json` (footer "Data freshness"). |
 | `pipeline/college_schedule.py` | Recent results + next 7 days of D-I games (ESPN scoreboard) → `data/college/schedule.json` for the College home. |
 | `pipeline/college_leaders.py` | All-time single-season and career college leaderboards (2007-08+) → `data/college/leaders.json`. |
 | `pipeline/college_transfer.py` | Fits the Transfer what-if's player→team link and transfer carryover → `data/college/transfer_model.json`. |
