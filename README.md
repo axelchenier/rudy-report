@@ -246,6 +246,13 @@ numbers need 20+ games, career per-game numbers 50+ games, career minutes use cl
 comparisons, a summary of his 20 closest matches drafted 2008-2020 (`nn_outcomes` in the prospect file, written by
 `college_draft.py`), and a similarity-weighted share reaching rotation/starter level, labeled **Model estimate**.
 
+**Ask bar, past drafts** (`js/ask/draft_history.js`, rules only): "who was drafted 5th in 2019", "best pick of the 2016
+draft", "steal of the 2012 draft", "best scorer from the 2009 draft", "where was Draymond Green drafted", "who did the Celtics draft
+in 2016", "Duke draft picks", "hit rate for picks 11-20", "how often do number 3 picks become rotation players", "which school
+produced the most NBA rotation players since 2010", "does college FT% predict NBA 3P%", "which college stats predict NBA success".
+"Best" always means most career NBA minutes (or scoring average when asked), stated in the answer; each answer links to the class
+or College → NBA page.
+
 **College what-if sliders** (team pages, labeled *Model estimate*): change adjusted offense, adjusted defense, 3P% or
 opponents' 3P% and see AdjEM, Barthag (Torvik's formula, exponent 11.5), an estimated T-Rank, expected wins against the same
 strength of schedule (log5 vs Torvik's SOS; preseason uses the opponent strength that reproduces Torvik's projected record),

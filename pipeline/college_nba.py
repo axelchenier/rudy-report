@@ -23,7 +23,7 @@ OUTCOME LABELS (plain NBA.com counting stats, defined on every page):
   none     = no NBA regular-season games yet
 
 OUTPUT
-  data/draft/history/index.json     classes list, hit rates by pick range, definitions
+  data/draft/history/index.json     classes list, hit rates by pick range, definitions, [nba_id, name, year, pick] for every pick
   data/draft/history/<year>.json    every pick of one class with college line and NBA outcome
   data/draft/translation.json       one row per matched drafted D-I player: final college season + NBA rookie/career
 """
@@ -209,6 +209,7 @@ def main():
     last_nba = max(r["SEASON"] for v in seasons.values() for r in v)
     cf.write_json(OUT / "history" / "index.json", {
         "generated_at": gen, "first": FIRST, "last": LAST, "nba_through": last_nba, "mature_last": MATURE_LAST, "years": years, "hit_rates": rates,
+        "names": [[p["nba_id"], p["name"], y, p["pick"]] for y, p in allpicks],          # the Ask bar's "where was X drafted" finder
         "definitions": {"starter": "2+ NBA seasons with 2,000+ regular-season minutes", "rotation": "5,000+ career NBA regular-season minutes",
                         "played": "at least 1 NBA regular-season game", "none": "no NBA regular-season games yet"},
         "sources": {"picks": "NBA.com DraftHistory", "nba": "NBA.com regular-season stats (LeagueDashPlayerStats)", "college": "Bart Torvik T-Rank"}})

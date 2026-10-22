@@ -3,6 +3,7 @@
 //   "most similar drafted player to Tyler Tanner". Rules only, no AI. Every chance is the site's MODEL ESTIMATE.
 import { esc } from "../ui.js";
 import { normalize } from "./names.js";
+import { draftHistoryAnswer } from "./draft_history.js";
 
 const DRAFT_WORDS = /\b(draft|drafted|prospects?|big board|model board|first round|1st round|lottery pick|draft pick|mock)\b/;
 const SIMILAR = /\b(similar|comps?|comparison|compares? to|reminds|looks like|statistical twin)\b/;
@@ -24,6 +25,8 @@ const MODEL_NOTE = "First-round and drafted chances are this site's <b>model est
 
 /** Returns { tags, result } for a draft question, or null. */
 export async function draftAnswer(question, nbaNameFound = false) {
+  const past = await draftHistoryAnswer(question).catch((e) => { console.warn(e); return null; });   // 2008-2026 drafts, college -> NBA
+  if (past) return past;
   const q = key(question);
   const simQ = SIMILAR.test(q) && /\b(drafted|draft|nba|pro|pick)\b/.test(q);
   if (!DRAFT_WORDS.test(q) && !simQ) return null;
