@@ -1,4 +1,5 @@
 // player.js - one player's profile page, in three tabs (each tab has its own shareable address):
+import { starButton } from "../saved.js";
 //   Overview          headline cards with percentile chips + league averages, a percentile profile, season-by-season tables
 //   Game log & splits every game of a season, rolling 5/10-game averages, home/road, rest, month and opponent splits
 //   Clutch · Hustle · Tracking   the player's numbers in those NBA.com datasets, with percentiles
@@ -43,7 +44,7 @@ export async function playerPage(app, id, query = "") {
   app.innerHTML = `
     <div class="page-head">
       <div>
-        <h1>${esc(p.PLAYER_NAME)}</h1>
+        <h1>${esc(p.PLAYER_NAME)} ${starButton({ type: "player", id, name: p.PLAYER_NAME, link: `#/player/${id}` })}</h1>
         <p class="sub">${season} · <a href="#/team/${p.TEAM_ID}">${esc(p.TEAM_ABBREVIATION)}</a> · age ${p.AGE ?? "–"} ·
           ${p.GP} game${p.GP === 1 ? "" : "s"} · ${fmt(p.MIN, "MIN")} min/game · team went ${p.W}-${p.L} in his games</p>
       </div>

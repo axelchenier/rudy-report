@@ -1,4 +1,5 @@
 // team.js - one team's page, in three tabs (each with a shareable address):
+import { starButton } from "../saved.js";
 //   Overview          record, stat cards with percentile chips + league averages, percentile profile, roster, season history
 //   Game log & splits every game: score, margin, per-game ratings, rolling 5/10-game averages, splits
 //   Clutch · Hustle   the team's numbers in those NBA.com datasets
@@ -32,7 +33,7 @@ export async function teamPage(app, id, query = "") {
 
   app.innerHTML = `
     <div class="page-head">
-      <div><h1>${esc(t.TEAM_NAME)}</h1>
+      <div><h1>${esc(t.TEAM_NAME)} ${starButton({ type: "team", id, name: t.TEAM_NAME, link: `#/team/${id}` })}</h1>
         <p class="sub">${season} · ${t.W}-${t.L} · net rating ${fmt(t.NET_RATING, "NET_RATING")} (#${rankOf(t.NET_RATING, all.map((x) => x.NET_RATING))} of ${all.length})
           · <a href="#/standings?season=${season}">standings</a></p></div>
       <div class="head-tools"><label class="page-season">Season <select id="tm-season">${SEASONS().map((s) =>

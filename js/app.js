@@ -3,6 +3,9 @@
 import { loadMeta, META, SEASONS, currentSeason, setSeason, withSeason } from "./data.js";
 import { esc } from "./ui.js";
 import { askPage } from "./pages/ask.js";
+import { savedListPage } from "./pages/saved_list.js";
+import { myBoardPage } from "./pages/myboard.js";
+import "./saved.js";
 import { playersPage } from "./pages/players.js";
 import { teamsPage } from "./pages/teams.js";
 import { playerPage } from "./pages/player.js";
@@ -65,6 +68,8 @@ const routes = [
   [/^#\/college\/conferences(?:\?(.*))?$/, collegeConferencesPage, "college"],
   [/^#\/college\/conference\/([^?\/]+)(?:\?(.*))?$/, collegeConferencePage, "college"],
   [/^#\/draft\/?(?:\?(.*))?$/, draftBoardPage, "draft"],
+  [/^#\/draft\/myboard\/?$/, myBoardPage, "draft"],
+  [/^#\/saved\/?$/, savedListPage, "tools"],
   [/^#\/draft\/history\/?(?:\?(.*))?$/, draftHistoryPage, "draft"],
   [/^#\/draft\/mock\/?(?:\?(.*))?$/, draftMockPage, "draft"],
   [/^#\/draft\/translation\/?(?:\?(.*))?$/, draftTranslationPage, "draft"],
