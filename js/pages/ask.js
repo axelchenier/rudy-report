@@ -111,7 +111,7 @@ async function showAnswer(box, question) {
   }
   const result = intent.type === "unknown" ? null : await answer(intent);
   if (!result) {
-    box.innerHTML = `<div class="card"><p class="headline">I couldn't understand that one yet.</p>
+    box.innerHTML = `<div class="card"><p class="headline">${intent.reason ? esc(intent.reason) : "I couldn't understand that one yet."}</p>
       <p class="muted">This site answers questions with simple rules (no paid AI), so it knows patterns like:</p>
       <ul class="muted"><li>“Who leads the league in <i>stat</i>?” / “Top 10 teams by <i>stat</i> in 2023-24”</li>
         <li>“Players averaging 25 points and 5 assists” / “… with at least 50 games”</li>

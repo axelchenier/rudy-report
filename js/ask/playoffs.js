@@ -111,11 +111,15 @@ export async function playoffAnswer(question) {
   if (/\b(champions?|championships?|titles?|rings?|finals)\b/.test(q)) {
     const since = q.match(/\b(?:since|after|from)\s+((?:19|20)\d\d)\b/);
     const from = since ? seasons.find((s) => +s.slice(0, 4) >= +since[1] - (/(after)/.test(q) ? 0 : 1)) || first : first;
-    const list = finals.filter((r) => r.SEASON >= from).sort((a, b) => b.SEASON.localeCompare(a.SEASON));
+    const dec = q.match(/\b(?:the\s+)?(?:(19|20)(\d)0|['’]?(\d)0)['’]?s\b/);       // "the 2000s" = seasons that began 2000-2009
+    const d0 = dec ? (dec[1] ? +`${dec[1]}${dec[2]}0` : (+dec[3] >= 5 ? 1900 : 2000) + 10 * +dec[3]) : null;
+    const list = finals.filter((r) => (d0 == null ? r.SEASON >= from : +r.SEASON.slice(0, 4) >= d0 && +r.SEASON.slice(0, 4) <= d0 + 9)).sort((a, b) => b.SEASON.localeCompare(a.SEASON));
+    if (!list.length) return out([], `No NBA Finals on this site for that span (playoff results start in ${first}).`);
     const count = new Map(); for (const r of list) count.set(r.WIN_ID, { id: r.WIN_ID, abbr: r.WIN, n: (count.get(r.WIN_ID)?.n || 0) + 1, last: count.get(r.WIN_ID)?.last || r.SEASON });
     const ranked = [...count.values()].sort((a, b) => b.n - a.n);
-    return out([`Seasons: ${from} to ${seasons[seasons.length - 1]}`, "Champions"],
-      `Most NBA titles since ${from}: <b>${ranked.filter((r) => r.n === ranked[0].n).map((r) => full(r.id, r.abbr)).join(", ")}</b> with <b>${ranked[0].n}</b>.`,
+    const span = d0 == null ? `since ${from}` : `in the ${d0}s (${list[list.length - 1].SEASON} to ${list[0].SEASON})`;
+    return out([`Seasons: ${list[list.length - 1].SEASON} to ${list[0].SEASON}`, "Champions"],
+      `Most NBA titles ${span}: <b>${ranked.filter((r) => r.n === ranked[0].n).map((r) => full(r.id, r.abbr)).join(", ")}</b> with <b>${ranked[0].n}</b>.`,
       [{ title: "Titles", rows: ranked.map((r) => ({ ...r, TEAM: r.abbr })), entity: "teams", rank: true, sortKey: "n", columns: [
         { key: "TEAM", label: "Team", left: true, html: (r) => link(r.id, r.abbr) }, { key: "n", label: "Titles" }, { key: "last", label: "Latest", left: true }] },
        { title: "Every champion", rows: list, entity: "teams", rank: false, columns: champCols }],

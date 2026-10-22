@@ -36,6 +36,16 @@ function findSeasons(q, all, current) {
   }
   if (/past decade|last decade|last ten|past ten/.test(q)) return { seasons: all.slice(0, 10), label: "past 10 seasons", asked: 10 };
   if (/all time|ever\b|career|in history|of all/.test(q)) return { seasons: all, label: "all loaded seasons", asked: Infinity };
+  // Decades: "in the 2000s", "the 90s", "the '90s", "1990s" = seasons that STARTED in that decade (2000s = 2000-01 to 2009-10).
+  const dec = q.match(/\b(?:the\s+)?(?:(19|20)(\d)0|['’]?(\d)0)['’]?s\b/);
+  if (dec) {
+    const d = dec[1] ? +`${dec[1]}${dec[2]}0` : (+dec[3] >= 5 ? 1900 : 2000) + 10 * +dec[3];
+    const ss = all.filter((x) => +x.slice(0, 4) >= d && +x.slice(0, 4) <= d + 9);
+    if (!ss.length) return { seasons: [], label: `the ${d}s`, outOfRange: `The ${d}s aren't on this site: NBA.com stats here start in ${all[all.length - 1]}.` };
+    const first = ss[ss.length - 1], last = ss[0], early = +first.slice(0, 4) > d;
+    return { seasons: ss, label: `the ${d}s (${first} to ${last})`, asked: early ? 10 : ss.length,
+      note: early ? `NBA.com stats on this site start in ${first}, so “the ${d}s” here means ${first} to ${last}.` : null };
+  }
   const since = q.match(/since (?:the )?((?:19|20)\d\d)/);
   if (since) { const ss = all.filter((s) => +s.slice(0, 4) >= +since[1]); return { seasons: ss, label: `since ${since[1]}-${String(+since[1] + 1).slice(2)}` }; }
   const range = q.match(/((?:19|20)\d\d)[\s\/-]+(\d\d)\b/);            // "2023-24" (the dash may have become a space)
@@ -77,7 +87,8 @@ export function parseQuestion(question, ctx) {
   const stats = findStats(qs);
   const names = findNames(ctx.index, q, question, stats.map((s) => [s.start, s.end]));
   const seasons = span?.seasons || [ctx.season];
-  const base = { question, seasons, spanLabel: span?.label || seasons[0], askedYears: span?.asked };
+  if (span?.outOfRange) return { type: "unknown", reason: span.outOfRange };
+  const base = { question, seasons, spanLabel: span?.label || seasons[0], askedYears: span?.asked, spanNote: span?.note };
 
   // ---- Numbers attached to stats become filters ("25 points", "at least 50 games") ----
   const filters = [];

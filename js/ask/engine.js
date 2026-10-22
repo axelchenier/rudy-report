@@ -134,7 +134,8 @@ async function leaders(intent) {
   const sources = new Set([sourceOf(stat), ...filters.map((f) => sourceOf(f.stat))]);
   const live = META.seasons.find((x) => x.in_progress && seasons.includes(x.season));
   if (live) notes.push(`${live.season} is still in progress (teams have played up to ${live.max_team_games} game${live.max_team_games === 1 ? "" : "s"}), so these numbers will change a lot.`);
-  if (intent.askedYears && intent.askedYears !== Infinity && intent.askedYears > seasons.length)
+  if (intent.spanNote) notes.push(intent.spanNote);
+  else if (intent.askedYears && intent.askedYears !== Infinity && intent.askedYears > seasons.length)
     notes.push(`You asked about ${intent.askedYears} seasons, but this site has ${seasons.length} loaded (${seasonText(seasons)}).`);
 
   // ---------------- TEAMS ----------------
