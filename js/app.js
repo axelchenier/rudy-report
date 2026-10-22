@@ -20,6 +20,7 @@ import { collegeComparePage } from "./pages/college_compare.js";
 import { collegeReportsPage } from "./pages/college_reports.js";
 import { collegePredictorPage } from "./pages/college_predictor.js";
 import { draftBoardPage, draftProspectPage } from "./pages/draft.js";
+import { setFooter } from "./footer.js";
 
 const app = document.getElementById("app");
 
@@ -64,6 +65,7 @@ async function render() {
     console.error(err);
     app.innerHTML = `<div class="card"><h3>Something went wrong</h3><p class="muted">${esc(err.message)}</p></div>`;
   }
+  setFooter(hash);                 // footer credits the data sources of this section (NBA / College / Draft)
   window.scrollTo(0, 0);
 }
 
@@ -89,13 +91,6 @@ async function start() {
     localStorage.setItem("theme", next);
     render();                     // redraw so charts pick up the new colors
   });
-
-  // Footer: where the data came from and when.
-  const seasons = SEASONS();
-  document.getElementById("footer-text").innerHTML =
-    `Data: <a href="${META.source_url}" target="_blank" rel="noopener">NBA.com/stats</a> via the free nba_api Python library · ` +
-    `${esc(META.season_type)}, ${seasons[seasons.length - 1]} to ${seasons[0]} · pulled ${esc(META.pulled_at_utc)}. ` +
-    `<span class="muted">Built by Axel Chenier. Not affiliated with the NBA.</span>`;
 
   window.addEventListener("hashchange", render);
   render();
