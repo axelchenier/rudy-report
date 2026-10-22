@@ -144,6 +144,7 @@ def playtypes(season):
     if not rows:
         return 0
     df = pd.concat(rows, ignore_index=True)
+    df["PLAYER_ID"] = df["PLAYER_ID"].astype("Int64")       # team rows have no player id
     save_compact(df, DATA_DIR / season / "playtypes.json")
     return len(df)
 

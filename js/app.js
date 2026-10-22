@@ -27,7 +27,7 @@ const routes = [
   [/^#\/player\/(\d+)(?:\?(.*))?$/, playerPage, "players"],
   [/^#\/team\/(\d+)(?:\?(.*))?$/, teamPage, "teams"],
   [/^#\/standings(?:\?(.*))?$/, standingsPage, "standings"],
-  [/^#\/hubs(?:\/(clutch|hustle|tracking))?(?:\?(.*))?$/, hubsPage, "hubs"],
+  [/^#\/hubs(?:\/(clutch|hustle|tracking|playtypes))?(?:\?(.*))?$/, hubsPage, "hubs"],
   [/^#\/glossary(?:\?(.*))?$/, glossaryPage, "glossary"],
   [/^#\/compare(?:\?(.*))?$/, comparePage, "compare"],
   [/^#\/college\/?(?:teams)?(?:\?(.*))?$/, collegeTeamsPage, "college"],

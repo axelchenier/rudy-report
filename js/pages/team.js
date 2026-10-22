@@ -7,6 +7,7 @@ import { COLUMNS, fmt } from "../stats.js";
 import { renderTable, esc, rankOf, playerLink } from "../ui.js";
 import { statCard, profileHTML, tabBar, renderGameLog } from "./shared.js";
 import { renderShotChart } from "./shotview.js";
+import { renderPlayTypes } from "./playtypeview.js";
 import { teamLog } from "../gamelog.js";
 import { HUBS, hubRows, existsFor, FIRST_SEASON } from "../hubs.js";
 
@@ -36,7 +37,7 @@ export async function teamPage(app, id, query = "") {
         `<option ${s === season ? "selected" : ""}>${s}</option>`).join("")}</select></label>
         <a class="btn" href="#/compare?type=teams&ids=${id}">Compare →</a></div>
     </div>
-    ${tabBar(base, [["overview", "Overview"], ["gamelog", "Game log & splits"], ["shots", "Shot chart"], ["more", "Clutch · Hustle"]], tab)}
+    ${tabBar(base, [["overview", "Overview"], ["gamelog", "Game log & splits"], ["shots", "Shot chart"], ["playtypes", "Play types"], ["more", "Clutch · Hustle"]], tab)}
     <div id="tab"></div>`;
   app.querySelectorAll(".page-tabs a").forEach((a) => a.href += `&season=${season}`);
   app.querySelector("#tm-season").addEventListener("change", (e) => { location.hash = `${base}?tab=${tab}&season=${e.target.value}`; });
@@ -52,6 +53,12 @@ export async function teamPage(app, id, query = "") {
   if (tab === "shots") {
     box.innerHTML = `<h2>${season} shot chart</h2><div id="sc"></div>`;
     await renderShotChart(box.querySelector("#sc"), { season, teamId: id });
+    return;
+  }
+
+  if (tab === "playtypes") {
+    box.innerHTML = `<h2>${season} play types</h2><div id="pt"></div>`;
+    await renderPlayTypes(box.querySelector("#pt"), { season, teamId: id });
     return;
   }
 

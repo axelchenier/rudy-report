@@ -4,11 +4,21 @@ import { seasonFromQuery, seasonSelectHTML, withSeason, seasonGames, QUALIFY_SHA
 import { renderTable, esc, playerLink, teamAbbrLink } from "../ui.js";
 import { HUBS, hubRows, inPool, existsFor, FIRST_SEASON } from "../hubs.js";
 import { CLUTCH_NOTE } from "../glossary.js";
+import { playtypeHub } from "./playtypeview.js";
 
 export async function hubsPage(app, kind = "clutch", query = "") {
   kind = kind || "clutch";
   const params = new URLSearchParams(query);
   const season = seasonFromQuery(query);
+  const tabs = `<nav class="page-tabs">${[...Object.entries(HUBS).map(([k, h]) => [k, h.title]), ["playtypes", "Play types"]].map(([k, t]) =>
+      `<a href="${withSeason(`#/hubs/${k}`, season)}" class="${k === kind ? "active" : ""}">${t}</a>`).join("")}</nav>`;
+  if (kind === "playtypes") {
+    app.innerHTML = `<div class="page-head"><div><h1>Stat hubs</h1><p class="sub">Play-type leaderboards (Synergy data via NBA.com/stats).</p></div>
+      ${seasonSelectHTML(season, "hub-season")}</div>${tabs}<div id="hub"></div>`;
+    app.querySelector("#hub-season").addEventListener("change", (e) => { location.hash = withSeason(location.hash, e.target.value); });
+    await playtypeHub(app.querySelector("#hub"), { season, params });
+    return;
+  }
   const hub = HUBS[kind];
   const entity = kind === "tracking" ? "players" : (params.get("entity") === "teams" ? "teams" : "players");
   const group = Math.min(Number(params.get("group") || 0), hub.groups.length - 1);
@@ -19,8 +29,7 @@ export async function hubsPage(app, kind = "clutch", query = "") {
     <div class="page-head"><div><h1>Stat hubs</h1>
       <p class="sub">Clutch, hustle and player-tracking leaderboards from NBA.com/stats.</p></div>
       ${seasonSelectHTML(season, "hub-season")}</div>
-    <nav class="page-tabs">${Object.entries(HUBS).map(([k, h]) =>
-      `<a href="${withSeason(`#/hubs/${k}`, season)}" class="${k === kind ? "active" : ""}">${h.title}</a>`).join("")}</nav>
+    ${tabs}
     <div class="toolbar">
       ${kind === "tracking" ? "" : `<div class="tabs">${["players", "teams"].map((e) =>
         `<a class="tab-link ${e === entity ? "active" : ""}" href="${withSeason(`#/hubs/${kind}`, season, { entity: e, group })}">${e === "players" ? "Players" : "Teams"}</a>`).join("")}</div>`}

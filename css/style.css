@@ -252,3 +252,13 @@ span.loss { color: var(--bad); font-weight: 700; }
 .diet-legend { display: flex; flex-wrap: wrap; gap: 10px; font-size: 12px; margin-top: 6px; color: var(--muted); }
 .diet-legend i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 4px; vertical-align: -1px; }
 @media (max-width: 860px) { .shot-wrap { grid-template-columns: 1fr; } }
+
+/* ---------- Play types ---------- */
+.pt-list { display: grid; gap: 6px; }
+.pt-row { display: grid; grid-template-columns: minmax(150px, 1.3fr) 2fr 90px 90px 44px 70px; gap: 10px; align-items: center; font-size: 14px; }
+.pt-row.small-sample { opacity: .5; }
+.pt-freq { position: relative; height: 22px; background: var(--panel-2); border-radius: 6px; overflow: hidden; }
+.pt-freq i { position: absolute; inset: 0 auto 0 0; background: color-mix(in srgb, var(--accent) 55%, transparent); }
+.pt-freq b { position: relative; padding-left: 8px; font-size: 12px; line-height: 22px; }
+.pt-vs { font-size: 12px; }
+@media (max-width: 860px) { .pt-row { grid-template-columns: 1fr 1fr 70px 44px; } .pt-row .pt-vs, .pt-row > span:last-child { display: none; } }
