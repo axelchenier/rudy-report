@@ -231,9 +231,10 @@ TS%, steals, blocks, 3P%), NCAA seeds/results, and a season-by-season history. S
 (each conference's best T-Rank team + the best remaining teams, seeded 1-16 by T-Rank on an S-curve) for any season, including
 2026-27 preseason. It plays the bracket 20,000 times with the Game Predictor's model (neutral court) and shows every team's odds to
 reach each round, a one-click simulated bracket, the real results with the model's pre-game chances, and a back-test. "Edit the field"
-swaps teams in/out or adds rating points ("what if Minnesota were 5 points better?"). Refresh brackets after a tournament:
+swaps teams in/out or adds rating points ("what if Minnesota were 5 points better?"). The nightly `update_college.py` saves a new
+year's bracket automatically once its title game is final (it does nothing outside mid-March to April). By hand:
 
-    .venv/bin/python pipeline/college_bracket.py --years 2027
+    .venv/bin/python pipeline/college_bracket.py --current       # or --years 2027
 
 Nightly college job (Torvik refresh + ESPN games + reports + draft board):
 

@@ -4,6 +4,8 @@ college_bracket.py  -  the real NCAA men's tournament brackets (seeds, regions a
 RUN IT (once; it re-uses its cache, and only needs re-running after a new tournament):
     .venv/bin/python pipeline/college_bracket.py              # 2008-2026 (no 2020: cancelled)
     .venv/bin/python pipeline/college_bracket.py --years 2026
+    .venv/bin/python pipeline/college_bracket.py --current    # what update_college.py runs nightly: only does work from
+                                                              # mid-March to April until this year's bracket is saved
 
 SOURCE
   ESPN's public scoreboard feed (site.api.espn.com, the same ESPN source the College section already uses), one request
@@ -38,12 +40,19 @@ def day_events(d: date):
     f = CACHE / f"{d:%Y%m%d}.json"
     if f.exists():
         return json.loads(f.read_text())
+    if d > date.today():
+        return []                                   # no games yet
     for attempt in range(3):
         try:
             r = requests.get(URL.format(d=f"{d:%Y%m%d}"), headers=UA, timeout=30)
             r.raise_for_status()
             ev = r.json().get("events", [])
-            f.write_text(json.dumps(ev))
+            # Only cache a day once it's over and every game on it is final (so a run during the tournament re-checks it).
+            done = all(e["competitions"][0].get("status", {}).get("type", {}).get("completed") or
+                       e["competitions"][0].get("status", {}).get("type", {}).get("name") in ("STATUS_UNCONTESTED", "STATUS_CANCELED", "STATUS_POSTPONED")
+                       for e in ev)
+            if d < date.today() - timedelta(days=1) and done:
+                f.write_text(json.dumps(ev))
             time.sleep(0.4)
             return ev
         except Exception as e:  # noqa: BLE001
@@ -170,16 +179,39 @@ def build(year):
     return year
 
 
-def main():
-    ap = argparse.ArgumentParser()
-    ap.add_argument("--years", default="2008-2026")
-    a = ap.parse_args()
-    lo, _, hi = a.years.partition("-")
-    years = [y for y in range(int(lo), int(hi or lo) + 1) if y != 2020]
-    done = [y for y in years if build(y)]
+def write_index(done=()):
     old = sorted(int(p.stem) for p in OUT.glob("[0-9]*.json"))
     (OUT / "index.json").write_text(json.dumps({"years": sorted(set(old) | set(done), reverse=True),
                                                 "source": "ESPN scoreboard (site.api.espn.com)"}))
+
+
+def update_current(today=None):
+    """Nightly hook (update_college.py): build this year's bracket once its tournament is over. A no-op (no network)
+    outside mid-March..April or once <year>.json exists. Returns the year built, or None."""
+    today = today or date.today()
+    year = today.year
+    if (year == 2020 or not (date(year, 3, 15) <= today <= date(year, 4, 30)) or (OUT / f"{year}.json").exists()
+            or not (ROOT / "data" / "college" / season_label(year) / "teams.json").exists()):
+        print(f"Brackets: nothing to do ({year} {'already saved' if (OUT / f'{year}.json').exists() else 'not in tournament season'}).")
+        return None
+    built = build(year)            # None until all 63 games (through the title game) are final
+    if built:
+        write_index([built])
+    return built
+
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--years", default="2008-2026")
+    ap.add_argument("--current", action="store_true", help="only this year's tournament, and only if it has finished (cheap no-op otherwise)")
+    a = ap.parse_args()
+    if a.current:
+        update_current()
+        return
+    lo, _, hi = a.years.partition("-")
+    years = [y for y in range(int(lo), int(hi or lo) + 1) if y != 2020]
+    done = [y for y in years if build(y)]
+    write_index(done)
     if not done:
         print("ERROR: no brackets built")
         sys.exit(1)

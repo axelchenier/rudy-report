@@ -12,7 +12,8 @@ OPTIONS
                           archive (used to test the in-season report design while the new season hasn't started)
   --out DIR               write reports somewhere else (default data/college/reports)
 
-A normal run (no --season/--out) also rebuilds the 2027 Draft board (pipeline/college_draft.py -> data/draft/).
+A normal run (no --season/--out) also rebuilds the 2027 Draft board (pipeline/college_draft.py -> data/draft/) and, from
+mid-March to April, saves that year's NCAA bracket once the title game is final (pipeline/college_bracket.py --current).
 
 Safe to run every day (idempotent). Errors print "ERROR: ..." and exit 1.
 
@@ -597,6 +598,13 @@ def run():
     if "--season" not in sys.argv and "--out" not in sys.argv:
         import college_draft
         college_draft.main()
+        # Save this year's real NCAA bracket for the Tournament Simulator once the tournament is over
+        # (no network and instant outside mid-March..April, or once data/college/brackets/<year>.json exists).
+        import college_bracket
+        try:
+            college_bracket.update_current()
+        except Exception as e:  # noqa: BLE001  - a bracket hiccup shouldn't stop the reports
+            print(f"WARNING: bracket update failed: {e}")
 
 
 if __name__ == "__main__":
