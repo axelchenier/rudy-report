@@ -7,6 +7,7 @@ import { buildNameIndex } from "../ask/names.js";
 import { parseQuestion } from "../ask/parser.js";
 import { answer } from "../ask/engine.js";
 import { AI_ENABLED, askAI } from "../ask/ai.js";
+import { collegeAnswer } from "../ask/college.js";
 
 // Clickable example questions (the first five are Axel's own test questions).
 const EXAMPLES = [
@@ -21,6 +22,8 @@ const EXAMPLES = [
   "Compare Anthony Edwards and Shai Gilgeous-Alexander",
   "Timberwolves net rating",
   "Best defensive rating among teams in 2023-24",
+  "Best offense in college basketball",
+  "Top college scorers",
   "Most triple doubles in the past 5 years",
 ];
 
@@ -71,6 +74,18 @@ async function showAnswer(box, question) {
   // "past N years" / "all time" use COMPLETE seasons only; the in-progress season is used for "this season".
   const ctx = { index: await getIndex(), seasons: completeSeasons(), current: META.current_season, season: currentSeason() };
   let intent = parseQuestion(question, ctx);
+  // College questions ("college", "NCAA", a college team or player) are answered from the College data; NBA stays the default.
+  const college = await collegeAnswer(question, intent).catch((e) => { console.warn(e); return null; });
+  if (college) {
+    const r = college.result;
+    box.innerHTML = `<p class="headline">${r.headline}</p>
+      <div class="interpreted">${college.tags.map((t) => `<span class="tag">${t}</span>`).join("")}</div>${r.html || ""}
+      ${r.tables.map((t, i) => `<div id="ans-table-${i}"></div>`).join("")}
+      <ul class="muted small">${r.notes.map((n) => `<li>${n}</li>`).join("")}</ul>
+      <p class="muted small">Source: ${r.sources.map(esc).join(" · ")}. ${r.footer || ""}</p>`;
+    r.tables.forEach((t, i) => renderTable(box.querySelector(`#ans-table-${i}`), { pageSize: 25, ...t }));
+    return;
+  }
   if (intent.type === "unknown" && AI_ENABLED) {
     try { intent = { ...intent, ...(await askAI(question, Object.keys(STATS))).intent }; } catch (e) { console.warn(e); }
   }
