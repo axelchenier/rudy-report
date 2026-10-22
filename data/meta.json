@@ -1,0 +1,75 @@
+{
+  "source": "NBA.com/stats (LeagueDashPlayerStats & LeagueDashTeamStats) via the nba_api Python library",
+  "source_url": "https://www.nba.com/stats",
+  "season_type": "Regular Season",
+  "pulled_at_utc": "2026-10-22 03:38 UTC",
+  "seasons": [
+    {
+      "season": "2025-26",
+      "players": 582,
+      "teams": 30,
+      "max_team_games": 82
+    },
+    {
+      "season": "2024-25",
+      "players": 569,
+      "teams": 30,
+      "max_team_games": 82
+    },
+    {
+      "season": "2023-24",
+      "players": 572,
+      "teams": 30,
+      "max_team_games": 82
+    },
+    {
+      "season": "2022-23",
+      "players": 539,
+      "teams": 30,
+      "max_team_games": 82
+    },
+    {
+      "season": "2021-22",
+      "players": 605,
+      "teams": 30,
+      "max_team_games": 82
+    },
+    {
+      "season": "2020-21",
+      "players": 540,
+      "teams": 30,
+      "max_team_games": 72
+    },
+    {
+      "season": "2019-20",
+      "players": 529,
+      "teams": 30,
+      "max_team_games": 75
+    },
+    {
+      "season": "2018-19",
+      "players": 530,
+      "teams": 30,
+      "max_team_games": 82
+    },
+    {
+      "season": "2017-18",
+      "players": 540,
+      "teams": 30,
+      "max_team_games": 82
+    },
+    {
+      "season": "2016-17",
+      "players": 486,
+      "teams": 30,
+      "max_team_games": 82
+    }
+  ],
+  "extras": {
+    "pulled_at_utc": "2026-10-22 03:41 UTC",
+    "nba_game_logs": "NBA.com/stats LeagueGameLog (team and player game logs)",
+    "nba_tracking": "NBA.com/stats LeagueDashPtStats (Second Spectrum player tracking)",
+    "bbref": "Basketball-Reference.com season advanced tables (BPM, OBPM, DBPM, PER, WS, VORP)",
+    "bbref_url": "https://www.basketball-reference.com/"
+  }
+}

@@ -1,0 +1,57 @@
+<!doctype html>
+<!--
+  index.html - the ONE page of this website.
+  The header, footer, and an empty <main> live here. JavaScript (js/app.js) fills <main>
+  with the right "page" (Ask, Players, Teams, Compare, ...) based on the address bar (#/players etc).
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>The Rudy Report · NBA stats explorer</title>
+  <meta name="description" content="Explore, compare and ask questions about real NBA player and team stats.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 16 16%22%3E%3Ccircle cx=%228%22 cy=%228%22 r=%227%22 fill=%22%23ff7a1a%22/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="css/style.css">
+  <!-- Set the color theme BEFORE the page draws, so there's no flash of the wrong theme. -->
+  <script>
+    document.documentElement.dataset.theme =
+      localStorage.getItem("theme") || (matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark");
+  </script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap header-row">
+      <a class="brand" href="#/">
+        <span class="brand-ball" aria-hidden="true"></span>
+        <span>The Rudy <b>Report</b></span>
+      </a>
+      <nav class="nav" aria-label="Main">
+        <a href="#/" data-nav="ask">Ask</a>
+        <a href="#/players" data-nav="players">Players</a>
+        <a href="#/teams" data-nav="teams">Teams</a>
+        <a href="#/compare" data-nav="compare">Compare</a>
+      </nav>
+      <div class="header-tools">
+        <label class="season-picker">
+          <span class="sr-only">Season</span>
+          <select id="season-select" aria-label="Season"></select>
+        </label>
+        <button id="theme-toggle" class="icon-btn" title="Switch light/dark theme" aria-label="Switch theme">◐</button>
+      </div>
+    </div>
+  </header>
+
+  <main id="app" class="wrap" tabindex="-1">
+    <p class="muted">Loading…</p>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap" id="footer-text">Loading data source…</div>
+  </footer>
+
+  <!-- Chart.js draws the bar and radar charts (saved locally in /vendor). -->
+  <script src="vendor/chart.umd.min.js"></script>
+  <!-- Our own code. "type=module" lets files import each other. -->
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>

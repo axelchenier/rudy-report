@@ -1,0 +1,7 @@
+nba_api
+pandas
+requests
+lxml
+html5lib
+# only for taking screenshots:
+playwright
