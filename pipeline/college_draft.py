@@ -36,6 +36,7 @@ TRAIN_LAST_YEAR = 2023                 # train on seasons ending 2008..2023 (lat
 BOARD_SIZE = 150
 NN_OUTCOMES = 20                       # nearest past players (drafted 2008-2020) whose NBA outcomes the prospect page summarizes
 MATURE_LAST = 2020
+MOCK_PCT = {"FG3_PCT", "FT_PCT", "FG3A_100", "AST_PCT", "TOV_PCT", "BLK_PCT", "STL_PCT", "DRB_PCT", "ORB_PCT", "TS", "OBPM", "DBPM"}
 
 # Model features: (key, label). FT_ADJ = free-throw % shrunk toward average for small samples.
 FEATURES = [("AGE", "Age (Feb 1 of the season)"), ("HT_IN", "Height"), ("BPM", "Box Plus/Minus"), ("OBPM", "Offensive BPM"), ("DBPM", "Defensive BPM"),
@@ -284,7 +285,9 @@ def main():
                     "class_stats": r["CLASS"], "ht": r["HT"], "role": r["POS"], "age_draft": age_draft, "gp": int(r["GP"]),
                     "min": clean(r["MIN"]), "pts": clean(r["PTS"]), "reb": clean(r["REB"]), "ast": clean(r["AST"]), "bpm": clean(r["BPM"]),
                     "ts": clean(r["TS"]), "usg": clean(r["USG"]), "p_first": round(float(r["P_FIRST"]), 3), "p_drafted": round(float(r["P_DRAFTED"]), 3),
-                    "combine": bool(cm), "top_comp": comps[0]["player"] if comps else None}
+                    "combine": bool(cm), "top_comp": comps[0]["player"] if comps else None,
+                    # D-I percentiles (100 = best; None = below the attempt minimum) used by the Mock Draft's team-fit score
+                    "pct": {x["key"]: (x["pctile"] if x["enough"] else None) for x in pcts if x["key"] in MOCK_PCT}}
         rows.append(base_row)
         rep = {**base_row, "dob": dob, "hometown": r.get("HOMETOWN"), "stats_season": r["SEASON"],
                "season_line": {k: clean(r.get(k)) for k in ["GP", "MIN", "MIN_PCT", "PTS", "REB", "AST", "STL", "BLK", "TOV", "FG_PCT", "FG3M", "FG3A", "FG3_PCT",

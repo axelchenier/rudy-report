@@ -253,6 +253,15 @@ produced the most NBA rotation players since 2010", "does college FT% predict NB
 "Best" always means most career NBA minutes (or scoring average when asked), stated in the answer; each answer links to the class
 or College → NBA page.
 
+**2027 Mock Draft simulator** (`#/draft/mock`, Draft menu, everything labeled **Model estimate**): choose a draft order
+(projected standings from the Playoff Odds simulation, one simulated 3-2-1 lottery using the NBA side's `js/lottery.js` +
+`js/sim.js` unchanged, last season's real records, or your own by swapping teams), set how much team needs matter, and the
+first round fills from the Model Board. Team needs = bottom-half NBA.com team-stat ranks (last complete season) in ten areas
+(3P%, assist %, turnover %, blocks, steals, defensive/offensive rating, DREB%/OREB%, TS%); fit = the prospect's D-I percentiles
+in those areas (new `pct` field on each board row from `college_draft.py`). Each pick = best *board log-odds + weight × 2 × fit*;
+any pick can be overridden and later picks re-fill. Not modeled: traded picks, protections, the 2nd round, players not on the board
+(incoming freshmen, internationals).
+
 **College what-if sliders** (team pages, labeled *Model estimate*): change adjusted offense, adjusted defense, 3P% or
 opponents' 3P% and see AdjEM, Barthag (Torvik's formula, exponent 11.5), an estimated T-Rank, expected wins against the same
 strength of schedule (log5 vs Torvik's SOS; preseason uses the opponent strength that reproduces Torvik's projected record),
