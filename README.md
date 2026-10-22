@@ -345,6 +345,7 @@ Every player and team page has a **Shot chart** tab (NBA.com `ShotChartDetail`, 
 - Team charts can switch to **opponents' shots** (colors flip: green = good defense).
 - Data: `data/<season>/shots/p_NN.json` (40 files, by player ID) and `data/<season>/shot_zones.json`
   (league zone averages + team hexagons), made by `pipeline/fetch_advanced.py` (also run nightly by `update_reports.py`).
+  To back-fill older seasons politely: `pipeline/fetch_advanced.py --status` lists what is missing; `pipeline/fetch_advanced.py 2016-17 2017-18 --max-requests 150` fetches at most 150 requests, caches every answer in `pipeline/cache/adv/` and skips saved files, so re-running the same command resumes (exit code 3 = budget used up).
 
 ## Play types
 

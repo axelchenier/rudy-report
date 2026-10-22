@@ -3,10 +3,20 @@ fetch_advanced.py  -  downloads the data behind shot charts, play types, lineups
 All from NBA.com/stats via nba_api.
 
 RUN IT (from the nba-stats-app folder):
-    .venv/bin/python pipeline/fetch_advanced.py                       every season in data/meta.json
+    .venv/bin/python pipeline/fetch_advanced.py --status              what is missing (no NBA.com requests)
+    .venv/bin/python pipeline/fetch_advanced.py                       every non-history season in data/meta.json, skipping files already saved
     .venv/bin/python pipeline/fetch_advanced.py 2025-26               one season
     .venv/bin/python pipeline/fetch_advanced.py 2025-26 --only shots  one kind (shots, playtypes, lineups, onoff)
-(update_reports.py calls update_season() for the current season every night.)
+    --max-requests N   stop cleanly after N NBA.com requests (exit code 3 = "budget used up, run again later")
+    --force            re-download files that already exist
+    --pause S          seconds between requests (default 2.5, plus random jitter)
+(update_reports.py calls update_season() for the current season every night; that always re-downloads.)
+
+POLITE + RESUMABLE: every NBA.com answer is cached in pipeline/cache/adv/<season>/ (git-ignored) as soon as it arrives,
+so a run that is stopped, times out or hits --max-requests picks up where it left off - only missing requests are made.
+Failed requests back off exponentially (15s, 30s, 60s, 120s + jitter) before giving up on that file.
+Suggested retry for the seasons that timed out (run it away from the ~11:58 UTC nightly refresh, as often as needed):
+    .venv/bin/python pipeline/fetch_advanced.py 2016-17 2017-18 2018-19 2019-20 2020-21 2021-22 2022-23 --max-requests 150
 
 It saves, for each season:
   data/<season>/shots/p_<NN>.json   every shot (ShotChartDetail): player, x, y, made, zone, period;
@@ -24,10 +34,14 @@ js/shots.js uses the exact same math so player and team charts line up.
 """
 
 import json
+import argparse
 import math
+import random
+import re
 import sys
 import time
 from collections import defaultdict
+from pathlib import Path
 
 import pandas as pd
 from nba_api.stats.endpoints import shotchartdetail, synergyplaytypes, leaguedashlineups, teamplayeronoffsummary
@@ -40,17 +54,43 @@ HEX = 15.0
 PLAY_TYPES = ["Isolation", "Transition", "PRBallHandler", "PRRollman", "Postup", "Spotup", "Handoff", "Cut", "OffScreen", "OffRebound", "Misc"]
 
 
+CACHE = Path(__file__).resolve().parent / "cache" / "adv"
+RUN = {"budget": None, "made": 0, "pause": 1.0, "cache": False}  # main() turns the cache on; the nightly refresh always asks NBA.com fresh
+
+
+class BudgetUsedUp(Exception):
+    """--max-requests reached: stop cleanly; cached answers make the next run continue from here."""
+
+
+def _cache_path(what):
+    return CACHE / (re.sub(r"[^A-Za-z0-9._-]+", "_", what) + ".pkl")
+
+
 def nba_call(make, what, index=0):
-    """Like fetch_more.nba_call but can return any result set (index)."""
-    for attempt in range(3):
+    """One NBA.com request with a cache (resume), a request budget and exponential backoff. index=None -> all result sets."""
+    path = _cache_path(what)
+    if RUN["cache"] and path.exists():
+        frames = pd.read_pickle(path)
+        return frames if index is None else frames[index]
+    tries = 5
+    for attempt in range(tries):
+        if RUN["budget"] is not None and RUN["made"] >= RUN["budget"]:
+            raise BudgetUsedUp(f"--max-requests {RUN['budget']} reached before {what}")
+        RUN["made"] += 1
         try:
             frames = make().get_data_frames()
-            time.sleep(PAUSE_SECONDS)
+            if RUN["cache"]:
+                path.parent.mkdir(parents=True, exist_ok=True)
+                pd.to_pickle(frames, path)
+            time.sleep(RUN["pause"] + random.uniform(0, RUN["pause"]))
             return frames if index is None else frames[index]
         except Exception as error:
-            print(f"  ...problem with {what} ({error}); retrying")
-            time.sleep(5 * (attempt + 1))
-    raise RuntimeError(f"NBA.com request failed 3 times: {what}")
+            if attempt == tries - 1:
+                break
+            wait = min(300, 15 * 2 ** attempt) + random.uniform(0, 5)
+            print(f"  ...problem with {what} ({str(error)[:120]}); waiting {wait:.0f}s", flush=True)
+            time.sleep(wait)
+    raise RuntimeError(f"NBA.com request failed {tries} times: {what}")
 
 
 def hex_of(x, y):
@@ -188,30 +228,57 @@ def onoff(season):
 
 
 KINDS = {"shots": shots, "playtypes": playtypes, "lineups": lineups, "onoff": onoff}
+# The file whose presence means "this kind is done" (shots writes shot_zones.json last).
+DONE_FILE = {"shots": "shot_zones.json", "playtypes": "playtypes.json", "lineups": "lineups.json", "onoff": "onoff.json"}
 
 
-def update_season(season, only=None):
+def missing(season, only=None):
+    return [k for k in KINDS if (not only or k in only) and not (DATA_DIR / season / DONE_FILE[k]).exists()]
+
+
+def update_season(season, only=None, force=True):
+    """Nightly (force=True): re-download everything for the season. CLI default: only kinds whose file is missing."""
     for name, fn in KINDS.items():
         if only and name not in only:
+            continue
+        if not force and name not in missing(season):
+            print(f"  {season}: {name} already saved - skip", flush=True)
             continue
         print(f"  {season}: {name} {fn(season)}", flush=True)
 
 
 def main():
-    args = sys.argv[1:]
-    only = None
-    if "--only" in args:
-        i = args.index("--only")
-        only = args[i + 1].split(",")
-        args = args[:i] + args[i + 2:]
-    seasons = args or [s["season"] for s in json.loads((DATA_DIR / "meta.json").read_text())["seasons"]]
+    ap = argparse.ArgumentParser(description="NBA.com shots / play types / lineups / on-off, politely and resumably.")
+    ap.add_argument("seasons", nargs="*")
+    ap.add_argument("--only", help="comma list: " + ",".join(KINDS))
+    ap.add_argument("--max-requests", type=int, default=None)
+    ap.add_argument("--pause", type=float, default=2.5)
+    ap.add_argument("--force", action="store_true")
+    ap.add_argument("--status", action="store_true", help="list missing files and exit (no requests)")
+    a = ap.parse_args()
+    only = a.only.split(",") if a.only else None
+    seasons = a.seasons or [s["season"] for s in json.loads((DATA_DIR / "meta.json").read_text())["seasons"] if s.get("era") != "history"]
+    RUN.update(budget=a.max_requests, pause=a.pause, cache=not a.force)
+    if a.status:
+        for season in seasons:
+            m = missing(season, only)
+            cached = len(list((CACHE).glob(f"{season}_*.pkl"))) if CACHE.exists() else 0
+            print(f"  {season}: {'missing ' + ', '.join(m) if m else 'complete'}{f'  ({cached} cached answers)' if cached else ''}")
+        return
     failed = []
-    for season in seasons:
-        try:
-            update_season(season, only)
-        except Exception as error:
-            print(f"  !! {season} failed: {error}", flush=True)
-            failed.append(season)
+    try:
+        for season in seasons:
+            try:
+                update_season(season, only, force=a.force)
+            except BudgetUsedUp:
+                raise
+            except Exception as error:
+                print(f"  !! {season} failed: {error}", flush=True)
+                failed.append(season)
+    except BudgetUsedUp as stop:
+        print(f"Stopped: {stop}. {RUN['made']} requests made; run the same command again to continue.", flush=True)
+        sys.exit(3)
+    print(f"{RUN['made']} NBA.com requests made.")
     if failed:
         print("FAILED seasons:", ", ".join(failed), file=sys.stderr)
         sys.exit(1)
