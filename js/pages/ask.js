@@ -28,6 +28,7 @@ const EXAMPLES = [
   "Top college scorers",
   "Top 2027 draft prospects",
   "Who won the 2016 Finals?",
+  "Who won the 2016 NCAA tournament?",
   "Most MVPs since 2000",
   "Hit rate for picks 11-20",
   "Who was drafted 5th in 2019?",
