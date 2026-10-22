@@ -387,3 +387,4 @@ input[type=range] { vertical-align: middle; accent-color: var(--accent); }
 #mk-src { max-width: calc(100vw - 150px); }
 table.mock .mk-pick { max-width: 230px; }
 table.mock td.small { white-space: nowrap; }
+#cgl-k { flex-wrap: wrap; }

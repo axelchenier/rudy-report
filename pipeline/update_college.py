@@ -14,7 +14,8 @@ OPTIONS
 
 A normal run (no --season/--out) also rebuilds the 2027 Draft board (pipeline/college_draft.py -> data/draft/) and, from
 mid-March to April, saves that year's NCAA bracket once the title game is final (pipeline/college_bracket.py --current), and rebuilds
-the 2008-2026 draft classes / college-to-NBA data (pipeline/college_nba.py).
+the 2008-2026 draft classes / college-to-NBA data (pipeline/college_nba.py) and, November-April, the
+current season's player game logs (pipeline/college_gamelogs.py).
 
 Safe to run every day (idempotent). Errors print "ERROR: ..." and exit 1.
 
@@ -612,6 +613,12 @@ def run():
             college_nba.main()
         except Exception as e:  # noqa: BLE001
             print(f"WARNING: draft history update failed: {e}")
+        # College player game logs for the current season (ESPN box scores; no-op May-October).
+        import college_gamelogs
+        try:
+            college_gamelogs.update_current()
+        except Exception as e:  # noqa: BLE001
+            print(f"WARNING: college game log update failed: {e}")
 
 
 if __name__ == "__main__":

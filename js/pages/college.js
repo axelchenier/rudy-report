@@ -4,6 +4,7 @@ import { STATS, fmt } from "../stats.js";
 import { renderTable, esc, rankOf, percentile, PALETTE, chartTheme } from "../ui.js";
 import { CCOLUMNS } from "../college/cstats.js";
 import { renderProgramHistory, renderPlayerExtras } from "./college_extras.js";
+import { renderCollegeGameLog } from "./college_gamelog.js";
 import { renderCollegeWhatIf } from "./college_whatif.js";
 import { loadCMeta, CMETA, cload, cseasonFromQuery, currentCSeason, cseasonSelectHTML, seasonInfo, addRecords, careerOf,
   TORVIK_CREDIT, C_QUAL_MIN_PCT, playedSeasons, CSEASONS } from "../college/cdata.js";
@@ -258,6 +259,7 @@ export async function collegePlayerPage(app, pid) {
     <div class="toolbar"><div class="tabs"><button data-m="basic" class="active">Per Game</button><button data-m="adv">Advanced</button></div></div>
     <div id="hist"></div>
     ${career.length > 1 ? `<div class="card" style="margin-top:12px"><div class="chart-box"><canvas id="trend"></canvas></div></div>` : ""}
+    <div id="cgamelog"></div>
     ${creditLine()}`;
   const drawHist = (m) => renderTable(app.querySelector("#hist"), { rows: career, entity: "players", sortKey: "SEASON", sortAsc: true, rank: false,
     columns: [{ key: "SEASON", label: "Season", left: true }, { key: "TEAM_NAME", label: "Team", left: true, html: (r) => `<a href="#/college/team/${esc(r.TEAM_ID)}?season=${r.SEASON}">${esc(r.TEAM_NAME)}</a>` },
@@ -267,6 +269,7 @@ export async function collegePlayerPage(app, pid) {
     app.querySelectorAll("[data-m]").forEach((x) => x.classList.toggle("active", x === b)); drawHist(b.dataset.m); }));
   drawHist("basic");
   renderPlayerExtras(app.querySelector("#cextras"), pid, career).catch((e) => console.warn(e));
+  renderCollegeGameLog(app.querySelector("#cgamelog"), pid, career.map((c) => c.SEASON)).catch((e) => console.warn(e));
   if (career.length > 1) {
     const th = chartTheme();
     new Chart(app.querySelector("#trend"), { type: "line",

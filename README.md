@@ -268,6 +268,12 @@ since 2008 from that school with his NBA.com career and outcome label. Player pa
 from Torvik's season rows) and, for drafted players, the draft pick plus final college season vs NBA rookie season vs NBA
 career, with links to his NBA page and draft class.
 
+**College player game logs** (player pages, *Game log*): every game of 2024-25 and 2025-26 (plus the current season nightly,
+November-April) from ESPN box scores via sportsdataverse, linked to Torvik players by ESPN id: a per-game chart with rolling
+averages, the game table (opponents link to their team pages; postseason tagged) and splits (home/away, wins/losses, starts,
+postseason, vs top-50 T-Rank, by month). Built by `pipeline/college_gamelogs.py` into `data/college/gamelogs/<season>/g_NN.json`
+(about 7.6 MB per season; run `college_gamelogs.py 2023 2024` for older seasons).
+
 **College what-if sliders** (team pages, labeled *Model estimate*): change adjusted offense, adjusted defense, 3P% or
 opponents' 3P% and see AdjEM, Barthag (Torvik's formula, exponent 11.5), an estimated T-Rank, expected wins against the same
 strength of schedule (log5 vs Torvik's SOS; preseason uses the opponent strength that reproduces Torvik's projected record),
@@ -296,6 +302,7 @@ Nightly college job (Torvik refresh + ESPN games + reports + draft board):
 |---|---|
 | `pipeline/update_college.py` | Nightly job → `data/college/reports/` (and runs `college_draft.py`). |
 | `pipeline/college_draft.py` | Draft model + prospect reports → `data/draft/`. |
+| `pipeline/college_gamelogs.py` | College player game logs (ESPN box scores) → `data/college/gamelogs/`. |
 | `pipeline/college_nba.py` | Draft classes 2008-2026 + college-to-NBA data → `data/draft/history/`, `data/draft/translation.json`. |
 | `pipeline/college_bracket.py` | Real NCAA brackets (ESPN) → `data/college/brackets/<year>.json`. |
 | `js/pages/college_tourney.js` | Tournament Simulator page. |
