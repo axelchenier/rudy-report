@@ -1,7 +1,7 @@
 // saved.js - saved players/teams kept in this browser (localStorage 'rr_saved_v1'). Items: {type, id, name, link}.
 const KEY = "rr_saved_v1";
 export function listSaved() { try { return JSON.parse(localStorage.getItem(KEY) || "[]"); } catch { return []; } }
-const write = (a) => { try { localStorage.setItem(KEY, JSON.stringify(a)); } catch { /* storage blocked */ } };
+const write = (a) => { try { localStorage.setItem(KEY, JSON.stringify(a)); } catch { /* storage blocked */ } window.dispatchEvent(new Event("rr-data-changed")); };
 export const isSaved = (type, id) => listSaved().some((x) => x.type === type && String(x.id) === String(id));
 export function removeSaved(type, id) { write(listSaved().filter((x) => !(x.type === type && String(x.id) === String(id)))); }
 export function toggleSaved(item) {

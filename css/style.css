@@ -454,3 +454,13 @@ label.bar-pick select { flex: 1 1 auto; min-width: 0; max-width: 100%; }
 .rr-star{font-size:.8rem;vertical-align:middle;margin-left:.4rem}
 .rr-board li,.rr-list li{display:flex;flex-wrap:wrap;gap:.4rem;align-items:center;padding:.35rem 0;border-bottom:1px solid #8883}
 .rr-board li{cursor:grab}.rr-note{flex:1;min-width:10rem}
+/* Account modal */
+.acct-btn { font-size: 1rem; flex-shrink: 0; padding: 6px 9px; }
+.acct-modal { position: fixed; inset: 0; background: rgba(0,0,0,.55); display: flex; align-items: center; justify-content: center; z-index: 1000; }
+.acct-modal[hidden] { display: none; }
+.acct-box { position: relative; background: var(--card, #1b1f27); color: inherit; padding: 1.25rem; border-radius: 10px; width: min(92vw, 340px); display: flex; flex-direction: column; gap: .6rem; }
+.acct-box input { padding: .55rem; border-radius: 6px; border: 1px solid #555; background: transparent; color: inherit; }
+.acct-row { display: flex; gap: .5rem; } .acct-row .btn { flex: 1; }
+.acct-x { position: absolute; top: .4rem; right: .6rem; background: none; border: 0; color: inherit; font-size: 1.4rem; cursor: pointer; }
+.acct-note { min-height: 1.2em; font-size: .9rem; margin: 0; }
+@media (min-width: 1020px) and (max-width: 1259px) { .nav a, .nav-drop { padding: 6px 5px; } .header-row { gap: 6px; } }

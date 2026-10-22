@@ -4,7 +4,7 @@ import { esc } from "../ui.js";
 import { draftNav } from "./draft_nav.js";
 const KEY = "rr_myboard_v1";
 const load = () => { try { return JSON.parse(localStorage.getItem(KEY) || "null"); } catch { return null; } };
-const save = (b) => { try { localStorage.setItem(KEY, JSON.stringify(b)); } catch { /* blocked */ } };
+const save = (b) => { try { localStorage.setItem(KEY, JSON.stringify(b)); } catch { /* blocked */ } window.dispatchEvent(new Event("rr-data-changed")); };
 export async function myBoardPage(app) {
   let data;
   try { data = await (await fetch("data/draft/board.json")).json(); } catch { app.innerHTML = `${draftNav("myboard")}<p class="muted">Could not load the model board.</p>`; return; }
