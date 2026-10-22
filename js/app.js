@@ -13,6 +13,7 @@ import { standingsPage } from "./pages/standings.js";
 import { hubsPage } from "./pages/hubs.js";
 import { glossaryPage } from "./pages/glossary.js";
 import { wowyPage } from "./pages/lineups.js";
+import { toolsPage } from "./pages/tools.js";
 // College (NCAA men's D-I) section: its own pages and data (data/college/).
 import { collegeTeamsPage, collegePlayersPage, collegeTeamPage, collegePlayerPage } from "./pages/college.js";
 import { collegeComparePage } from "./pages/college_compare.js";
@@ -35,6 +36,7 @@ const routes = [
   [/^#\/glossary(?:\?(.*))?$/, glossaryPage, "glossary"],
   [/^#\/wowy(?:\?(.*))?$/, wowyPage, "teams"],
   [/^#\/compare(?:\?(.*))?$/, comparePage, "compare"],
+  [/^#\/tools(?:\/(\w+))?(?:\?(.*))?$/, toolsPage, "tools"],
   [/^#\/college\/?(?:teams)?(?:\?(.*))?$/, collegeTeamsPage, "college"],
   [/^#\/college\/players(?:\?(.*))?$/, collegePlayersPage, "college"],
   [/^#\/college\/team\/([\w-]+)(?:\?(.*))?$/, collegeTeamPage, "college"],
@@ -54,7 +56,7 @@ async function render() {
   const params = hash.match(re)?.slice(1) || [];
   document.querySelectorAll("[data-nav]").forEach((a) => a.classList.toggle("active", a.dataset.nav === navKey));
   const picker = document.querySelector(".season-picker");          // the header picker is for NBA seasons
-  if (picker) picker.style.visibility = navKey === "college" ? "hidden" : "";
+  if (picker) picker.style.visibility = navKey === "college" || navKey === "tools" ? "hidden" : "";   // Tools use the current season
   app.innerHTML = `<p class="muted">Loading…</p>`;
   try {
     await page(app, ...params);
