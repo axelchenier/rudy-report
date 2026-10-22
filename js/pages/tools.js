@@ -2,6 +2,7 @@
 //   #/tools/odds     Playoff Odds simulator (Monte Carlo over the real remaining schedule)  - MODEL ESTIMATE
 //   #/tools/similar  Player similarity finder (js/pages/similar.js)
 //   #/tools/lineup   Lineup builder (js/pages/builder.js)
+//   #/tools/trade    Trade what-if, stats only (js/pages/trade.js)  - MODEL ESTIMATE
 //   #/tools/lottery  2027 Draft Lottery simulator: the NBA's official 3-2-1 rules (js/lottery.js) on simulated final standings
 // Data: NBA.com/stats (standings, team stats, game logs) and NBA.com's schedule (ScheduleLeagueV2), saved by the pipeline.
 import { load, META, completeSeasons } from "../data.js";
@@ -9,12 +10,14 @@ import { renderTable, esc, modelBadge } from "../ui.js";
 import { prepare, simulate, rng } from "../sim.js";
 import { similarTool } from "./similar.js";
 import { builderTool } from "./builder.js";
+import { tradeTool } from "./trade.js";
 import { draw, entriesFrom, checkOdds, GROUPS, OFFICIAL, LOTTERY_SOURCES, FLOOR } from "../lottery.js";
 
 const TOOLS = [
   ["odds", "Playoff odds", "Simulate the rest of the season 10,000 times: playoff, Play-In, seed and title chances. Nudge any team up or down to test a scenario."],
   ["similar", "Similar players", "Find the player-seasons (1996-97 to now) whose stat profile is closest to any player's, era-adjusted."],
   ["lineup", "Lineup builder", "Pick any five from a roster: their real NBA.com results together, a pair-based net rating estimate, and lineup traits."],
+  ["trade", "Trade what-if", "Move players between two teams in any season from 2016-17 on and see the estimated swing in net rating and wins (stats only, no salaries)."],
   ["lottery", "Draft lottery", "The new 3-2-1 Lottery (official NBA rules for 2027): every team's chances at each pick, plus draw the lottery yourself."],
 ];
 
@@ -25,7 +28,7 @@ export async function toolsPage(app, tool = "", query = "") {
       <div class="grid tool-cards">${TOOLS.map(([k, l, d]) => `<a class="card tool-card" href="#/tools/${k}"><h3>${esc(l)}</h3><p class="muted small">${esc(d)}</p></a>`).join("")}</div>`;
     return;
   }
-  const page = { odds: oddsTool, lottery: lotteryTool, similar: similarTool, lineup: builderTool }[tool];
+  const page = { odds: oddsTool, lottery: lotteryTool, similar: similarTool, lineup: builderTool, trade: tradeTool }[tool];
   if (!page) { app.innerHTML = `${tabs}<p class="muted">Unknown tool.</p>`; return; }
   app.innerHTML = `${tabs}<div id="tool"></div>`;
   await page(app.querySelector("#tool"), new URLSearchParams(query));

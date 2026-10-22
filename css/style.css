@@ -405,3 +405,7 @@ table.mock td.small { white-space: nowrap; }
 .lead-list { margin: 6px 0 0; padding: 0; list-style: none; font-size: 13px; }
 .lead-list li { display: flex; gap: 6px; align-items: baseline; padding: 2px 0; }
 .lead-list li b { margin-left: auto; }
+
+/* Trade what-if: two side-by-side columns */
+.trade-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media (max-width: 700px) { .trade-grid { grid-template-columns: 1fr; } }
