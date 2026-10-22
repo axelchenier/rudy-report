@@ -373,3 +373,14 @@ input[type=range] { vertical-align: middle; accent-color: var(--accent); }
 .tier-starter { color: var(--good); border-color: var(--good); font-weight: 600; }
 .tier-rotation { color: var(--accent); border-color: var(--accent); }
 .tier-none { opacity: .7; }
+.tr-wrap { overflow-x: auto; }
+.tr-scatter { width: 100%; min-width: 320px; height: auto; display: block; }
+.tr-scatter .grid-line { stroke: var(--border); stroke-width: 1; }
+.tr-scatter .axis { fill: var(--muted); font-size: 11px; }
+.tr-scatter .axis-title { fill: var(--text); font-size: 12px; }
+.tr-scatter .fit-line { stroke: var(--text); stroke-width: 2; stroke-dasharray: 6 4; }
+.tr-stats { display: flex; flex-wrap: wrap; gap: 6px 18px; margin-bottom: 8px; font-size: 14px; }
+.rbar { display: inline-block; min-width: 110px; padding: 1px 6px; border-radius: 4px; font-variant-numeric: tabular-nums;
+  background: linear-gradient(90deg, color-mix(in srgb, var(--c) 35%, transparent) var(--w), transparent var(--w)); }
+.linkish { background: none; border: 0; padding: 0; color: var(--accent); cursor: pointer; font: inherit; }
+.linkish:hover { text-decoration: underline; }

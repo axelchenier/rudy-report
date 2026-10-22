@@ -1,6 +1,7 @@
 // draft_nav.js - the tab bar shared by every Draft page (2027 board, past classes, college-to-NBA translation).
 export function draftNav(active) {
   const items = [["board", "2027 Model Board", "#/draft"], ["history", "Draft classes 2008-2026", "#/draft/history"],
+    ["translation", "College → NBA", "#/draft/translation"],
     ["college", "College hub", "#/college"]];
   return `<div class="tabs" style="margin-bottom:12px;flex-wrap:wrap">${items.map(([k, l, h]) =>
     `<a class="tab-link ${k === active ? "active" : ""}" href="${h}">${l}</a>`).join("")}</div>`;

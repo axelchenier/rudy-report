@@ -34,6 +34,8 @@ DRAFT_YEAR = 2027
 DRAFT_DAY = date(2027, 6, 24)          # approximate; the league hasn't announced the date. Used only for "age at draft".
 TRAIN_LAST_YEAR = 2023                 # train on seasons ending 2008..2023 (later players may not have been drafted YET)
 BOARD_SIZE = 150
+NN_OUTCOMES = 20                       # nearest past players (drafted 2008-2020) whose NBA outcomes the prospect page summarizes
+MATURE_LAST = 2020
 
 # Model features: (key, label). FT_ADJ = free-throw % shrunk toward average for small samples.
 FEATURES = [("AGE", "Age (Feb 1 of the season)"), ("HT_IN", "Height"), ("BPM", "Box Plus/Minus"), ("OBPM", "Offensive BPM"), ("DBPM", "Defensive BPM"),
@@ -218,6 +220,7 @@ def main():
     drafted_last = drafted_last.sort_values("YEAR").drop_duplicates("PID", keep="last")
     SZ = ["Z_" + k for k in SIM_KEYS]
     D = drafted_last[SZ].values
+    mature = (drafted_last["YEAR"] <= MATURE_LAST).values
 
     combine = combine_measurements()
     (OUT / "prospects").mkdir(parents=True, exist_ok=True)
@@ -264,6 +267,10 @@ def main():
                           "class": c["CLASS"], "age": clean(c["AGE"]), "ht": c["HT"], "pick": int(c["NBA_PICK"]), "draft_year": int(c["YEAR"]),
                           "pts": clean(c["PTS"]), "bpm": clean(c["BPM"]), "ts": clean(c["TS"]), "usg": clean(c["USG"]),
                           "similarity": round(max(0.0, 100 * (1 - float(d[j]) / 2)), 1)})
+        # 20 nearest among players drafted 2008-2020 (6+ NBA seasons, so careers are mostly complete). The prospect page joins
+        # these to their real NBA.com outcomes from data/draft/translation.json (pipeline/college_nba.py).
+        dm = np.where(mature, d, np.inf)
+        nn = [[int(drafted_last.iloc[j]["PID"]), round(max(0.0, 100 * (1 - float(dm[j]) / 2)), 1)] for j in np.argsort(dm)[:NN_OUTCOMES] if np.isfinite(dm[j])]
         dob = r.get("DOB")
         age_draft = None
         if isinstance(dob, str) and dob:
@@ -284,7 +291,7 @@ def main():
                                                             "FT_PCT", "FTA_TOT", "FG3A_TOT", "TS", "EFG", "USG", "ORTG", "DRTG", "BPM", "OBPM", "DBPM", "PORPAG",
                                                             "RIM_M", "RIM_A", "RIM_PCT", "DUNKS", "TEAM_TRANK", "TEAM_ADJEM"]},
                "percentiles": pcts, "pctile_pool": f"{len(q)} qualified D-I players in {cf.season_label(stats_year)} (40%+ of team minutes)",
-               "strengths": strengths, "weaknesses": weaknesses, "drivers": contrib[:6], "comps": comps, "combine_data": cm}
+               "strengths": strengths, "weaknesses": weaknesses, "drivers": contrib[:6], "comps": comps, "nn_outcomes": nn, "combine_data": cm}
         cf.write_json(OUT / "prospects" / f"{pid}.json", rep)
 
     out = {"draft_year": DRAFT_YEAR, "generated_at": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC"),

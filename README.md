@@ -234,6 +234,18 @@ Outcome labels use NBA.com regular-season minutes only (no Basketball-Reference 
 `data/draft/history/` and `data/draft/translation.json`. 906 of 914 college picks are linked; the rest never played D-I
 (e.g. Shaedon Sharpe, Ricky Ledo) or NBA.com lists a non-college club as their school.
 
+**College → NBA** (`#/draft/translation?x=C_PTS&y=R_PPG`, Draft menu): how drafted D-I players' final college seasons
+(Torvik) lined up with their NBA.com rookie and career numbers. A stat-by-stat table (correlation r, players, and the
+median NBA ÷ college ratio, e.g. rookies typically kept ~38% of their college scoring), a scatter explorer for any college stat vs
+any NBA outcome (by pick range, click a dot for the player), a ranking of which college numbers went with long careers, both raw and
+*beyond draft slot* (minutes minus a fitted minutes-by-log-pick curve), and a searchable table of every matched player. Correlations
+and medians are descriptive; the fitted lines and the beyond-slot column are labeled **Model estimate**. Sample rules: rookie
+numbers need 20+ games, career per-game numbers 50+ games, career minutes use classes 2008-2020 (non-players count as 0).
+
+**Prospect pages** (`#/draft/<pid>`) add *What similar past players became in the NBA*: the NBA.com careers of the 6 listed
+comparisons, a summary of his 20 closest matches drafted 2008-2020 (`nn_outcomes` in the prospect file, written by
+`college_draft.py`), and a similarity-weighted share reaching rotation/starter level, labeled **Model estimate**.
+
 **College what-if sliders** (team pages, labeled *Model estimate*): change adjusted offense, adjusted defense, 3P% or
 opponents' 3P% and see AdjEM, Barthag (Torvik's formula, exponent 11.5), an estimated T-Rank, expected wins against the same
 strength of schedule (log5 vs Torvik's SOS; preseason uses the opponent strength that reproduces Torvik's projected record),

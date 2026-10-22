@@ -2,7 +2,8 @@
 // Displays data/draft/*.json from pipeline/college_draft.py. Stats are real (Torvik T-Rank CSVs, NBA Draft Combine);
 // the board order and chances are a MODEL ESTIMATE made by this site. No scouting opinions, no one else's rankings.
 import { esc } from "../ui.js";
-import { draftNav } from "./draft_nav.js";
+import { draftNav, tierTag, nbaLink } from "./draft_nav.js";
+import { unpack } from "./draft_translation.js";
 import { careerOf, TORVIK_CREDIT } from "../college/cdata.js";
 
 const cache = new Map();
@@ -62,6 +63,37 @@ export async function draftBoardPage(app, query = "") {
   draw();
 }
 
+// "What similar past players became": real NBA.com outcomes of the most similar drafted players (pipeline/college_nba.py),
+// plus one similarity-weighted summary, labeled Model estimate.
+function nbaOutcomes(p, outcomes) {
+  const shown = p.comps.map((c) => ({ c, o: outcomes.get(c.pid) }));
+  const nn = (p.nn_outcomes || []).map(([pid, sim]) => ({ o: outcomes.get(pid), sim })).filter((x) => x.o);
+  const med = (xs) => { const s2 = [...xs].sort((a, b2) => a - b2); return s2.length ? s2[Math.floor(s2.length / 2)] : null; };
+  const cnt = (t) => nn.filter((x) => t.includes(x.o.TIER)).length;
+  const wsum = nn.reduce((a, x) => a + x.sim, 0);
+  const wshare = (t) => wsum ? nn.reduce((a, x) => a + (t.includes(x.o.TIER) ? x.sim : 0), 0) / wsum : null;
+  const ppg = nn.filter((x) => x.o.N_GP >= 50).map((x) => x.o.N_PPG);
+  return `<section class="report-section"><h2>What similar past players became in the NBA</h2>
+    <p class="muted small">Real NBA.com regular-season results of the drafted players whose final college seasons looked most like his. History, not a forecast.</p>
+    <div class="table-wrap"><table class="data"><thead><tr><th class="left">Player</th><th>Drafted</th><th>NBA seasons</th><th>GP</th><th>Minutes</th><th>PTS</th><th>REB</th><th>AST</th><th>TS%</th><th>Rookie PTS</th><th class="left">Outcome</th></tr></thead>
+    <tbody>${shown.map(({ c, o }) => `<tr><td class="left">${o && o.N_GP ? nbaLink(o.NBA_ID, esc(c.player), true) : esc(c.player)}</td>
+      <td>${o ? `<a href="#/draft/history?year=${o.DRAFT_YEAR}">${o.DRAFT_YEAR}</a> #${o.PICK}` : `${c.draft_year} · #${c.pick}`}</td>
+      ${o ? `<td>${o.N_SEASONS}</td><td>${o.N_GP ?? 0}</td><td>${o.N_MIN ? o.N_MIN.toLocaleString() : 0}</td><td>${num(o.N_PPG)}</td><td>${num(o.N_RPG)}</td><td>${num(o.N_APG)}</td><td>${pct(o.N_TS)}</td><td>${num(o.R_PPG)}</td><td class="left">${tierTag(o.TIER)}</td>`
+        : `<td colspan="9" class="muted left">Not matched to NBA.com draft history</td>`}</tr>`).join("")}</tbody></table></div>
+    ${nn.length ? `<div class="grid two-col" style="margin-top:12px">
+      <div class="card"><h3>His ${nn.length} closest matches drafted 2008-2020</h3>
+        <p>${cnt(["played", "rotation", "starter"])} played in the NBA, <b>${cnt(["rotation", "starter"])}</b> became rotation players (5,000+ minutes) and <b>${cnt(["starter"])}</b> starters (2+ seasons of 2,000+ minutes).
+          Median career: ${(med(nn.map((x) => x.o.N_MIN ?? 0)) ?? 0).toLocaleString()} minutes${ppg.length ? `; ${num(med(ppg))} points a game among the ${ppg.length} who played 50+ games` : ""}.</p>
+        <p class="small">${nn.map((x) => `${x.o.N_GP ? nbaLink(x.o.NBA_ID, esc(x.o.NAME), true) : esc(x.o.NAME)} ${tierTag(x.o.TIER)}`).join(" · ")}</p></div>
+      <div class="card"><h3>Similarity-weighted outcome ${BADGE}</h3>
+        <div class="grid stat-cards" style="grid-template-columns:repeat(auto-fill,minmax(140px,1fr))">
+          <div class="card stat-card"><div class="label">Reached rotation</div><div class="value">${Math.round(100 * wshare(["rotation", "starter"]))}%</div></div>
+          <div class="card stat-card"><div class="label">Became a starter</div><div class="value">${Math.round(100 * wshare(["starter"]))}%</div></div></div>
+        <p class="muted small">Share of those ${nn.length} past players reaching each level, each counted by how similar he is (closer matches count more). Only drafted players are in the pool, so this assumes he gets drafted, and it can't see anything outside the box score.</p></div>
+    </div>` : ""}
+    <p class="muted small">Sources: NBA.com Draft History and regular-season stats; college seasons from Torvik. <a href="#/draft/translation">How college stats carried over →</a></p></section>`;
+}
+
 export async function draftProspectPage(app, pid) {
   const [b, p] = await Promise.all([getJSON("data/draft/board.json"), getJSON(`data/draft/prospects/${pid}.json`).catch(() => null)]);
   if (!p) { app.innerHTML = `${draftNav("board")}<h1>Prospect not found</h1><p class="muted">This player isn't on the current board. <a href="#/college/player/${esc(pid)}">College stats page →</a></p>`; return; }
@@ -70,6 +102,8 @@ export async function draftProspectPage(app, pid) {
     <td style="width:45%"><div style="background:var(--panel-2);border-radius:6px;height:14px;position:relative">
       <div style="width:${x.pctile}%;height:100%;border-radius:6px;background:${x.pctile >= 80 ? "var(--good)" : x.pctile <= 20 ? "var(--bad)" : "var(--accent)"};opacity:${x.enough ? 1 : .35}"></div></div></td>
     <td><b>${x.pctile}</b>${x.enough ? "" : ` <span class="muted small" title="Below the attempt minimum (${esc(x.rule)})">*</span>`}</td></tr>`;
+  let outcomes = null;
+  try { outcomes = new Map(unpack(await getJSON("data/draft/translation.json")).map((r) => [r.PID, r])); } catch { /* section hidden */ }
   let career = [];
   try { career = (await careerOf(Number(pid))).sort((a, b2) => a.SEASON < b2.SEASON ? -1 : 1); } catch { /* careers optional */ }
   const sline = (k, f = num) => f(s[k]);
@@ -105,6 +139,7 @@ export async function draftProspectPage(app, pid) {
         <td class="left">${esc(x.class || "")}</td><td>${num(x.age)}</td><td class="left">${esc(x.ht || "")}</td><td>${num(x.pts)}</td><td>${num(x.bpm)}</td><td>${pct(x.ts)}</td><td>${pct(x.usg)}</td>
         <td>${x.draft_year} · pick ${x.pick}</td><td><b>${num(x.similarity, 0)}</b></td></tr>`).join("")}</tbody></table></div>
       <p class="muted small">Similarity: 100 = identical on every input; 0 = on average two standard deviations apart. Pool: ${esc(b.model.comps_pool)}.</p></section>
+    ${outcomes ? nbaOutcomes(p, outcomes) : ""}
     ${c ? `<section class="report-section"><h2>NBA Draft Combine (${esc(c.SEASON)})</h2><div class="grid stat-cards">
       ${[["Height (no shoes)", ftin(c.HEIGHT_WO_SHOES)], ["Wingspan", ftin(c.WINGSPAN)], ["Standing reach", ftin(c.STANDING_REACH)], ["Weight", c.WEIGHT ? `${num(c.WEIGHT, 0)} lb` : "–"],
         ["Max vertical", c.MAX_VERTICAL_LEAP ? `${c.MAX_VERTICAL_LEAP}"` : "–"], ["Lane agility", c.LANE_AGILITY_TIME ? `${c.LANE_AGILITY_TIME}s` : "–"], ["3/4 sprint", c.THREE_QUARTER_SPRINT ? `${c.THREE_QUARTER_SPRINT}s` : "–"],
