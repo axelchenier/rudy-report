@@ -1,5 +1,5 @@
 // players.js - the Players page: one big sortable table with filters and tabs.
-import { load, currentSeason, seasonGames } from "../data.js";
+import { load, currentSeason, seasonFromQuery, seasonSelectHTML, withSeason, META, seasonGames } from "../data.js";
 import { COLUMNS } from "../stats.js";
 import { renderTable, playerLink, teamAbbrLink, esc } from "../ui.js";
 
@@ -12,18 +12,24 @@ const MODES = {
 };
 
 // Filter settings are remembered while you click around.
-const state = { mode: "pergame", search: "", team: "", minGP: null, minMIN: 10 };
+const state = { mode: "pergame", search: "", team: "", minGP: null, minGPAuto: true, minMIN: 10 };
 
-export async function playersPage(app) {
-  const season = currentSeason();
-  if (state.minGP === null) state.minGP = Math.round(seasonGames(season) * 0.25);
+export async function playersPage(app, query = "") {
+  const season = seasonFromQuery(query);          // ?season=... in the address wins
+  const urlMode = new URLSearchParams(query).get("mode");
+  if (urlMode && MODES[urlMode]) state.mode = urlMode;
+  const live = META.seasons.find((x) => x.season === season)?.in_progress;
+  // Default "min games" = 25% of the season so far (until you type your own number).
+  if (state.minGPAuto) state.minGP = Math.round(seasonGames(season) * 0.25);
   const perGame = await load("players", season);          // used for team list + minutes filter
   const teams = [...new Set(perGame.map((p) => p.TEAM_ABBREVIATION))].sort();
 
   app.innerHTML = `
     <div class="page-head">
       <div><h1>Players</h1><p class="sub">${season} regular season · click any column header to sort · click a name for the full profile</p></div>
+      ${seasonSelectHTML(season)}
     </div>
+    ${live ? `<div class="callout"><p>⚠ ${season} is in progress: teams have played up to ${seasonGames(season)} game${seasonGames(season) === 1 ? "" : "s"}, so per-game numbers will move a lot.</p></div>` : ""}
     <div class="toolbar">
       <div class="tabs" role="tablist">${Object.entries(MODES).map(([k, m]) =>
         `<button data-mode="${k}" class="${k === state.mode ? "active" : ""}">${m.label}</button>`).join("")}</div>
@@ -52,14 +58,17 @@ export async function playersPage(app) {
     renderTable(app.querySelector("#table"), { rows, columns, entity: "players", sortKey: mode.sort });
   }
 
+  // Season dropdown -> new address (the header picker follows).
+  app.querySelector("#page-season").addEventListener("change", (e) => { location.hash = withSeason("#/players", e.target.value, { mode: state.mode }); });
   app.querySelectorAll("[data-mode]").forEach((b) => b.addEventListener("click", () => {
     state.mode = b.dataset.mode;
+    history.replaceState(null, "", withSeason("#/players", season, { mode: state.mode }));   // keep the address shareable
     app.querySelectorAll("[data-mode]").forEach((x) => x.classList.toggle("active", x === b));
     draw();
   }));
   app.querySelector("#q").addEventListener("input", (e) => { state.search = e.target.value; draw(); });
   app.querySelector("#team").addEventListener("change", (e) => { state.team = e.target.value; draw(); });
-  app.querySelector("#mingp").addEventListener("input", (e) => { state.minGP = +e.target.value; draw(); });
+  app.querySelector("#mingp").addEventListener("input", (e) => { state.minGP = +e.target.value; state.minGPAuto = false; draw(); });
   app.querySelector("#minmin").addEventListener("input", (e) => { state.minMIN = +e.target.value; draw(); });
   draw();
 }

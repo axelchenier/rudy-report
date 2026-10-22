@@ -4,6 +4,7 @@ An interactive NBA stats website. You can:
 
 - **Ask** questions in plain English on the home page, for example *"Who leads the league in box plus minus?"*
 - **Browse Players and Teams** in big sortable tables, with Per Game / Totals / Per 36 (or Per 100 possessions) / Advanced tabs.
+  Each page has its own season dropdown. The season and tab are saved in the address, so you can share a link like `#/players?season=2019-20&mode=advanced`.
 - **Open any player or team** to see league ranks, season-by-season numbers, and team rosters.
 - **Compare** 2 to 4 players or teams side by side, with a bar chart and a radar chart.
 

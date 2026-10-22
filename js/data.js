@@ -50,3 +50,29 @@ export function seasonGames(season = currentSeason()) {
 // (the same rule NBA.com uses for its stat leaderboards).
 export const QUALIFY_SHARE = 0.7;
 export const qualifies = (p, season) => p.GP >= Math.ceil(seasonGames(season) * QUALIFY_SHARE);
+
+// ---- Season in the address bar (#/players?season=2024-25&mode=advanced) ----
+// If the address names a valid season, make it the current season (and update the header picker).
+export function seasonFromQuery(query = "") {
+  const wanted = new URLSearchParams(query).get("season");
+  if (wanted && SEASONS().includes(wanted) && wanted !== currentSeason()) {
+    setSeason(wanted);
+    const picker = document.getElementById("season-select");
+    if (picker) picker.value = wanted;
+  }
+  return currentSeason();
+}
+// Return the same address with ?season=... set (other settings like &mode= are kept).
+export function withSeason(hash, season, extra = {}) {
+  const [path, query = ""] = hash.split("?");
+  const params = new URLSearchParams(query);
+  params.set("season", season);
+  for (const [k, v] of Object.entries(extra)) params.set(k, v);
+  return `${path}?${params}`;
+}
+// A season dropdown for a page (stays in sync with the header picker through the address).
+export function seasonSelectHTML(season, id = "page-season") {
+  const label = (s) => META.seasons.find((x) => x.season === s)?.in_progress ? `${s} (in progress)` : s;
+  return `<label class="page-season">Season <select id="${id}">${SEASONS().map((s) =>
+    `<option value="${s}" ${s === season ? "selected" : ""}>${label(s)}</option>`).join("")}</select></label>`;
+}

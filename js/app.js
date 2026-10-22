@@ -1,6 +1,6 @@
 // app.js - the "traffic controller". It looks at the address bar (#/players, #/team/123, ...)
 // and shows the matching page inside <main id="app">.
-import { loadMeta, META, SEASONS, currentSeason, setSeason } from "./data.js";
+import { loadMeta, META, SEASONS, currentSeason, setSeason, withSeason } from "./data.js";
 import { esc } from "./ui.js";
 import { askPage } from "./pages/ask.js";
 import { playersPage } from "./pages/players.js";
@@ -16,8 +16,8 @@ const app = document.getElementById("app");
 const routes = [
   [/^#?\/?$/, askPage, "ask"],
   [/^#\/ask(?:\?(.*))?$/, askPage, "ask"],
-  [/^#\/players$/, playersPage, "players"],
-  [/^#\/teams$/, teamsPage, "teams"],
+  [/^#\/players(?:\?(.*))?$/, playersPage, "players"],
+  [/^#\/teams(?:\?(.*))?$/, teamsPage, "teams"],
   [/^#\/player\/(\d+)$/, playerPage, "players"],
   [/^#\/team\/(\d+)$/, teamPage, "teams"],
   [/^#\/compare(?:\?(.*))?$/, comparePage, "compare"],
@@ -47,7 +47,13 @@ async function start() {
   const select = document.getElementById("season-select");
   select.innerHTML = SEASONS().map((s) => `<option value="${s}">${s}</option>`).join("");
   select.value = currentSeason();
-  select.addEventListener("change", () => { setSeason(select.value); render(); });
+  select.addEventListener("change", () => {
+    setSeason(select.value);
+    // On the Players/Teams pages the season is part of the address, so links can be shared.
+    const page = location.hash.match(/^#\/(players|teams)\b/);
+    if (page) location.hash = withSeason(location.hash, select.value);
+    else render();
+  });
 
   // Light/dark switch.
   document.getElementById("theme-toggle").addEventListener("click", () => {

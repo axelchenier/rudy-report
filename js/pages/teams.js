@@ -1,5 +1,5 @@
 // teams.js - the Teams page: all 30 teams in a sortable table with tabs.
-import { load, currentSeason } from "../data.js";
+import { load, currentSeason, seasonFromQuery, seasonSelectHTML, withSeason, META } from "../data.js";
 import { COLUMNS } from "../stats.js";
 import { renderTable, teamLink } from "../ui.js";
 
@@ -11,11 +11,16 @@ const MODES = {
 };
 const state = { mode: "pergame" };
 
-export async function teamsPage(app) {
-  const season = currentSeason();
+export async function teamsPage(app, query = "") {
+  const season = seasonFromQuery(query);          // ?season=... in the address wins
+  const urlMode = new URLSearchParams(query).get("mode");
+  if (urlMode && MODES[urlMode]) state.mode = urlMode;
+  const live = META.seasons.find((x) => x.season === season)?.in_progress;
   app.innerHTML = `
     <div class="page-head"><div><h1>Teams</h1>
-      <p class="sub">${season} regular season · click a column to sort · click a team for roster and history</p></div></div>
+      <p class="sub">${season} regular season · click a column to sort · click a team for roster and history</p></div>
+      ${seasonSelectHTML(season)}</div>
+    ${live ? `<div class="callout"><p>⚠ ${season} is in progress: only teams that have played are listed, and early-season numbers move a lot.</p></div>` : ""}
     <div class="toolbar"><div class="tabs">${Object.entries(MODES).map(([k, m]) =>
       `<button data-mode="${k}" class="${k === state.mode ? "active" : ""}">${m.label}</button>`).join("")}</div></div>
     <div id="table"></div>
@@ -30,8 +35,10 @@ export async function teamsPage(app) {
       columns: [{ key: "TEAM_NAME", label: "Team", left: true, html: teamLink }, ...mode.cols.map((key) => ({ key }))],
     });
   }
+  app.querySelector("#page-season").addEventListener("change", (e) => { location.hash = withSeason("#/teams", e.target.value, { mode: state.mode }); });
   app.querySelectorAll("[data-mode]").forEach((b) => b.addEventListener("click", () => {
     state.mode = b.dataset.mode;
+    history.replaceState(null, "", withSeason("#/teams", season, { mode: state.mode }));
     app.querySelectorAll("[data-mode]").forEach((x) => x.classList.toggle("active", x === b));
     draw();
   }));
