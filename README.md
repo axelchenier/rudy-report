@@ -221,6 +221,11 @@ chances fit on 2008-2023 college seasons, with a back-test and a method note) an
 rule-based strengths/weaknesses with numbers, most similar past drafted players, NBA Draft Combine data when it exists,
 college career). No scouting opinions and no outside rankings.
 
+**Conferences** (`#/college/conferences`, `#/college/conference/<code>`): every conference ranked by average adjusted
+efficiency margin (plus top-4 AdjEM, offense, defense, tempo, best team, and NCAA bids/wins/best run when a real bracket exists),
+and one page per conference with standings (by conference win %), rating cards, player leaders (points, rebounds, assists, BPM,
+TS%, steals, blocks, 3P%), NCAA seeds/results, and a season-by-season history. Season switcher on both.
+
 **Tournament Simulator** (`#/college/tournament`, labeled *Model estimate*): pick a field, either a **real NCAA bracket**
 (2008-2026, seeds/regions/results from ESPN's scoreboard, saved by `pipeline/college_bracket.py`) or a **model-seeded field**
 (each conference's best T-Rank team + the best remaining teams, seeded 1-16 by T-Rank on an S-curve) for any season, including
@@ -240,6 +245,7 @@ Nightly college job (Torvik refresh + ESPN games + reports + draft board):
 | `pipeline/college_draft.py` | Draft model + prospect reports → `data/draft/`. |
 | `pipeline/college_bracket.py` | Real NCAA brackets (ESPN) → `data/college/brackets/<year>.json`. |
 | `js/pages/college_tourney.js` | Tournament Simulator page. |
+| `js/pages/college_conf.js` | Conference pages (all conferences + one conference). |
 | `js/pages/college_reports.js`, `college_predictor.js`, `draft.js` | Those pages. |
 | `js/nav.js` | Top-nav dropdowns (College, More) and the mobile menu. |
 

@@ -16,7 +16,7 @@ export const ccol = (key, extra = {}) => STRING_KEYS.has(key)
 
 // Sub-navigation shared by every College page.
 export function collegeNav(active) {
-  const items = [["teams", "Teams", "#/college/teams"], ["players", "Players", "#/college/players"], ["compare", "Compare", "#/college/compare"],
+  const items = [["teams", "Teams", "#/college/teams"], ["players", "Players", "#/college/players"], ["conferences", "Conferences", "#/college/conferences"], ["compare", "Compare", "#/college/compare"],
     ["reports", "Reports", "#/college/reports"], ["predictor", "Predictor", "#/college/predictor"],
     ["tournament", "Tournament sim", "#/college/tournament"], ["draft", "2027 Draft", "#/draft"]];
   return `<div class="tabs" style="margin-bottom:12px;flex-wrap:wrap">${items.map(([k, l, h]) =>
@@ -168,9 +168,9 @@ export async function collegeTeamPage(app, id, query = "") {
   app.innerHTML = `
     ${collegeNav("teams")}
     <div class="page-head"><div><h1>${esc(t.TEAM_NAME)}</h1>
-      <p class="sub">${season} · ${esc(t.CONF)} · ${pre ? "preseason projection" : `${t.REC} (${esc(t.CONF_REC || "–")} conf)`} · T-Rank #${t.TRANK} of ${n}
+      <p class="sub">${season} · <a href="#/college/conference/${encodeURIComponent(t.CONF)}?season=${season}">${esc(t.CONF)}</a> · ${pre ? "preseason projection" : `${t.REC} (${esc(t.CONF_REC || "–")} conf)`} · T-Rank #${t.TRANK} of ${n}
         ${t.HOME_REC ? ` · home ${t.HOME_REC}, away/neutral ${t.AWAY_REC}` : ""}</p></div>
-      <div style="display:flex;gap:8px;align-items:center">${cseasonSelectHTML(season)}
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">${cseasonSelectHTML(season)}
         <a class="btn" href="#/college/compare?type=teams&ids=${esc(id)}&season=${season}">Compare →</a></div></div>
     ${preseasonCallout(season)}
     <div class="grid stat-cards">${cards}</div>
@@ -180,7 +180,7 @@ export async function collegeTeamPage(app, id, query = "") {
         <div class="table-wrap"><table class="data"><thead><tr><th class="left">Factor</th><th>Offense</th><th>Rank</th><th>Defense (opp.)</th><th>Rank</th></tr></thead><tbody>
         ${FOUR.map(([label, o, d]) => `<tr><td class="left">${label}</td><td>${fmt(t[o], o)}</td><td class="muted">#${rk(o)}</td><td>${fmt(t[d], d)}</td><td class="muted">#${rk(d)}</td></tr>`).join("")}
         </tbody></table></div></div>
-      <div><h2>${esc(t.CONF)} standings</h2><div id="conf"></div></div>
+      <div><h2>${esc(t.CONF)} standings</h2><div id="conf"></div><p class="small"><a href="#/college/conference/${encodeURIComponent(t.CONF)}?season=${season}">Full ${esc(t.CONF)} page: standings, leaders, history →</a></p></div>
     </div>
     <h2>Roster · ${pre ? playedSeasons()[0] + " (last season's team)" : season}</h2>
     <div id="roster"></div>
