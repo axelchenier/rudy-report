@@ -12,6 +12,9 @@ import { reportsPage } from "./pages/reports.js";
 import { standingsPage } from "./pages/standings.js";
 import { hubsPage } from "./pages/hubs.js";
 import { glossaryPage } from "./pages/glossary.js";
+// College (NCAA men's D-I) section: its own pages and data (data/college/).
+import { collegeTeamsPage, collegePlayersPage, collegeTeamPage, collegePlayerPage } from "./pages/college.js";
+import { collegeComparePage } from "./pages/college_compare.js";
 
 const app = document.getElementById("app");
 
@@ -27,6 +30,11 @@ const routes = [
   [/^#\/hubs(?:\/(clutch|hustle|tracking))?(?:\?(.*))?$/, hubsPage, "hubs"],
   [/^#\/glossary(?:\?(.*))?$/, glossaryPage, "glossary"],
   [/^#\/compare(?:\?(.*))?$/, comparePage, "compare"],
+  [/^#\/college\/?(?:teams)?(?:\?(.*))?$/, collegeTeamsPage, "college"],
+  [/^#\/college\/players(?:\?(.*))?$/, collegePlayersPage, "college"],
+  [/^#\/college\/team\/([\w-]+)(?:\?(.*))?$/, collegeTeamPage, "college"],
+  [/^#\/college\/player\/(\d+)$/, collegePlayerPage, "college"],
+  [/^#\/college\/compare(?:\?(.*))?$/, collegeComparePage, "college"],
   [/^#\/reports(?:\/(daily|weekly|monthly))?(?:\/([\w-]+))?$/, reportsPage, "reports"],
 ];
 
@@ -36,6 +44,8 @@ async function render() {
   const [re, page, navKey] = match || routes[0];
   const params = hash.match(re)?.slice(1) || [];
   document.querySelectorAll("[data-nav]").forEach((a) => a.classList.toggle("active", a.dataset.nav === navKey));
+  const picker = document.querySelector(".season-picker");          // the header picker is for NBA seasons
+  if (picker) picker.style.visibility = navKey === "college" ? "hidden" : "";
   app.innerHTML = `<p class="muted">Loading…</p>`;
   try {
     await page(app, ...params);

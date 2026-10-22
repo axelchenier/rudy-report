@@ -2,6 +2,7 @@ nba_api
 pandas
 requests
 lxml
+sportsdataverse   # college box scores (ESPN data)
 html5lib
 # only for taking screenshots:
 playwright

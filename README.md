@@ -180,3 +180,30 @@ Team ratings for date ranges (ORtg, DRtg, Net, Pace, 3PA/100) are estimated from
 | `js/hubs.js` | Which files and columns make up the clutch / hustle / tracking sections. |
 | `js/pages/shared.js` | Percentile cards, percentile bars, the game-log view, and page tabs. |
 | `js/pages/standings.js`, `hubs.js`, `glossary.js` | The new pages. |
+
+## College basketball (NCAA men's Division I)
+
+The **College** tab has its own Teams and Players tables (sortable, with Ratings / Four Factors / Scoring tabs for teams and
+Per Game / Advanced / Shooting tabs for players), a season switcher (2007-08 to today, plus Torvik's preseason ratings for a
+season that hasn't started), team and player pages, and a College Compare page (2-4 players or teams, bar + radar charts).
+The Ask bar also answers college questions ("best offense in college basketball", "Duke adjusted efficiency",
+"top college scorers"). The NBA stays the default; a question goes to college data when it says college/NCAA, names a
+college conference, or names a college team that isn't also an NBA city.
+
+| File | What it is |
+|---|---|
+| `pipeline/college_fetch.py` | Downloads Bart Torvik's public CSV files + ESPN box scores and writes `data/college/`. |
+| `data/college/<season>/teams.json`, `players.json` | One season of college teams / players (players are stored column-wise to keep files small). |
+| `data/college/careers/<n>.json` | Every college season of every player, split into 100 files (`player id % 100`). |
+| `js/college/cstats.js`, `js/college/cdata.js` | College stat dictionary and data loading. |
+| `js/pages/college.js`, `js/pages/college_compare.js` | The College pages. |
+| `js/ask/college.js` | The college part of the Ask bar (rules, no AI). |
+
+**Sources:** [barttorvik.com](https://barttorvik.com/) T-Rank bulk CSV files (`<year>_team_results.csv`, `<year>_fffinal.csv`,
+`getadvstats.php?year=<year>&csv=1`). Bart Torvik publishes these for public use; we credit him on every page and only use the CSV links.
+ESPN box scores (turnovers, fouls, starts, home/away records) come through the free `sportsdataverse` package.
+Sports-Reference is **not** used (its terms don't allow building a database from it).
+
+Refresh college data (current season; add `--seasons 2008-2027` to rebuild everything):
+
+    .venv/bin/python pipeline/college_fetch.py --seasons 2027
