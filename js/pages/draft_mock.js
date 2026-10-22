@@ -53,6 +53,7 @@ export function fitScore(p, needs) {
   return wsum ? s / wsum : 0;          // -0.5 .. +0.5
 }
 
+// overrides: { TEAM_ID: prospect pid }. Keyed by team, so a user's pick follows the team through swaps, re-rolled lotteries and order changes.
 const state = { source: "projected", order: null, overrides: {}, needW: 1, seed: 1 };
 
 export async function draftMockPage(app) {
@@ -83,7 +84,7 @@ export async function draftMockPage(app) {
     return ids;
   };
   const setSource = (src) => {
-    state.source = src; state.overrides = {};
+    state.source = src;
     state.order = src === "lottery" ? lotteryOrder(state.seed) : src === "last" ? lastSeasonOrder() : projectedOrder();
   };
   if (!state.order) setSource(state.source);
@@ -94,8 +95,8 @@ export async function draftMockPage(app) {
     state.order.forEach((tid, k) => {
       const nd = needs.get(tid)?.needs || [];
       const score = (p) => logit(p.p_first) + state.needW * 2 * fitScore(p, nd);
-      let pid = state.overrides[k + 1];
-      if (pid && taken.has(pid)) { delete state.overrides[k + 1]; pid = null; }
+      let pid = state.overrides[tid];
+      if (pid && taken.has(pid)) { delete state.overrides[tid]; pid = null; }   // an earlier pick already took him
       const avail = P.filter((p) => !taken.has(p.pid)).map((p) => ({ p, s: score(p), fit: fitScore(p, nd) })).sort((a, c) => c.s - a.s);
       const choice = pid ? avail.find((x) => x.p.pid === pid) : avail[0];
       taken.add(choice.p.pid);
@@ -114,7 +115,7 @@ export async function draftMockPage(app) {
         <td><b>${x.pick}</b></td>
         <td class="left"><select class="mk-team" data-k="${x.pick - 1}" aria-label="Team at pick ${x.pick}">${teamOpts(x.tid)}</select></td>
         <td class="left small">${x.top.length ? x.top.map((n) => `<span title="${esc(n.label)}: NBA.com ${esc(n.stat)} = ${num(n.value, n.value < 2 ? 3 : 1)}, #${n.rank} of 30">${esc(SHORT[n.stat])} <span class="muted">#${n.rank}</span></span>`).join(" · ") : `<span class="muted">No bottom-half area</span>`}</td>
-        <td class="left"><select class="mk-pick" data-pick="${x.pick}" aria-label="Player at pick ${x.pick}">
+        <td class="left"><select class="mk-pick" data-tid="${x.tid}" aria-label="Player at pick ${x.pick}">
           <option value="">${x.manual ? "↺ Back to auto" : "Auto"}: ${esc(x.avail[0].p.player)}</option>
           ${x.avail.map((a) => `<option value="${a.p.pid}" ${x.manual && a.p.pid === p.pid ? "selected" : ""}>${esc(a.p.player)} (#${a.p.rank}, fit ${a.fit >= 0 ? "+" : ""}${Math.round(a.fit * 100)})</option>`).join("")}
           ${x.manual && !x.avail.some((a) => a.p.pid === p.pid) ? `<option value="${p.pid}" selected>${esc(p.player)}</option>` : ""}</select>
@@ -122,8 +123,8 @@ export async function draftMockPage(app) {
         <td>${p.rank}</td><td>${x.choice.fit >= 0 ? "+" : ""}${Math.round(x.choice.fit * 100)}</td><td>${chance(p.p_first)}</td>
         <td class="left small">${num(p.pts)} / ${num(p.reb)} / ${num(p.ast)} · BPM ${num(p.bpm)} · TS ${p.ts == null ? "–" : (p.ts * 100).toFixed(1)}%</td></tr>`; }).join("")}</tbody></table></div>`;
     app.querySelectorAll(".mk-pick").forEach((s) => s.addEventListener("change", () => {
-      const k = +s.dataset.pick;
-      if (s.value) state.overrides[k] = +s.value; else delete state.overrides[k];
+      const tid = +s.dataset.tid;
+      if (s.value) state.overrides[tid] = +s.value; else delete state.overrides[tid];
       draw_();
     }));
     app.querySelectorAll(".mk-team").forEach((s) => s.addEventListener("change", () => {
@@ -153,7 +154,7 @@ export async function draftMockPage(app) {
       <p class="small"><b>Board value</b> = the Model Board's first-round chance on a log-odds scale (college stats, age and height; <a href="#/draft">method</a>).
         <b>Team needs</b> = each team's NBA.com rank (1-30) in ${esc(ranksSeason)} in ten areas: ${NEEDS.map(([l, s]) => `${esc(l)} (${esc(s)})`).join(", ")}.
         A bottom-half rank becomes a need, weighted from 0 (15th) to 1 (30th). <b>Fit</b> = how far above or below the D-I median the prospect's matching percentiles are, averaged with those weights (−50 to +50).
-        Each pick takes the available player with the highest <i>board value + weight × 2 × fit</i>. Weight 0 = pure best available.</p>
+        Each pick takes the available player with the highest <i>board value + weight × 2 × fit</i>. Weight 0 = pure best available. Your own picks stay with the team (through swaps, re-rolled lotteries and order changes) unless an earlier pick takes that player.</p>
       <p class="small muted">Order options: “projected” sorts teams by average wins in 2,000 simulated seasons from the Playoff Odds model; “lottery” is one simulated season plus one drawing under the NBA's 3-2-1 rules (the same code as <a href="#/tools/lottery">Draft lottery</a>);
         picks 17-30 follow record. Traded picks, pick protections and the 2nd round aren't modeled. Team stats: NBA.com; college stats: Bart Torvik.</p></div>`;
   app.querySelector("#mk-src").addEventListener("change", (e) => { if (e.target.value !== "custom") setSource(e.target.value); else state.source = "custom"; draw_(); });

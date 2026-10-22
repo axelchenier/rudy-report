@@ -259,7 +259,7 @@ or College → NBA page.
 first round fills from the Model Board. Team needs = bottom-half NBA.com team-stat ranks (last complete season) in ten areas
 (3P%, assist %, turnover %, blocks, steals, defensive/offensive rating, DREB%/OREB%, TS%); fit = the prospect's D-I percentiles
 in those areas (new `pct` field on each board row from `college_draft.py`). Each pick = best *board log-odds + weight × 2 × fit*;
-any pick can be overridden and later picks re-fill. Not modeled: traded picks, protections, the 2nd round, players not on the board
+any pick can be overridden (the choice follows the team through swaps and new lottery rolls) and later picks re-fill. Not modeled: traded picks, protections, the 2nd round, players not on the board
 (incoming freshmen, internationals).
 
 **College team and player pages, history extras** (`js/pages/college_extras.js`): team pages end with *Program history*:
