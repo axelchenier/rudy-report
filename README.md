@@ -208,6 +208,27 @@ Refresh college data (current season; add `--seasons 2008-2027` to rebuild every
 
     .venv/bin/python pipeline/college_fetch.py --seasons 2027
 
+**College Reports** (`#/college/reports`): Daily / Weekly / Monthly reports in the same style as the NBA Reports (scores,
+top-25 matchups, upsets, top performers, notable lines, leaders, what changed vs the previous period, T-Rank movers,
+hot/cold vs last season, freshmen). Before the season starts it shows the first game day and a recap of last season.
+**Game predictor** (`#/college/predictor`, labeled *Model estimate*): score, margin and win chance from Torvik's
+adjusted efficiencies, with the method and back-test on the page.
+**2027 NBA Draft** (`#/draft`): the *Rudy Report Model Board* (labeled *Model estimate*: a logistic model of first-round
+chances fit on 2008-2023 college seasons, with a back-test and a method note) and a report per prospect (percentiles,
+rule-based strengths/weaknesses with numbers, most similar past drafted players, NBA Draft Combine data when it exists,
+college career). No scouting opinions and no outside rankings.
+
+Nightly college job (Torvik refresh + ESPN games + reports + draft board):
+
+    .venv/bin/python pipeline/update_college.py
+
+| File | What it is |
+|---|---|
+| `pipeline/update_college.py` | Nightly job → `data/college/reports/` (and runs `college_draft.py`). |
+| `pipeline/college_draft.py` | Draft model + prospect reports → `data/draft/`. |
+| `js/pages/college_reports.js`, `college_predictor.js`, `draft.js` | Those pages. |
+| `js/nav.js` | Top-nav dropdowns (College, More) and the mobile menu. |
+
 ## Shot charts
 
 Every player and team page has a **Shot chart** tab (NBA.com `ShotChartDetail`, all seasons loaded):

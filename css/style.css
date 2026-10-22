@@ -277,3 +277,34 @@ input[type=range] { vertical-align: middle; accent-color: var(--accent); }
 .wi-check { display: block; margin: -4px 0 6px 118px; }
 .btn.tiny { padding: 2px 8px; font-size: 12px; }
 @media (max-width: 860px) { .wi-grid { grid-template-columns: 1fr; } .wi-slider { grid-template-columns: 90px 1fr 56px; } .wi-slider .btn { display: none; } .wi-check { margin-left: 0; } }
+
+/* ---------- Grouped top nav: NBA links + College / More dropdowns + mobile hamburger (js/nav.js) ---------- */
+.brand { white-space: nowrap; flex-shrink: 0; }
+.nav { overflow: visible; align-items: center; flex-wrap: nowrap; }
+.nav a, .nav-drop { white-space: nowrap; }
+.nav-group { position: relative; }
+.nav-drop { background: none; border: 0; font: inherit; color: var(--muted); padding: 6px 12px; border-radius: 8px; font-weight: 500; cursor: pointer; }
+.nav-drop:hover, .nav-group.open > .nav-drop { color: var(--text); background: var(--panel-2); }
+.nav-drop.active, .nav-group:has(a.active) > .nav-drop { color: var(--text); background: var(--panel-2); }
+.nav-menu { display: none; position: absolute; top: calc(100% + 6px); left: 0; min-width: 190px; padding: 6px; z-index: 20;
+  background: var(--panel); border: 1px solid var(--border); border-radius: 10px; box-shadow: 0 8px 24px rgba(0, 0, 0, .25); }
+.nav-menu-right { left: auto; right: 0; }
+.nav-group.open > .nav-menu { display: grid; }
+.nav-menu a { display: block; padding: 7px 10px; }
+.nav-menu a.current { color: var(--text); background: var(--panel-2); }
+.nav-toggle { display: none; }
+@media (max-width: 1100px) { .nav-drop { padding: 6px 8px; } .season-picker select { max-width: 110px; } }
+@media (max-width: 1019px) {
+  .header-row { flex-wrap: nowrap; height: 60px; padding-top: 0; padding-bottom: 0; }
+  .nav-toggle { display: inline-block; order: 2; }
+  .header-tools { order: 3; }
+  .nav { display: none; position: absolute; top: 60px; left: 0; right: 0; flex-direction: column; align-items: stretch; gap: 2px;
+    padding: 10px 16px 14px; background: var(--bg); border-bottom: 1px solid var(--border); box-shadow: 0 10px 24px rgba(0, 0, 0, .2);
+    max-height: calc(100vh - 60px); overflow-y: auto; width: auto; }
+  body.nav-open .nav { display: flex; }
+  .nav a, .nav-drop { padding: 9px 10px; text-align: left; }
+  .nav-drop { width: 100%; }
+  .nav-menu { position: static; display: grid; box-shadow: none; border: 0; background: none; padding: 0 0 0 14px; min-width: 0; }
+  .nav-drop span { display: none; }
+  .nav-drop { pointer-events: none; font-size: 12px; text-transform: uppercase; letter-spacing: .05em; padding-top: 12px; }
+}
