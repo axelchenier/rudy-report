@@ -13,13 +13,18 @@ export async function collegeComparePage(app, query = "") {
   const type = params.get("type") === "teams" ? "teams" : "players";
   let season = cseasonFromQuery(query);
   if (type === "players" && seasonInfo(season).preseason) season = playedSeasons()[0];
-  const ids = (params.get("ids") || "").split(",").filter(Boolean).slice(0, MAX);
+  // ids are "id@season" so players/teams from different seasons can be compared (a plain id means the page's season).
+  const ids = (params.get("ids") || "").split(",").filter(Boolean).slice(0, MAX).map((x) => x.includes("@") ? x : `${x}@${season}`);
   const rows = (await cload(type, season)).map((r) => type === "teams" ? addRecords(r) : r);
   const idOf = (r) => String(type === "players" ? r.PID : r.TEAM_ID);
-  const nameOf = (r) => type === "players" ? `${r.PLAYER_NAME} (${r.TEAM_NAME})` : r.TEAM_NAME;
-  const picked = ids.map((id) => rows.find((r) => idOf(r) === id)).filter(Boolean);
+  const pickedSeasons = [...new Set(ids.map((x) => x.split("@")[1]))].filter((s) => playedSeasons().includes(s) || s === season);
+  const bySeason = {};
+  for (const s of pickedSeasons) bySeason[s] = s === season ? rows : (await cload(type, s)).map((r) => type === "teams" ? addRecords(r) : r);
+  const picked = ids.map((key) => { const [id, s] = key.split("@"); const r = (bySeason[s] || []).find((x) => idOf(x) === id); return r && { ...r, _season: s, _key: key }; }).filter(Boolean);
+  const mixed = new Set(picked.map((r) => r._season)).size > 1;
+  const nameOf = (r) => (type === "players" ? `${r.PLAYER_NAME} (${r.TEAM_NAME})` : r.TEAM_NAME) + (r._season && (mixed || r._season !== season) ? ` ${r._season}` : "");
   const go = (newIds, newType = type, s = season) => { location.hash = `#/college/compare?type=${newType}&season=${s}&ids=${newIds.join(",")}`; };
-  const pool = type === "players" ? rows.filter((r) => (r.MIN_PCT ?? 0) >= C_QUAL_MIN_PCT) : rows;
+  const qual = (list) => type === "players" ? list.filter((r) => (r.MIN_PCT ?? 0) >= C_QUAL_MIN_PCT) : list;
   const statKeys = CCOMPARE[type];
   // Datalist of names (players: only those with real minutes, to keep the list usable).
   const options = (type === "players" ? rows.filter((r) => (r.MIN_PCT ?? 0) >= 0.2) : rows).map((r) => `<option value="${esc(nameOf(r))}">`).join("");
@@ -27,29 +32,29 @@ export async function collegeComparePage(app, query = "") {
   app.innerHTML = `
     ${collegeNav("compare")}
     <div class="page-head"><div><h1>Compare (College)</h1>
-      <p class="sub">${season} · pick up to ${MAX} ${type} · best value in each row is green</p></div>
+      <p class="sub">Pick up to ${MAX} ${type} · best value in each row is green · change the season to add ${type === "players" ? "a player" : "a team"} from another year (your picks stay)</p></div>
       <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">${cseasonSelectHTML(season)}
       <div class="tabs"><button data-type="players" class="${type === "players" ? "active" : ""}">Players</button>
         <button data-type="teams" class="${type === "teams" ? "active" : ""}">Teams</button></div></div></div>
     <div class="card"><div class="picker-row">
       ${picked.map((r, i) => `<span class="pill"><span class="dot" style="background:${PALETTE[i]}"></span>${esc(nameOf(r))}
-        <button data-remove="${esc(idOf(r))}" title="Remove">×</button></span>`).join("")}
-      ${picked.length < MAX ? `<input type="search" id="add" list="names" placeholder="Add a ${type === "players" ? "player" : "team"}…" style="min-width:260px">
+        <button data-remove="${esc(r._key)}" title="Remove">×</button></span>`).join("")}
+      ${picked.length < MAX ? `<input type="search" id="add" list="names" placeholder="Add a ${season} ${type === "players" ? "player" : "team"}…" style="min-width:260px">
         <datalist id="names">${options}</datalist>` : ""}
     </div></div>
     <div id="result"></div>`;
-  app.querySelector("#page-season").addEventListener("change", (e) => go([], type, e.target.value));
+  app.querySelector("#page-season").addEventListener("change", (e) => go(ids, type, e.target.value));
   app.querySelectorAll("[data-type]").forEach((b) => b.addEventListener("click", () => go([], b.dataset.type)));
   app.querySelectorAll("[data-remove]").forEach((b) => b.addEventListener("click", () => go(ids.filter((x) => x !== b.dataset.remove))));
   app.querySelector("#add")?.addEventListener("change", (e) => {
     const v = e.target.value.trim().toLowerCase();
     const r = rows.find((x) => nameOf(x).toLowerCase() === v) || rows.find((x) => (type === "players" ? x.PLAYER_NAME : x.TEAM_NAME).toLowerCase() === v);
-    if (r && !ids.includes(idOf(r))) go([...ids, idOf(r)]);
+    if (r && !ids.includes(`${idOf(r)}@${season}`)) go([...ids, `${idOf(r)}@${season}`]);
   });
   const result = app.querySelector("#result");
   if (picked.length < 2) { result.innerHTML = `<p class="muted" style="margin-top:16px">Add at least two ${type} to compare. Start typing a name above.</p>`; return; }
 
-  const link = (r) => type === "players" ? `#/college/player/${r.PID}` : `#/college/team/${esc(r.TEAM_ID)}?season=${season}`;
+  const link = (r) => type === "players" ? `#/college/player/${r.PID}` : `#/college/team/${esc(r.TEAM_ID)}?season=${r._season}`;
   const head = `<tr><th class="left">Stat</th>${picked.map((r, i) => `<th><span class="dot" style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${PALETTE[i]}"></span>
     <a href="${link(r)}">${esc(nameOf(r))}</a></th>`).join("")}</tr>`;
   const body = statKeys.map((k) => {
@@ -64,7 +69,7 @@ export async function collegeComparePage(app, query = "") {
       <div class="card"><div class="toolbar" style="margin:0 0 8px"><label>Bar chart stat <select id="barstat">${statKeys.map((k) =>
         `<option value="${k}" ${k === (type === "players" ? "BPM" : "ADJEM") ? "selected" : ""}>${esc(STATS[k].label)} · ${esc(STATS[k].name)}</option>`).join("")}</select></label></div>
         <div class="chart-box"><canvas id="bar"></canvas></div></div>
-      <div class="card"><h3>D-I percentile <span class="muted small">(100 = best${type === "players" ? " among players with 40%+ of team minutes" : ` of ${rows.length} teams`})</span></h3>
+      <div class="card"><h3>D-I percentile <span class="muted small">(100 = best${type === "players" ? " among players with 40%+ of team minutes" : " of D-I teams"}${mixed ? ", each against his own season" : ` in ${season}`})</span></h3>
         <div class="chart-box"><canvas id="radar"></canvas></div></div>
     </div>`;
   const th = chartTheme();
@@ -73,7 +78,7 @@ export async function collegeComparePage(app, query = "") {
   const drawBar = (k) => {
     bar?.destroy();
     bar = new Chart(result.querySelector("#bar"), { type: "bar",
-      data: { labels: picked.map((r) => type === "players" ? r.PLAYER_NAME : r.TEAM_NAME), datasets: [{ label: STATS[k].name, data: picked.map((r) => show(r[k], k)), backgroundColor: PALETTE.slice(0, picked.length), borderRadius: 6 }] },
+      data: { labels: picked.map((r) => (type === "players" ? r.PLAYER_NAME : r.TEAM_NAME) + (mixed ? ` ${r._season}` : "")), datasets: [{ label: STATS[k].name, data: picked.map((r) => show(r[k], k)), backgroundColor: PALETTE.slice(0, picked.length), borderRadius: 6 }] },
       options: { maintainAspectRatio: false, plugins: { legend: { display: false }, title: { display: true, text: STATS[k].name, color: th.text } },
         scales: { x: { ticks: { color: th.text }, grid: { display: false } }, y: { ticks: { color: th.text }, grid: { color: th.grid } } } } });
   };
@@ -81,8 +86,8 @@ export async function collegeComparePage(app, query = "") {
   drawBar(result.querySelector("#barstat").value);
   const rk = CRADAR[type];
   new Chart(result.querySelector("#radar"), { type: "radar",
-    data: { labels: rk.map((k) => STATS[k].label), datasets: picked.map((r, i) => ({ label: type === "players" ? r.PLAYER_NAME : r.TEAM_NAME,
-      data: rk.map((k) => percentile(r[k], pool.map((x) => x[k]), STATS[k].lowerBetter)), borderColor: PALETTE[i], backgroundColor: PALETTE[i] + "33", pointBackgroundColor: PALETTE[i] })) },
+    data: { labels: rk.map((k) => STATS[k].label), datasets: picked.map((r, i) => ({ label: (type === "players" ? r.PLAYER_NAME : r.TEAM_NAME) + (mixed ? ` ${r._season}` : ""),
+      data: rk.map((k) => percentile(r[k], qual(bySeason[r._season] || rows).map((x) => x[k]), STATS[k].lowerBetter)), borderColor: PALETTE[i], backgroundColor: PALETTE[i] + "33", pointBackgroundColor: PALETTE[i] })) },
     options: { maintainAspectRatio: false, plugins: { legend: { labels: { color: th.text } } },
       scales: { r: { min: 0, max: 100, ticks: { display: false, stepSize: 25 }, grid: { color: th.grid }, angleLines: { color: th.grid }, pointLabels: { color: th.text } } } } });
 }

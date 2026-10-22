@@ -279,6 +279,10 @@ scores: margin chart with a 5-game average, game table with opponent T-Rank, pos
 (points per 100 possessions, not opponent-adjusted), and splits (home/away as ESPN lists them, conference/non-conference, vs top-25
 and top-100, vs non-D-I, postseason, close games, by month). `data/college/gamelogs/<season>/teams.json` (~1.2 MB per season).
 
+**College Compare across seasons**: `#/college/compare?type=players&ids=<pid>@<season>,...` compares players (or teams) from
+different seasons (e.g. Zion 2018-19 vs Anthony Davis 2011-12). Changing the season keeps your picks so you can add someone from
+another year; percentiles are against each one's own season. Old links with plain ids still work (they mean the page's season).
+
 **College Leaders** (`#/college/leaders`, College menu): season leaders (top 10 in 12 stats; filter by conference and class, e.g.
 freshmen), the best single seasons since 2007-08 (21 stats, all players or freshmen only) and career leaders since 2007-08 (8 stats,
 transfers combined). Qualified = 40%+ of team minutes and 15+ games (Torvik's rule); shooting % lists need 200 FGA / 100 3PA / 100 FTA.
