@@ -1,0 +1,883 @@
+{
+ "type": "daily",
+ "id": "2026-10-22",
+ "season": "2026-27",
+ "title": "Daily Report — Oct 22, 2026",
+ "range": {
+  "start": "2026-10-22",
+  "end": "2026-10-22",
+  "days": 1,
+  "requested_start": "2026-10-22"
+ },
+ "generated_at": "2026-10-23 12:09 UTC",
+ "sources": [
+  "NBA.com/stats box scores (LeagueGameLog) via nba_api",
+  "NBA.com/stats season tables (LeagueDashPlayerStats / LeagueDashTeamStats) via nba_api"
+ ],
+ "notes": [
+  "Early season: only 16 games have been played so far this season."
+ ],
+ "summary": {
+  "games": 2,
+  "teams": 4,
+  "players": 45,
+  "max_team_games_in_period": 1,
+  "season_games_so_far": 16
+ },
+ "games": [
+  {
+   "game_id": "0022600006",
+   "date": "2026-10-22",
+   "home": "Philadelphia 76ers",
+   "home_abbr": "PHI",
+   "home_id": 1610612755,
+   "home_pts": 114,
+   "away": "Cleveland Cavaliers",
+   "away_abbr": "CLE",
+   "away_id": 1610612739,
+   "away_pts": 106,
+   "ot": 0,
+   "margin": 8
+  },
+  {
+   "game_id": "0022600007",
+   "date": "2026-10-22",
+   "home": "Oklahoma City Thunder",
+   "home_abbr": "OKC",
+   "home_id": 1610612760,
+   "home_pts": 96,
+   "away": "Denver Nuggets",
+   "away_abbr": "DEN",
+   "away_id": 1610612743,
+   "away_pts": 84,
+   "ot": 0,
+   "margin": 12
+  }
+ ],
+ "top_performers": [
+  {
+   "player": "Tyrese Maxey",
+   "player_id": 1630178,
+   "team": "PHI",
+   "date": "2026-10-22",
+   "opp": "CLE",
+   "wl": "W",
+   "pts": 32,
+   "reb": 3,
+   "ast": 6,
+   "gmsc": 23.8,
+   "line": "32 PTS, 3 REB, 6 AST (12-23 FG, 42 min)"
+  },
+  {
+   "player": "Donovan Mitchell",
+   "player_id": 1628378,
+   "team": "CLE",
+   "date": "2026-10-22",
+   "opp": "PHI",
+   "wl": "L",
+   "pts": 32,
+   "reb": 10,
+   "ast": 3,
+   "gmsc": 23.5,
+   "line": "32 PTS, 10 REB, 3 AST (11-19 FG, 35 min)"
+  },
+  {
+   "player": "Aaron Gordon",
+   "player_id": 203932,
+   "team": "DEN",
+   "date": "2026-10-22",
+   "opp": "OKC",
+   "wl": "L",
+   "pts": 20,
+   "reb": 6,
+   "ast": 1,
+   "gmsc": 18.9,
+   "line": "20 PTS, 6 REB, 1 AST, 3 3PM (6-9 FG, 29 min)"
+  },
+  {
+   "player": "Chet Holmgren",
+   "player_id": 1631096,
+   "team": "OKC",
+   "date": "2026-10-22",
+   "opp": "DEN",
+   "wl": "W",
+   "pts": 12,
+   "reb": 17,
+   "ast": 2,
+   "gmsc": 17.0,
+   "line": "12 PTS, 17 REB, 2 AST, 4 BLK (5-9 FG, 28 min)"
+  },
+  {
+   "player": "Joel Embiid",
+   "player_id": 203954,
+   "team": "PHI",
+   "date": "2026-10-22",
+   "opp": "CLE",
+   "wl": "W",
+   "pts": 24,
+   "reb": 7,
+   "ast": 1,
+   "gmsc": 15.8,
+   "line": "24 PTS, 7 REB, 1 AST (8-16 FG, 34 min)"
+  },
+  {
+   "player": "Jalen Williams",
+   "player_id": 1631114,
+   "team": "OKC",
+   "date": "2026-10-22",
+   "opp": "DEN",
+   "wl": "W",
+   "pts": 21,
+   "reb": 5,
+   "ast": 3,
+   "gmsc": 14.3,
+   "line": "21 PTS, 5 REB, 3 AST (7-15 FG, 33 min)"
+  },
+  {
+   "player": "Evan Mobley",
+   "player_id": 1630596,
+   "team": "CLE",
+   "date": "2026-10-22",
+   "opp": "PHI",
+   "wl": "L",
+   "pts": 18,
+   "reb": 8,
+   "ast": 2,
+   "gmsc": 13.3,
+   "line": "18 PTS, 8 REB, 2 AST (7-13 FG, 34 min)"
+  },
+  {
+   "player": "VJ Edgecombe",
+   "player_id": 1642845,
+   "team": "PHI",
+   "date": "2026-10-22",
+   "opp": "CLE",
+   "wl": "W",
+   "pts": 11,
+   "reb": 7,
+   "ast": 6,
+   "gmsc": 13.2,
+   "line": "11 PTS, 7 REB, 6 AST, 3 STL (4-11 FG, 33 min)"
+  },
+  {
+   "player": "LeBron James",
+   "player_id": 2544,
+   "team": "PHI",
+   "date": "2026-10-22",
+   "opp": "CLE",
+   "wl": "W",
+   "pts": 17,
+   "reb": 10,
+   "ast": 5,
+   "gmsc": 13.2,
+   "line": "17 PTS, 10 REB, 5 AST, 3 STL (5-14 FG, 33 min)"
+  },
+  {
+   "player": "Jaylen Brown",
+   "player_id": 1627759,
+   "team": "PHI",
+   "date": "2026-10-22",
+   "opp": "CLE",
+   "wl": "W",
+   "pts": 21,
+   "reb": 8,
+   "ast": 4,
+   "gmsc": 12.0,
+   "line": "21 PTS, 8 REB, 4 AST (10-20 FG, 38 min)"
+  }
+ ],
+ "notable": [
+  {
+   "player": "Tyrese Maxey",
+   "player_id": 1630178,
+   "team": "PHI",
+   "date": "2026-10-22",
+   "opp": "CLE",
+   "tags": [
+    "32-point game"
+   ],
+   "pts": 32,
+   "line": "32 PTS, 3 REB, 6 AST (12-23 FG, 42 min)"
+  },
+  {
+   "player": "Donovan Mitchell",
+   "player_id": 1628378,
+   "team": "CLE",
+   "date": "2026-10-22",
+   "opp": "PHI",
+   "tags": [
+    "32-point game"
+   ],
+   "pts": 32,
+   "line": "32 PTS, 10 REB, 3 AST (11-19 FG, 35 min)"
+  },
+  {
+   "player": "Ajay Mitchell",
+   "player_id": 1642349,
+   "team": "OKC",
+   "date": "2026-10-22",
+   "opp": "DEN",
+   "tags": [
+    "5 steals"
+   ],
+   "pts": 12,
+   "line": "12 PTS, 0 REB, 0 AST, 5 STL (5-11 FG, 23 min)"
+  }
+ ],
+ "notable_counts": {
+  "30_point_games": 2,
+  "triple_doubles": 0,
+  "games_5_threes": 0,
+  "twenty_twenty": 0
+ },
+ "team_standouts": [
+  {
+   "label": "Biggest win",
+   "team": "Oklahoma City Thunder",
+   "abbr": "OKC",
+   "team_id": 1610612760,
+   "date": "2026-10-22",
+   "value": "+12",
+   "detail": "96-84 vs DEN"
+  },
+  {
+   "label": "Most points",
+   "team": "Philadelphia 76ers",
+   "abbr": "PHI",
+   "team_id": 1610612755,
+   "date": "2026-10-22",
+   "value": "114",
+   "detail": "vs CLE (W)"
+  },
+  {
+   "label": "Best offensive rating (one game)",
+   "team": "Philadelphia 76ers",
+   "abbr": "PHI",
+   "team_id": 1610612755,
+   "date": "2026-10-22",
+   "value": "102.0",
+   "detail": "points per 100 possessions vs CLE"
+  },
+  {
+   "label": "Most 3-pointers",
+   "team": "Oklahoma City Thunder",
+   "abbr": "OKC",
+   "team_id": 1610612760,
+   "date": "2026-10-22",
+   "value": "11",
+   "detail": "11-43 vs DEN"
+  },
+  {
+   "label": "Best shooting (eFG%)",
+   "team": "Philadelphia 76ers",
+   "abbr": "PHI",
+   "team_id": 1610612755,
+   "date": "2026-10-22",
+   "value": "49.5%",
+   "detail": "vs CLE"
+  },
+  {
+   "label": "Best defense (fewest points allowed)",
+   "team": "Oklahoma City Thunder",
+   "abbr": "OKC",
+   "team_id": 1610612760,
+   "date": "2026-10-22",
+   "value": "84",
+   "detail": "vs DEN (W)"
+  }
+ ],
+ "leaders": [],
+ "qualifier": "Player lists need at least 1 game and 20 minutes per game in the period.",
+ "hot": [
+  {
+   "player": "Donovan Mitchell",
+   "player_id": 1628378,
+   "team": "CLE",
+   "gp": 1,
+   "min": 35.0,
+   "ppg": 32.0,
+   "prior_ppg": 27.9,
+   "delta": 4.1,
+   "ts": 0.671,
+   "prior_ts": 0.613
+  },
+  {
+   "player": "Jalen Williams",
+   "player_id": 1631114,
+   "team": "OKC",
+   "gp": 1,
+   "min": 33.0,
+   "ppg": 21.0,
+   "prior_ppg": 17.1,
+   "delta": 3.9,
+   "ts": 0.595,
+   "prior_ts": 0.56
+  },
+  {
+   "player": "Aaron Gordon",
+   "player_id": 203932,
+   "team": "DEN",
+   "gp": 1,
+   "min": 29.0,
+   "ppg": 20.0,
+   "prior_ppg": 16.2,
+   "delta": 3.8,
+   "ts": 0.859,
+   "prior_ts": 0.62
+  },
+  {
+   "player": "Tyrese Maxey",
+   "player_id": 1630178,
+   "team": "PHI",
+   "gp": 1,
+   "min": 42.0,
+   "ppg": 32.0,
+   "prior_ppg": 28.3,
+   "delta": 3.7,
+   "ts": 0.603,
+   "prior_ts": 0.588
+  },
+  {
+   "player": "Alex Caruso",
+   "player_id": 1627936,
+   "team": "OKC",
+   "gp": 1,
+   "min": 20.0,
+   "ppg": 7.0,
+   "prior_ppg": 6.2,
+   "delta": 0.8,
+   "ts": 0.5,
+   "prior_ts": 0.54
+  },
+  {
+   "player": "Cason Wallace",
+   "player_id": 1641717,
+   "team": "OKC",
+   "gp": 1,
+   "min": 24.0,
+   "ppg": 9.0,
+   "prior_ppg": 8.6,
+   "delta": 0.4,
+   "ts": 0.562,
+   "prior_ts": 0.538
+  },
+  {
+   "player": "Evan Mobley",
+   "player_id": 1630596,
+   "team": "CLE",
+   "gp": 1,
+   "min": 34.0,
+   "ppg": 18.0,
+   "prior_ppg": 18.2,
+   "delta": -0.2,
+   "ts": 0.628,
+   "prior_ts": 0.596
+  },
+  {
+   "player": "Jarrett Allen",
+   "player_id": 1628386,
+   "team": "CLE",
+   "gp": 1,
+   "min": 28.0,
+   "ppg": 14.0,
+   "prior_ppg": 15.4,
+   "delta": -1.4,
+   "ts": 0.595,
+   "prior_ts": 0.669
+  }
+ ],
+ "cold": [
+  {
+   "player": "Jamal Murray",
+   "player_id": 1627750,
+   "team": "DEN",
+   "gp": 1,
+   "min": 37.0,
+   "ppg": 6.0,
+   "prior_ppg": 25.4,
+   "delta": -19.4,
+   "ts": 0.235,
+   "prior_ts": 0.622
+  },
+  {
+   "player": "Nikola Jokić",
+   "player_id": 203999,
+   "team": "DEN",
+   "gp": 1,
+   "min": 35.0,
+   "ppg": 13.0,
+   "prior_ppg": 27.7,
+   "delta": -14.7,
+   "ts": 0.313,
+   "prior_ts": 0.67
+  },
+  {
+   "player": "Shai Gilgeous-Alexander",
+   "player_id": 1628983,
+   "team": "OKC",
+   "gp": 1,
+   "min": 35.0,
+   "ppg": 17.0,
+   "prior_ppg": 31.1,
+   "delta": -14.1,
+   "ts": 0.428,
+   "prior_ts": 0.665
+  },
+  {
+   "player": "Jaylon Tyson",
+   "player_id": 1642281,
+   "team": "CLE",
+   "gp": 1,
+   "min": 24.0,
+   "ppg": 3.0,
+   "prior_ppg": 13.2,
+   "delta": -10.2,
+   "ts": 0.218,
+   "prior_ts": 0.608
+  },
+  {
+   "player": "Sam Merrill",
+   "player_id": 1630241,
+   "team": "CLE",
+   "gp": 1,
+   "min": 24.0,
+   "ppg": 5.0,
+   "prior_ppg": 12.8,
+   "delta": -7.8,
+   "ts": 0.5,
+   "prior_ts": 0.644
+  },
+  {
+   "player": "Jaylen Brown",
+   "player_id": 1627759,
+   "team": "PHI",
+   "gp": 1,
+   "min": 38.0,
+   "ppg": 21.0,
+   "prior_ppg": 28.7,
+   "delta": -7.7,
+   "ts": 0.525,
+   "prior_ts": 0.573
+  },
+  {
+   "player": "James Harden",
+   "player_id": 201935,
+   "team": "CLE",
+   "gp": 1,
+   "min": 33.0,
+   "ppg": 16.0,
+   "prior_ppg": 23.6,
+   "delta": -7.6,
+   "ts": 0.581,
+   "prior_ts": 0.61
+  },
+  {
+   "player": "Peyton Watson",
+   "player_id": 1631212,
+   "team": "CLE",
+   "gp": 1,
+   "min": 30.0,
+   "ppg": 8.0,
+   "prior_ppg": 14.6,
+   "delta": -6.6,
+   "ts": 0.457,
+   "prior_ts": 0.594
+  }
+ ],
+ "hot_cold_basis": "Compared with each player's 2025-26 per-game average (players with 20+ games and 15+ minutes last season).",
+ "teams": [
+  {
+   "team": "Oklahoma City Thunder",
+   "abbr": "OKC",
+   "team_id": 1610612760,
+   "gp": 1,
+   "w": 1,
+   "l": 0,
+   "net": 12.5,
+   "ortg": 100.1,
+   "drtg": 87.6,
+   "pace": 95.9,
+   "fg3a100": 44.8,
+   "ppg": 96.0,
+   "last_net": 10.9,
+   "last_pace": 101.7,
+   "last_fg3a100": 37.0,
+   "last_record": "64-18"
+  },
+  {
+   "team": "Philadelphia 76ers",
+   "abbr": "PHI",
+   "team_id": 1610612755,
+   "gp": 1,
+   "w": 1,
+   "l": 0,
+   "net": 7.2,
+   "ortg": 102.0,
+   "drtg": 94.8,
+   "pace": 111.8,
+   "fg3a100": 25.1,
+   "ppg": 114.0,
+   "last_net": -0.2,
+   "last_pace": 102.3,
+   "last_fg3a100": 34.2,
+   "last_record": "45-37"
+  },
+  {
+   "team": "Cleveland Cavaliers",
+   "abbr": "CLE",
+   "team_id": 1610612739,
+   "gp": 1,
+   "w": 0,
+   "l": 1,
+   "net": -7.2,
+   "ortg": 94.8,
+   "drtg": 102.0,
+   "pace": 111.8,
+   "fg3a100": 25.9,
+   "ppg": 106.0,
+   "last_net": 4.0,
+   "last_pace": 102.6,
+   "last_fg3a100": 38.6,
+   "last_record": "52-30"
+  },
+  {
+   "team": "Denver Nuggets",
+   "abbr": "DEN",
+   "team_id": 1610612743,
+   "gp": 1,
+   "w": 0,
+   "l": 1,
+   "net": -12.5,
+   "ortg": 87.6,
+   "drtg": 100.1,
+   "pace": 95.9,
+   "fg3a100": 31.3,
+   "ppg": 84.0,
+   "last_net": 5.0,
+   "last_pace": 100.8,
+   "last_fg3a100": 35.0,
+   "last_record": "54-28"
+  }
+ ],
+ "teams_basis": "Last-season columns are 2025-26 full-season numbers, calculated the same way from box scores.",
+ "streaks": [
+  {
+   "team": "Oklahoma City Thunder",
+   "abbr": "OKC",
+   "team_id": 1610612760,
+   "type": "W",
+   "n": 2,
+   "games": 2
+  },
+  {
+   "team": "Philadelphia 76ers",
+   "abbr": "PHI",
+   "team_id": 1610612755,
+   "type": "W",
+   "n": 2,
+   "games": 2
+  }
+ ],
+ "rookies": [
+  {
+   "player": "Trevon Brazile",
+   "player_id": 1642350,
+   "team": "DEN",
+   "gp": 1,
+   "min": 18.0,
+   "ppg": 4.0,
+   "rpg": 12.0,
+   "apg": 0.0,
+   "ts": 0.291
+  },
+  {
+   "player": "Alpha Diallo",
+   "player_id": 1643813,
+   "team": "DEN",
+   "gp": 1,
+   "min": 22.0,
+   "ppg": 4.0,
+   "rpg": 2.0,
+   "apg": 3.0,
+   "ts": 0.5
+  },
+  {
+   "player": "Aday Mara",
+   "player_id": 1643530,
+   "team": "OKC",
+   "gp": 1,
+   "min": 13.0,
+   "ppg": 2.0,
+   "rpg": 3.0,
+   "apg": 0.0,
+   "ts": 0.333
+  },
+  {
+   "player": "Bennett Stirtz",
+   "player_id": 1642892,
+   "team": "OKC",
+   "gp": 1,
+   "min": 2.0,
+   "ppg": 0.0,
+   "rpg": 0.0,
+   "apg": 0.0,
+   "ts": 0.0
+  },
+  {
+   "player": "Bryce Hopkins",
+   "player_id": 1643624,
+   "team": "DEN",
+   "gp": 1,
+   "min": 2.0,
+   "ppg": 0.0,
+   "rpg": 1.0,
+   "apg": 0.0,
+   "ts": null
+  }
+ ],
+ "efficiency": {
+  "league_ts": 0.503,
+  "rule": "Players with 12+ shot attempts (FGA + 0.44 x FTA) per game",
+  "high": [
+   {
+    "player": "Donovan Mitchell",
+    "player_id": 1628378,
+    "team": "CLE",
+    "gp": 1,
+    "ppg": 32.0,
+    "ts": 0.671
+   },
+   {
+    "player": "Evan Mobley",
+    "player_id": 1630596,
+    "team": "CLE",
+    "gp": 1,
+    "ppg": 18.0,
+    "ts": 0.628
+   },
+   {
+    "player": "Tyrese Maxey",
+    "player_id": 1630178,
+    "team": "PHI",
+    "gp": 1,
+    "ppg": 32.0,
+    "ts": 0.603
+   },
+   {
+    "player": "Joel Embiid",
+    "player_id": 203954,
+    "team": "PHI",
+    "gp": 1,
+    "ppg": 24.0,
+    "ts": 0.601
+   },
+   {
+    "player": "Jalen Williams",
+    "player_id": 1631114,
+    "team": "OKC",
+    "gp": 1,
+    "ppg": 21.0,
+    "ts": 0.595
+   }
+  ],
+  "low": [
+   {
+    "player": "Jamal Murray",
+    "player_id": 1627750,
+    "team": "DEN",
+    "gp": 1,
+    "ppg": 6.0,
+    "ts": 0.235
+   },
+   {
+    "player": "Nikola Jokić",
+    "player_id": 203999,
+    "team": "DEN",
+    "gp": 1,
+    "ppg": 13.0,
+    "ts": 0.313
+   },
+   {
+    "player": "Shai Gilgeous-Alexander",
+    "player_id": 1628983,
+    "team": "OKC",
+    "gp": 1,
+    "ppg": 17.0,
+    "ts": 0.428
+   },
+   {
+    "player": "VJ Edgecombe",
+    "player_id": 1642845,
+    "team": "PHI",
+    "gp": 1,
+    "ppg": 11.0,
+    "ts": 0.446
+   },
+   {
+    "player": "LeBron James",
+    "player_id": 2544,
+    "team": "PHI",
+    "gp": 1,
+    "ppg": 17.0,
+    "ts": 0.498
+   }
+  ]
+ },
+ "what_changed": {
+  "basis": "previous_period",
+  "range": {
+   "start": "2026-10-21",
+   "end": "2026-10-21"
+  },
+  "label": "vs the previous game day (Oct 21, 2026)",
+  "note": "The comparison period is small (11 games), so changes are noisy.",
+  "league": [
+   {
+    "stat": "PPG",
+    "label": "Points per game (per team)",
+    "current": 100.0,
+    "prior": 115.5,
+    "delta": -15.5
+   },
+   {
+    "stat": "PACE",
+    "label": "Pace (possessions per 48 min)",
+    "current": 103.8,
+    "prior": 105.4,
+    "delta": -1.5
+   },
+   {
+    "stat": "ORTG",
+    "label": "Offensive rating (points per 100 poss.)",
+    "current": 96.3,
+    "prior": 109.6,
+    "delta": -13.3
+   },
+   {
+    "stat": "FG3A_100",
+    "label": "3PA per 100 possessions",
+    "current": 31.3,
+    "prior": 33.6,
+    "delta": -2.3
+   },
+   {
+    "stat": "FG3_PCT",
+    "label": "3-point %",
+    "current": 0.254,
+    "prior": 0.326,
+    "delta": -0.072
+   },
+   {
+    "stat": "TS_PCT",
+    "label": "True shooting %",
+    "current": 0.503,
+    "prior": 0.575,
+    "delta": -0.072
+   }
+  ],
+  "players_compared": 0,
+  "ppg_risers": [],
+  "ppg_fallers": [],
+  "ts_risers": [],
+  "ts_fallers": [],
+  "teams": [],
+  "leaders_note": "Season-to-date leaders through Oct 22, 2026 vs through Oct 21, 2026 (at least 1 game(s), 20+ min/game).",
+  "leaders": [
+   {
+    "stat": "PTS",
+    "label": "Points per game",
+    "current": {
+     "player": "Anthony Edwards",
+     "player_id": 1630162,
+     "team": "MIN",
+     "value": 45.0
+    },
+    "prior": {
+     "player": "Anthony Edwards",
+     "player_id": 1630162,
+     "team": "MIN",
+     "value": 45.0
+    },
+    "changed": false
+   },
+   {
+    "stat": "REB",
+    "label": "Rebounds per game",
+    "current": {
+     "player": "Domantas Sabonis",
+     "player_id": 1627734,
+     "team": "SAC",
+     "value": 18.0
+    },
+    "prior": {
+     "player": "Domantas Sabonis",
+     "player_id": 1627734,
+     "team": "SAC",
+     "value": 18.0
+    },
+    "changed": false
+   },
+   {
+    "stat": "AST",
+    "label": "Assists per game",
+    "current": {
+     "player": "Trae Young",
+     "player_id": 1629027,
+     "team": "WAS",
+     "value": 13.0
+    },
+    "prior": {
+     "player": "Trae Young",
+     "player_id": 1629027,
+     "team": "WAS",
+     "value": 13.0
+    },
+    "changed": false
+   },
+   {
+    "stat": "TS_PCT",
+    "label": "True shooting % (10+ shots/game)",
+    "current": {
+     "player": "Grayson Allen",
+     "player_id": 1628960,
+     "team": "CHA",
+     "value": 0.976
+    },
+    "prior": {
+     "player": "Grayson Allen",
+     "player_id": 1628960,
+     "team": "CHA",
+     "value": 0.976
+    },
+    "changed": false
+   },
+   {
+    "stat": "NET",
+    "label": "Best team net rating",
+    "current": {
+     "team": "Oklahoma City Thunder",
+     "team_id": 1610612760,
+     "value": 12.5
+    },
+    "prior": {
+     "team": "Portland Trail Blazers",
+     "team_id": 1610612757,
+     "value": 41.0
+    },
+    "changed": true
+   }
+  ]
+ },
+ "trends": [
+  "Donovan Mitchell scored 32 points in this game, 4.1 more than his 2025-26 average (27.9).",
+  "Jalen Williams scored 21 points in this game, 3.9 more than his 2025-26 average (17.1).",
+  "Aaron Gordon scored 20 points in this game, 3.8 more than his 2025-26 average (16.2).",
+  "Jamal Murray scored 6 points on Oct 22, 2026, 19.4 fewer than his 2025-26 average (25.4).",
+  "Nikola Jokić scored 13 points on Oct 22, 2026, 14.7 fewer than his 2025-26 average (27.7).",
+  "There were 2 30-point games on Oct 22, 2026.",
+  "Pace was 103.8 possessions per 48 minutes on Oct 22, 2026, down 1.5 from 105.4 (on Oct 21, 2026).",
+  "League-wide, teams took 31.3 3-point attempts per 100 possessions on Oct 22, 2026, down 2.3 from 33.6 (on Oct 21, 2026).",
+  "Still unbeaten: Oklahoma City Thunder, Philadelphia 76ers.",
+  "Top-scoring rookie on Oct 22, 2026: Trevon Brazile (DEN), 4.0 points per game in 1 game."
+ ]
+}
