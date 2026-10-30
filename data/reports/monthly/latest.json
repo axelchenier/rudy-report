@@ -1,28 +1,28 @@
 {
  "type": "monthly",
- "id": "2026-10-28",
+ "id": "2026-10-29",
  "season": "2026-27",
- "title": "Monthly Report — Sep 29, 2026 to Oct 28, 2026",
+ "title": "Monthly Report — Sep 30, 2026 to Oct 29, 2026",
  "range": {
   "start": "2026-10-20",
-  "end": "2026-10-28",
+  "end": "2026-10-29",
   "days": 30,
-  "requested_start": "2026-09-29"
+  "requested_start": "2026-09-30"
  },
- "generated_at": "2026-10-29 12:06 UTC",
+ "generated_at": "2026-10-30 12:09 UTC",
  "sources": [
   "NBA.com/stats box scores (LeagueGameLog) via nba_api",
   "NBA.com/stats season tables (LeagueDashPlayerStats / LeagueDashTeamStats) via nba_api"
  ],
  "notes": [
-  "The 2026-27 regular season started on Oct 20, 2026, so this monthly report only covers Oct 20, 2026 to Oct 28, 2026 (68 games)."
+  "The 2026-27 regular season started on Oct 20, 2026, so this monthly report only covers Oct 20, 2026 to Oct 29, 2026 (71 games)."
  ],
  "summary": {
-  "games": 68,
+  "games": 71,
   "teams": 30,
-  "players": 425,
-  "max_team_games_in_period": 5,
-  "season_games_so_far": 68
+  "players": 430,
+  "max_team_games_in_period": 6,
+  "season_games_so_far": 71
  },
  "games": [],
  "top_performers": [
@@ -474,6 +474,18 @@
    "line": "34 PTS, 6 REB, 5 AST (13-26 FG, 36 min)"
   },
   {
+   "player": "Darius Acuff Jr.",
+   "player_id": 1643411,
+   "team": "SAC",
+   "date": "2026-10-29",
+   "opp": "NOP",
+   "tags": [
+    "34-point game"
+   ],
+   "pts": 34,
+   "line": "34 PTS, 6 REB, 14 AST, 3 3PM (13-26 FG, 41 min)"
+  },
+  {
    "player": "Julius Randle",
    "player_id": 203944,
    "team": "BKN",
@@ -640,23 +652,11 @@
    ],
    "pts": 30,
    "line": "30 PTS, 14 REB, 3 AST (10-24 FG, 38 min)"
-  },
-  {
-   "player": "Ajay Mitchell",
-   "player_id": 1642349,
-   "team": "OKC",
-   "date": "2026-10-26",
-   "opp": "PHX",
-   "tags": [
-    "30-point game"
-   ],
-   "pts": 30,
-   "line": "30 PTS, 2 REB, 5 AST (10-16 FG, 25 min)"
   }
  ],
  "notable_counts": {
-  "30_point_games": 42,
-  "triple_doubles": 5,
+  "30_point_games": 43,
+  "triple_doubles": 6,
   "games_5_threes": 46,
   "twenty_twenty": 1
  },
@@ -736,13 +736,6 @@
      "value": 33.2
     },
     {
-     "player": "Ty Jerome",
-     "player_id": 1629660,
-     "team": "MEM",
-     "gp": 4,
-     "value": 29.8
-    },
-    {
      "player": "Stephen Curry",
      "player_id": 201939,
      "team": "GSW",
@@ -755,6 +748,13 @@
      "team": "PHI",
      "gp": 5,
      "value": 28.4
+    },
+    {
+     "player": "Jayson Tatum",
+     "player_id": 1628369,
+     "team": "BOS",
+     "gp": 4,
+     "value": 28.0
     }
    ]
   },
@@ -766,8 +766,8 @@
      "player": "Domantas Sabonis",
      "player_id": 1627734,
      "team": "SAC",
-     "gp": 4,
-     "value": 16.5
+     "gp": 5,
+     "value": 16.2
     },
     {
      "player": "Karl-Anthony Towns",
@@ -828,8 +828,8 @@
      "player": "Jalen Johnson",
      "player_id": 1630552,
      "team": "ATL",
-     "gp": 5,
-     "value": 8.8
+     "gp": 6,
+     "value": 8.5
     },
     {
      "player": "Luka Dončić",
@@ -845,23 +845,23 @@
    "label": "Steals per game",
    "rows": [
     {
+     "player": "Zion Williamson",
+     "player_id": 1629627,
+     "team": "NOP",
+     "gp": 5,
+     "value": 3.2
+    },
+    {
      "player": "Dyson Daniels",
      "player_id": 1630700,
      "team": "ATL",
-     "gp": 5,
-     "value": 3.4
+     "gp": 6,
+     "value": 3.0
     },
     {
      "player": "Kris Dunn",
      "player_id": 1627739,
      "team": "LAC",
-     "gp": 4,
-     "value": 2.8
-    },
-    {
-     "player": "Zion Williamson",
-     "player_id": 1629627,
-     "team": "NOP",
      "gp": 4,
      "value": 2.8
     },
@@ -941,23 +941,23 @@
      "value": 4.5
     },
     {
-     "player": "Toumani Camara",
-     "player_id": 1641739,
-     "team": "POR",
-     "gp": 3,
-     "value": 4.3
-    },
-    {
-     "player": "Damian Lillard",
-     "player_id": 203081,
-     "team": "POR",
-     "gp": 3,
+     "player": "Duncan Robinson",
+     "player_id": 1629130,
+     "team": "DET",
+     "gp": 5,
      "value": 4.0
     },
     {
      "player": "Jamal Murray",
      "player_id": 1627750,
      "team": "DEN",
+     "gp": 4,
+     "value": 4.0
+    },
+    {
+     "player": "Toumani Camara",
+     "player_id": 1641739,
+     "team": "POR",
      "gp": 4,
      "value": 4.0
     }
@@ -971,8 +971,8 @@
      "player": "Domantas Sabonis",
      "player_id": 1627734,
      "team": "SAC",
-     "gp": 4,
-     "value": 0.766
+     "gp": 5,
+     "value": 0.739
     },
     {
      "player": "Austin Reaves",
@@ -982,18 +982,18 @@
      "value": 0.738
     },
     {
-     "player": "Jaylen Wells",
-     "player_id": 1642377,
-     "team": "MEM",
-     "gp": 4,
-     "value": 0.732
-    },
-    {
      "player": "Walker Kessler",
      "player_id": 1631117,
      "team": "LAL",
      "gp": 5,
      "value": 0.713
+    },
+    {
+     "player": "Zion Williamson",
+     "player_id": 1629627,
+     "team": "NOP",
+     "gp": 5,
+     "value": 0.701
     },
     {
      "player": "Stephen Curry",
@@ -1008,18 +1008,6 @@
  "qualifier": "Player lists need at least 3 games and 20 minutes per game in the period (normally 4 games; lowered because the season just started).",
  "hot": [
   {
-   "player": "Zach LaVine",
-   "player_id": 203897,
-   "team": "SAC",
-   "gp": 4,
-   "min": 36.0,
-   "ppg": 27.2,
-   "prior_ppg": 19.2,
-   "delta": 8.1,
-   "ts": 0.663,
-   "prior_ts": 0.614
-  },
-  {
    "player": "Davion Mitchell",
    "player_id": 1630558,
    "team": "MIA",
@@ -1030,6 +1018,30 @@
    "delta": 7.1,
    "ts": 0.609,
    "prior_ts": 0.582
+  },
+  {
+   "player": "Zach LaVine",
+   "player_id": 203897,
+   "team": "SAC",
+   "gp": 5,
+   "min": 36.6,
+   "ppg": 26.0,
+   "prior_ppg": 19.2,
+   "delta": 6.8,
+   "ts": 0.638,
+   "prior_ts": 0.614
+  },
+  {
+   "player": "Aaron Wiggins",
+   "player_id": 1630598,
+   "team": "ATL",
+   "gp": 6,
+   "min": 26.3,
+   "ppg": 15.5,
+   "prior_ppg": 9.4,
+   "delta": 6.1,
+   "ts": 0.654,
+   "prior_ts": 0.538
   },
   {
    "player": "Ja'Kobe Walter",
@@ -1080,18 +1092,6 @@
    "prior_ts": 0.574
   },
   {
-   "player": "Aaron Wiggins",
-   "player_id": 1630598,
-   "team": "ATL",
-   "gp": 5,
-   "min": 26.8,
-   "ppg": 14.6,
-   "prior_ppg": 9.4,
-   "delta": 5.2,
-   "ts": 0.639,
-   "prior_ts": 0.538
-  },
-  {
    "player": "Ajay Mitchell",
    "player_id": 1642349,
    "team": "OKC",
@@ -1115,6 +1115,18 @@
    "prior_ppg": 26.7,
    "delta": -10.7,
    "ts": 0.572,
+   "prior_ts": 0.608
+  },
+  {
+   "player": "Jerami Grant",
+   "player_id": 203924,
+   "team": "MEM",
+   "gp": 5,
+   "min": 24.6,
+   "ppg": 8.2,
+   "prior_ppg": 18.6,
+   "delta": -10.4,
+   "ts": 0.472,
    "prior_ts": 0.608
   },
   {
@@ -1142,30 +1154,6 @@
    "prior_ts": 0.562
   },
   {
-   "player": "Jerami Grant",
-   "player_id": 203924,
-   "team": "MEM",
-   "gp": 4,
-   "min": 24.0,
-   "ppg": 9.8,
-   "prior_ppg": 18.6,
-   "delta": -8.9,
-   "ts": 0.551,
-   "prior_ts": 0.608
-  },
-  {
-   "player": "Trey Murphy III",
-   "player_id": 1630530,
-   "team": "NOP",
-   "gp": 4,
-   "min": 32.5,
-   "ppg": 13.0,
-   "prior_ppg": 21.5,
-   "delta": -8.5,
-   "ts": 0.568,
-   "prior_ts": 0.613
-  },
-  {
    "player": "Jaylen Brown",
    "player_id": 1627759,
    "team": "PHI",
@@ -1178,16 +1166,16 @@
    "prior_ts": 0.573
   },
   {
-   "player": "James Harden",
-   "player_id": 201935,
-   "team": "CLE",
-   "gp": 4,
-   "min": 34.8,
-   "ppg": 15.8,
-   "prior_ppg": 23.6,
-   "delta": -7.9,
-   "ts": 0.49,
-   "prior_ts": 0.61
+   "player": "Trey Murphy III",
+   "player_id": 1630530,
+   "team": "NOP",
+   "gp": 5,
+   "min": 32.4,
+   "ppg": 14.2,
+   "prior_ppg": 21.5,
+   "delta": -7.3,
+   "ts": 0.579,
+   "prior_ts": 0.613
   },
   {
    "player": "LaMelo Ball",
@@ -1200,28 +1188,22 @@
    "delta": -6.7,
    "ts": 0.524,
    "prior_ts": 0.546
+  },
+  {
+   "player": "James Harden",
+   "player_id": 201935,
+   "team": "CLE",
+   "gp": 5,
+   "min": 35.0,
+   "ppg": 17.4,
+   "prior_ppg": 23.6,
+   "delta": -6.2,
+   "ts": 0.529,
+   "prior_ts": 0.61
   }
  ],
  "hot_cold_basis": "Compared with each player's 2025-26 per-game average (players with 20+ games and 15+ minutes last season).",
  "teams": [
-  {
-   "team": "Portland Trail Blazers",
-   "abbr": "POR",
-   "team_id": 1610612757,
-   "gp": 3,
-   "w": 3,
-   "l": 0,
-   "net": 18.1,
-   "ortg": 125.2,
-   "drtg": 107.2,
-   "pace": 103.3,
-   "fg3a100": 42.3,
-   "ppg": 129.3,
-   "last_net": -0.3,
-   "last_pace": 103.6,
-   "last_fg3a100": 40.6,
-   "last_record": "42-40"
-  },
   {
    "team": "Toronto Raptors",
    "abbr": "TOR",
@@ -1280,15 +1262,15 @@
    "team": "Memphis Grizzlies",
    "abbr": "MEM",
    "team_id": 1610612763,
-   "gp": 4,
-   "w": 4,
+   "gp": 5,
+   "w": 5,
    "l": 0,
-   "net": 9.5,
-   "ortg": 114.2,
-   "drtg": 104.7,
-   "pace": 102.2,
-   "fg3a100": 36.9,
-   "ppg": 116.8,
+   "net": 11.7,
+   "ortg": 115.2,
+   "drtg": 103.5,
+   "pace": 102.6,
+   "fg3a100": 37.6,
+   "ppg": 118.2,
    "last_net": -5.8,
    "last_pace": 104.1,
    "last_fg3a100": 37.9,
@@ -1311,6 +1293,24 @@
    "last_pace": 100.7,
    "last_fg3a100": 32.7,
    "last_record": "53-29"
+  },
+  {
+   "team": "Portland Trail Blazers",
+   "abbr": "POR",
+   "team_id": 1610612757,
+   "gp": 4,
+   "w": 3,
+   "l": 1,
+   "net": 8.5,
+   "ortg": 118.5,
+   "drtg": 110.1,
+   "pace": 103.6,
+   "fg3a100": 43.5,
+   "ppg": 122.8,
+   "last_net": -0.3,
+   "last_pace": 103.6,
+   "last_fg3a100": 40.6,
+   "last_record": "42-40"
   },
   {
    "team": "Boston Celtics",
@@ -1370,15 +1370,15 @@
    "team": "Atlanta Hawks",
    "abbr": "ATL",
    "team_id": 1610612737,
-   "gp": 5,
-   "w": 2,
+   "gp": 6,
+   "w": 3,
    "l": 3,
-   "net": 4.7,
-   "ortg": 112.8,
-   "drtg": 108.1,
-   "pace": 106.6,
-   "fg3a100": 38.8,
-   "ppg": 120.2,
+   "net": 4.4,
+   "ortg": 113.1,
+   "drtg": 108.7,
+   "pace": 105.4,
+   "fg3a100": 39.5,
+   "ppg": 119.2,
    "last_net": 2.3,
    "last_pace": 104.2,
    "last_fg3a100": 37.7,
@@ -1421,24 +1421,6 @@
    "last_record": "45-37"
   },
   {
-   "team": "Cleveland Cavaliers",
-   "abbr": "CLE",
-   "team_id": 1610612739,
-   "gp": 4,
-   "w": 3,
-   "l": 1,
-   "net": 1.9,
-   "ortg": 111.1,
-   "drtg": 109.2,
-   "pace": 105.1,
-   "fg3a100": 34.8,
-   "ppg": 119.8,
-   "last_net": 4.0,
-   "last_pace": 102.6,
-   "last_fg3a100": 38.6,
-   "last_record": "52-30"
-  },
-  {
    "team": "Dallas Mavericks",
    "abbr": "DAL",
    "team_id": 1610612742,
@@ -1455,6 +1437,24 @@
    "last_pace": 104.2,
    "last_fg3a100": 30.3,
    "last_record": "26-56"
+  },
+  {
+   "team": "Cleveland Cavaliers",
+   "abbr": "CLE",
+   "team_id": 1610612739,
+   "gp": 5,
+   "w": 3,
+   "l": 2,
+   "net": 0.9,
+   "ortg": 111.2,
+   "drtg": 110.3,
+   "pace": 104.0,
+   "fg3a100": 36.2,
+   "ppg": 118.0,
+   "last_net": 4.0,
+   "last_pace": 102.6,
+   "last_fg3a100": 38.6,
+   "last_record": "52-30"
   },
   {
    "team": "New York Knicks",
@@ -1529,6 +1529,24 @@
    "last_record": "37-45"
   },
   {
+   "team": "New Orleans Pelicans",
+   "abbr": "NOP",
+   "team_id": 1610612740,
+   "gp": 5,
+   "w": 1,
+   "l": 4,
+   "net": -2.0,
+   "ortg": 110.2,
+   "drtg": 112.2,
+   "pace": 106.2,
+   "fg3a100": 28.2,
+   "ppg": 119.4,
+   "last_net": -4.3,
+   "last_pace": 103.2,
+   "last_fg3a100": 31.0,
+   "last_record": "26-56"
+  },
+  {
    "team": "Washington Wizards",
    "abbr": "WAS",
    "team_id": 1610612764,
@@ -1563,24 +1581,6 @@
    "last_pace": 100.8,
    "last_fg3a100": 35.0,
    "last_record": "54-28"
-  },
-  {
-   "team": "New Orleans Pelicans",
-   "abbr": "NOP",
-   "team_id": 1610612740,
-   "gp": 4,
-   "w": 0,
-   "l": 4,
-   "net": -5.4,
-   "ortg": 108.8,
-   "drtg": 114.2,
-   "pace": 104.1,
-   "fg3a100": 29.0,
-   "ppg": 116.2,
-   "last_net": -4.3,
-   "last_pace": 103.2,
-   "last_fg3a100": 31.0,
-   "last_record": "26-56"
   },
   {
    "team": "Charlotte Hornets",
@@ -1730,15 +1730,15 @@
    "team": "Sacramento Kings",
    "abbr": "SAC",
    "team_id": 1610612758,
-   "gp": 4,
+   "gp": 5,
    "w": 0,
-   "l": 4,
-   "net": -17.1,
-   "ortg": 104.1,
-   "drtg": 121.3,
-   "pace": 103.5,
-   "fg3a100": 31.4,
-   "ppg": 107.8,
+   "l": 5,
+   "net": -15.7,
+   "ortg": 104.3,
+   "drtg": 120.0,
+   "pace": 105.7,
+   "fg3a100": 31.6,
+   "ppg": 110.2,
    "last_net": -9.8,
    "last_pace": 101.8,
    "last_fg3a100": 29.5,
@@ -1760,29 +1760,21 @@
    "abbr": "MEM",
    "team_id": 1610612763,
    "type": "W",
-   "n": 4,
-   "games": 4
-  },
-  {
-   "team": "Brooklyn Nets",
-   "abbr": "BKN",
-   "team_id": 1610612751,
-   "type": "L",
-   "n": 4,
-   "games": 4
-  },
-  {
-   "team": "New Orleans Pelicans",
-   "abbr": "NOP",
-   "team_id": 1610612740,
-   "type": "L",
-   "n": 4,
-   "games": 4
+   "n": 5,
+   "games": 5
   },
   {
    "team": "Sacramento Kings",
    "abbr": "SAC",
    "team_id": 1610612758,
+   "type": "L",
+   "n": 5,
+   "games": 5
+  },
+  {
+   "team": "Brooklyn Nets",
+   "abbr": "BKN",
+   "team_id": 1610612751,
    "type": "L",
    "n": 4,
    "games": 4
@@ -1796,34 +1788,10 @@
    "games": 4
   },
   {
-   "team": "Cleveland Cavaliers",
-   "abbr": "CLE",
-   "team_id": 1610612739,
-   "type": "W",
-   "n": 3,
-   "games": 4
-  },
-  {
-   "team": "Portland Trail Blazers",
-   "abbr": "POR",
-   "team_id": 1610612757,
-   "type": "W",
-   "n": 3,
-   "games": 3
-  },
-  {
    "team": "San Antonio Spurs",
    "abbr": "SAS",
    "team_id": 1610612759,
    "type": "W",
-   "n": 3,
-   "games": 5
-  },
-  {
-   "team": "Atlanta Hawks",
-   "abbr": "ATL",
-   "team_id": 1610612737,
-   "type": "L",
    "n": 3,
    "games": 5
   },
@@ -1842,9 +1810,52 @@
    "type": "L",
    "n": 3,
    "games": 4
+  },
+  {
+   "team": "Utah Jazz",
+   "abbr": "UTA",
+   "team_id": 1610612762,
+   "type": "L",
+   "n": 3,
+   "games": 5
+  },
+  {
+   "team": "Dallas Mavericks",
+   "abbr": "DAL",
+   "team_id": 1610612742,
+   "type": "W",
+   "n": 2,
+   "games": 5
+  },
+  {
+   "team": "Golden State Warriors",
+   "abbr": "GSW",
+   "team_id": 1610612744,
+   "type": "W",
+   "n": 2,
+   "games": 5
+  },
+  {
+   "team": "New York Knicks",
+   "abbr": "NYK",
+   "team_id": 1610612752,
+   "type": "W",
+   "n": 2,
+   "games": 5
   }
  ],
  "rookies": [
+  {
+   "player": "Darius Acuff Jr.",
+   "player_id": 1643411,
+   "team": "SAC",
+   "gp": 5,
+   "min": 36.4,
+   "ppg": 24.0,
+   "rpg": 3.4,
+   "apg": 6.6,
+   "ts": 0.463
+  },
   {
    "player": "Yaxel Lendeborg",
    "player_id": 1642865,
@@ -1855,17 +1866,6 @@
    "rpg": 9.2,
    "apg": 4.0,
    "ts": 0.592
-  },
-  {
-   "player": "Darius Acuff Jr.",
-   "player_id": 1643411,
-   "team": "SAC",
-   "gp": 4,
-   "min": 35.2,
-   "ppg": 21.5,
-   "rpg": 2.8,
-   "apg": 4.8,
-   "ts": 0.424
   },
   {
    "player": "Caleb Wilson",
@@ -1890,6 +1890,17 @@
    "ts": 0.738
   },
   {
+   "player": "Cameron Boozer",
+   "player_id": 1643409,
+   "team": "MEM",
+   "gp": 5,
+   "min": 32.0,
+   "ppg": 15.4,
+   "rpg": 10.8,
+   "apg": 6.2,
+   "ts": 0.48
+  },
+  {
    "player": "Keaton Wagler",
    "player_id": 1643413,
    "team": "LAC",
@@ -1899,17 +1910,6 @@
    "rpg": 4.2,
    "apg": 3.5,
    "ts": 0.581
-  },
-  {
-   "player": "Cameron Boozer",
-   "player_id": 1643409,
-   "team": "MEM",
-   "gp": 4,
-   "min": 33.0,
-   "ppg": 14.8,
-   "rpg": 10.5,
-   "apg": 4.8,
-   "ts": 0.425
   },
   {
    "player": "Meleek Thomas",
@@ -1939,20 +1939,20 @@
   "rule": "Players with 12+ shot attempts (FGA + 0.44 x FTA) per game",
   "high": [
    {
-    "player": "Domantas Sabonis",
-    "player_id": 1627734,
-    "team": "SAC",
-    "gp": 4,
-    "ppg": 19.0,
-    "ts": 0.766
-   },
-   {
     "player": "Austin Reaves",
     "player_id": 1630559,
     "team": "LAL",
     "gp": 5,
     "ppg": 24.4,
     "ts": 0.738
+   },
+   {
+    "player": "Zion Williamson",
+    "player_id": 1629627,
+    "team": "NOP",
+    "gp": 5,
+    "ppg": 21.8,
+    "ts": 0.701
    },
    {
     "player": "Stephen Curry",
@@ -1971,12 +1971,12 @@
     "ts": 0.699
    },
    {
-    "player": "Evan Mobley",
-    "player_id": 1630596,
-    "team": "CLE",
-    "gp": 4,
-    "ppg": 20.0,
-    "ts": 0.692
+    "player": "Karl-Anthony Towns",
+    "player_id": 1626157,
+    "team": "NYK",
+    "gp": 5,
+    "ppg": 21.8,
+    "ts": 0.671
    }
   ],
   "low": [
@@ -2005,20 +2005,20 @@
     "ts": 0.422
    },
    {
-    "player": "Darius Acuff Jr.",
-    "player_id": 1643411,
-    "team": "SAC",
-    "gp": 4,
-    "ppg": 21.5,
-    "ts": 0.424
+    "player": "Jeremiah Fears",
+    "player_id": 1642847,
+    "team": "NOP",
+    "gp": 5,
+    "ppg": 11.6,
+    "ts": 0.446
    },
    {
-    "player": "Cameron Boozer",
-    "player_id": 1643409,
-    "team": "MEM",
-    "gp": 4,
-    "ppg": 14.8,
-    "ts": 0.425
+    "player": "Darryn Peterson",
+    "player_id": 1643408,
+    "team": "UTA",
+    "gp": 5,
+    "ppg": 12.8,
+    "ts": 0.463
    }
   ]
  },
@@ -2031,30 +2031,30 @@
    {
     "stat": "PPG",
     "label": "Points per game (per team)",
-    "current": 114.3,
+    "current": 114.4,
     "prior": 115.6,
-    "delta": -1.3
+    "delta": -1.2
    },
    {
     "stat": "PACE",
     "label": "Pace (possessions per 48 min)",
-    "current": 103.9,
+    "current": 104.0,
     "prior": 102.0,
-    "delta": 1.8
+    "delta": 1.9
    },
    {
     "stat": "ORTG",
     "label": "Offensive rating (points per 100 poss.)",
     "current": 109.4,
     "prior": 112.7,
-    "delta": -3.4
+    "delta": -3.3
    },
    {
     "stat": "FG3A_100",
     "label": "3PA per 100 possessions",
-    "current": 35.9,
+    "current": 36.0,
     "prior": 36.1,
-    "delta": -0.2
+    "delta": -0.1
    },
    {
     "stat": "FG3_PCT",
@@ -2068,26 +2068,11 @@
     "label": "True shooting %",
     "current": 0.57,
     "prior": 0.581,
-    "delta": -0.012
+    "delta": -0.011
    }
   ],
-  "players_compared": 171,
+  "players_compared": 172,
   "ppg_risers": [
-   {
-    "player": "Zach LaVine",
-    "player_id": 203897,
-    "team": "SAC",
-    "gp": 4,
-    "prior_gp": 39,
-    "ppg": 27.2,
-    "prior_ppg": 19.2,
-    "ppg_delta": 8.1,
-    "ts": 0.663,
-    "prior_ts": 0.614,
-    "ts_delta": 0.049,
-    "shots": 20.6,
-    "prior_shots": 15.6
-   },
    {
     "player": "Davion Mitchell",
     "player_id": 1630558,
@@ -2102,6 +2087,36 @@
     "ts_delta": 0.027,
     "shots": 13.5,
     "prior_shots": 8.0
+   },
+   {
+    "player": "Zach LaVine",
+    "player_id": 203897,
+    "team": "SAC",
+    "gp": 5,
+    "prior_gp": 39,
+    "ppg": 26.0,
+    "prior_ppg": 19.2,
+    "ppg_delta": 6.8,
+    "ts": 0.638,
+    "prior_ts": 0.614,
+    "ts_delta": 0.024,
+    "shots": 20.4,
+    "prior_shots": 15.6
+   },
+   {
+    "player": "Aaron Wiggins",
+    "player_id": 1630598,
+    "team": "ATL",
+    "gp": 6,
+    "prior_gp": 65,
+    "ppg": 15.5,
+    "prior_ppg": 9.4,
+    "ppg_delta": 6.1,
+    "ts": 0.654,
+    "prior_ts": 0.538,
+    "ts_delta": 0.116,
+    "shots": 11.8,
+    "prior_shots": 8.7
    },
    {
     "player": "Ja'Kobe Walter",
@@ -2147,21 +2162,6 @@
     "ts_delta": -0.078,
     "shots": 25.8,
     "prior_shots": 17.6
-   },
-   {
-    "player": "Dylan Harper",
-    "player_id": 1642844,
-    "team": "SAS",
-    "gp": 5,
-    "prior_gp": 69,
-    "ppg": 17.2,
-    "prior_ppg": 11.8,
-    "ppg_delta": 5.4,
-    "ts": 0.539,
-    "prior_ts": 0.574,
-    "ts_delta": -0.035,
-    "shots": 15.9,
-    "prior_shots": 10.2
    }
   ],
   "ppg_fallers": [
@@ -2179,6 +2179,21 @@
     "ts_delta": -0.036,
     "shots": 14.0,
     "prior_shots": 22.0
+   },
+   {
+    "player": "Jerami Grant",
+    "player_id": 203924,
+    "team": "MEM",
+    "gp": 5,
+    "prior_gp": 57,
+    "ppg": 8.2,
+    "prior_ppg": 18.6,
+    "ppg_delta": -10.4,
+    "ts": 0.472,
+    "prior_ts": 0.608,
+    "ts_delta": -0.136,
+    "shots": 8.7,
+    "prior_shots": 15.3
    },
    {
     "player": "Mikal Bridges",
@@ -2211,36 +2226,6 @@
     "prior_shots": 15.1
    },
    {
-    "player": "Jerami Grant",
-    "player_id": 203924,
-    "team": "MEM",
-    "gp": 4,
-    "prior_gp": 57,
-    "ppg": 9.8,
-    "prior_ppg": 18.6,
-    "ppg_delta": -8.9,
-    "ts": 0.551,
-    "prior_ts": 0.608,
-    "ts_delta": -0.057,
-    "shots": 8.8,
-    "prior_shots": 15.3
-   },
-   {
-    "player": "Trey Murphy III",
-    "player_id": 1630530,
-    "team": "NOP",
-    "gp": 4,
-    "prior_gp": 66,
-    "ppg": 13.0,
-    "prior_ppg": 21.5,
-    "ppg_delta": -8.5,
-    "ts": 0.568,
-    "prior_ts": 0.613,
-    "ts_delta": -0.045,
-    "shots": 11.4,
-    "prior_shots": 17.5
-   },
-   {
     "player": "Jaylen Brown",
     "player_id": 1627759,
     "team": "PHI",
@@ -2254,6 +2239,21 @@
     "ts_delta": -0.037,
     "shots": 19.2,
     "prior_shots": 25.0
+   },
+   {
+    "player": "Trey Murphy III",
+    "player_id": 1630530,
+    "team": "NOP",
+    "gp": 5,
+    "prior_gp": 66,
+    "ppg": 14.2,
+    "prior_ppg": 21.5,
+    "ppg_delta": -7.3,
+    "ts": 0.579,
+    "prior_ts": 0.613,
+    "ts_delta": -0.034,
+    "shots": 12.3,
+    "prior_shots": 17.5
    }
   ],
   "ts_risers": [
@@ -2261,31 +2261,16 @@
     "player": "Toumani Camara",
     "player_id": 1641739,
     "team": "POR",
-    "gp": 3,
-    "prior_gp": 82,
-    "ppg": 16.3,
-    "prior_ppg": 13.4,
-    "ppg_delta": 2.9,
-    "ts": 0.911,
-    "prior_ts": 0.578,
-    "ts_delta": 0.333,
-    "shots": 9.0,
-    "prior_shots": 11.6
-   },
-   {
-    "player": "Jaylen Wells",
-    "player_id": 1642377,
-    "team": "MEM",
     "gp": 4,
-    "prior_gp": 69,
-    "ppg": 14.8,
-    "prior_ppg": 12.5,
-    "ppg_delta": 2.2,
-    "ts": 0.732,
-    "prior_ts": 0.559,
-    "ts_delta": 0.173,
-    "shots": 10.1,
-    "prior_shots": 11.2
+    "prior_gp": 82,
+    "ppg": 15.5,
+    "prior_ppg": 13.4,
+    "ppg_delta": 2.1,
+    "ts": 0.841,
+    "prior_ts": 0.578,
+    "ts_delta": 0.263,
+    "shots": 9.2,
+    "prior_shots": 11.6
    },
    {
     "player": "Wendell Carter Jr.",
@@ -2303,19 +2288,19 @@
     "prior_shots": 9.6
    },
    {
-    "player": "Ja Morant",
-    "player_id": 1629630,
-    "team": "POR",
-    "gp": 3,
-    "prior_gp": 20,
-    "ppg": 16.3,
-    "prior_ppg": 19.5,
-    "ppg_delta": -3.2,
-    "ts": 0.669,
-    "prior_ts": 0.521,
-    "ts_delta": 0.148,
-    "shots": 12.2,
-    "prior_shots": 18.7
+    "player": "Jaylen Wells",
+    "player_id": 1642377,
+    "team": "MEM",
+    "gp": 5,
+    "prior_gp": 69,
+    "ppg": 13.8,
+    "prior_ppg": 12.5,
+    "ppg_delta": 1.3,
+    "ts": 0.7,
+    "prior_ts": 0.559,
+    "ts_delta": 0.141,
+    "shots": 9.9,
+    "prior_shots": 11.2
    },
    {
     "player": "Grayson Allen",
@@ -2346,6 +2331,21 @@
     "ts_delta": 0.119,
     "shots": 8.7,
     "prior_shots": 8.4
+   },
+   {
+    "player": "De'Andre Hunter",
+    "player_id": 1629631,
+    "team": "SAC",
+    "gp": 5,
+    "prior_gp": 45,
+    "ppg": 13.0,
+    "prior_ppg": 13.7,
+    "ppg_delta": -0.7,
+    "ts": 0.663,
+    "prior_ts": 0.545,
+    "ts_delta": 0.118,
+    "shots": 9.8,
+    "prior_shots": 12.5
    }
   ],
   "ts_fallers": [
@@ -2410,21 +2410,6 @@
     "prior_shots": 12.3
    },
    {
-    "player": "Jeremiah Fears",
-    "player_id": 1642847,
-    "team": "NOP",
-    "gp": 4,
-    "prior_gp": 82,
-    "ppg": 9.0,
-    "prior_ppg": 14.3,
-    "ppg_delta": -5.3,
-    "ts": 0.378,
-    "prior_ts": 0.525,
-    "ts_delta": -0.147,
-    "shots": 11.9,
-    "prior_shots": 13.6
-   },
-   {
     "player": "Josh Giddey",
     "player_id": 1630581,
     "team": "CHI",
@@ -2438,35 +2423,36 @@
     "ts_delta": -0.141,
     "shots": 9.0,
     "prior_shots": 15.1
+   },
+   {
+    "player": "Desmond Bane",
+    "player_id": 1630217,
+    "team": "ORL",
+    "gp": 4,
+    "prior_gp": 82,
+    "ppg": 14.5,
+    "prior_ppg": 20.1,
+    "ppg_delta": -5.6,
+    "ts": 0.469,
+    "prior_ts": 0.607,
+    "ts_delta": -0.138,
+    "shots": 15.4,
+    "prior_shots": 16.5
    }
   ],
   "teams": [
    {
-    "team": "Portland Trail Blazers",
-    "abbr": "POR",
-    "team_id": 1610612757,
-    "record": "3-0",
-    "prior_record": "42-40",
-    "net": 18.1,
-    "prior_net": -0.3,
-    "net_delta": 18.4,
-    "pace": 103.3,
-    "prior_pace": 103.6,
-    "fg3a100": 42.3,
-    "prior_fg3a100": 40.6
-   },
-   {
     "team": "Memphis Grizzlies",
     "abbr": "MEM",
     "team_id": 1610612763,
-    "record": "4-0",
+    "record": "5-0",
     "prior_record": "25-57",
-    "net": 9.5,
+    "net": 11.7,
     "prior_net": -5.8,
-    "net_delta": 15.3,
-    "pace": 102.2,
+    "net_delta": 17.5,
+    "pace": 102.6,
     "prior_pace": 104.1,
-    "fg3a100": 36.9,
+    "fg3a100": 37.6,
     "prior_fg3a100": 37.9
    },
    {
@@ -2496,6 +2482,20 @@
     "prior_pace": 104.0,
     "fg3a100": 30.6,
     "prior_fg3a100": 34.8
+   },
+   {
+    "team": "Portland Trail Blazers",
+    "abbr": "POR",
+    "team_id": 1610612757,
+    "record": "3-1",
+    "prior_record": "42-40",
+    "net": 8.5,
+    "prior_net": -0.3,
+    "net_delta": 8.7,
+    "pace": 103.6,
+    "prior_pace": 103.6,
+    "fg3a100": 43.5,
+    "prior_fg3a100": 40.6
    },
    {
     "team": "Houston Rockets",
@@ -2582,17 +2582,31 @@
     "prior_fg3a100": 34.2
    },
    {
+    "team": "New Orleans Pelicans",
+    "abbr": "NOP",
+    "team_id": 1610612740,
+    "record": "1-4",
+    "prior_record": "26-56",
+    "net": -2.0,
+    "prior_net": -4.3,
+    "net_delta": 2.3,
+    "pace": 106.2,
+    "prior_pace": 103.2,
+    "fg3a100": 28.2,
+    "prior_fg3a100": 31.0
+   },
+   {
     "team": "Atlanta Hawks",
     "abbr": "ATL",
     "team_id": 1610612737,
-    "record": "2-3",
+    "record": "3-3",
     "prior_record": "46-36",
-    "net": 4.7,
+    "net": 4.4,
     "prior_net": 2.3,
-    "net_delta": 2.4,
-    "pace": 106.6,
+    "net_delta": 2.1,
+    "pace": 105.4,
     "prior_pace": 104.2,
-    "fg3a100": 38.8,
+    "fg3a100": 39.5,
     "prior_fg3a100": 37.7
    },
    {
@@ -2638,20 +2652,6 @@
     "prior_fg3a100": 43.0
    },
    {
-    "team": "New Orleans Pelicans",
-    "abbr": "NOP",
-    "team_id": 1610612740,
-    "record": "0-4",
-    "prior_record": "26-56",
-    "net": -5.4,
-    "prior_net": -4.3,
-    "net_delta": -1.0,
-    "pace": 104.1,
-    "prior_pace": 103.2,
-    "fg3a100": 29.0,
-    "prior_fg3a100": 31.0
-   },
-   {
     "team": "Golden State Warriors",
     "abbr": "GSW",
     "team_id": 1610612744,
@@ -2694,20 +2694,6 @@
     "prior_fg3a100": 36.9
    },
    {
-    "team": "Cleveland Cavaliers",
-    "abbr": "CLE",
-    "team_id": 1610612739,
-    "record": "3-1",
-    "prior_record": "52-30",
-    "net": 1.9,
-    "prior_net": 4.0,
-    "net_delta": -2.1,
-    "pace": 105.1,
-    "prior_pace": 102.6,
-    "fg3a100": 34.8,
-    "prior_fg3a100": 38.6
-   },
-   {
     "team": "LA Clippers",
     "abbr": "LAC",
     "team_id": 1610612746,
@@ -2722,6 +2708,20 @@
     "prior_fg3a100": 34.0
    },
    {
+    "team": "Cleveland Cavaliers",
+    "abbr": "CLE",
+    "team_id": 1610612739,
+    "record": "3-2",
+    "prior_record": "52-30",
+    "net": 0.9,
+    "prior_net": 4.0,
+    "net_delta": -3.0,
+    "pace": 104.0,
+    "prior_pace": 102.6,
+    "fg3a100": 36.2,
+    "prior_fg3a100": 38.6
+   },
+   {
     "team": "Milwaukee Bucks",
     "abbr": "MIL",
     "team_id": 1610612749,
@@ -2734,6 +2734,20 @@
     "prior_pace": 99.9,
     "fg3a100": 38.8,
     "prior_fg3a100": 39.0
+   },
+   {
+    "team": "Sacramento Kings",
+    "abbr": "SAC",
+    "team_id": 1610612758,
+    "record": "0-5",
+    "prior_record": "22-60",
+    "net": -15.7,
+    "prior_net": -9.8,
+    "net_delta": -5.9,
+    "pace": 105.7,
+    "prior_pace": 101.8,
+    "fg3a100": 31.6,
+    "prior_fg3a100": 29.5
    },
    {
     "team": "New York Knicks",
@@ -2762,20 +2776,6 @@
     "prior_pace": 101.7,
     "fg3a100": 31.8,
     "prior_fg3a100": 37.0
-   },
-   {
-    "team": "Sacramento Kings",
-    "abbr": "SAC",
-    "team_id": 1610612758,
-    "record": "0-4",
-    "prior_record": "22-60",
-    "net": -17.1,
-    "prior_net": -9.8,
-    "net_delta": -7.4,
-    "pace": 103.5,
-    "prior_pace": 101.8,
-    "fg3a100": 31.4,
-    "prior_fg3a100": 29.5
    },
    {
     "team": "Denver Nuggets",
@@ -2888,7 +2888,7 @@
      "player": "Domantas Sabonis",
      "player_id": 1627734,
      "team": "SAC",
-     "value": 16.5
+     "value": 16.2
     },
     "prior": {
      "player": "Nikola Jokić",
@@ -2922,7 +2922,7 @@
      "player": "Domantas Sabonis",
      "player_id": 1627734,
      "team": "SAC",
-     "value": 0.766
+     "value": 0.739
     },
     "prior": {
      "player": "Jalen Duren",
@@ -2936,9 +2936,9 @@
     "stat": "NET",
     "label": "Best team net rating",
     "current": {
-     "team": "Portland Trail Blazers",
-     "team_id": 1610612757,
-     "value": 18.1
+     "team": "Toronto Raptors",
+     "team_id": 1610612761,
+     "value": 13.9
     },
     "prior": {
      "team": "Oklahoma City Thunder",
@@ -2950,22 +2950,22 @@
   ]
  },
  "trends": [
-  "Zach LaVine is averaging 27.2 points over his first 4 games, 8.1 more than his 2025-26 average (19.2).",
   "Davion Mitchell is averaging 16.4 points over his first 5 games, 7.1 more than his 2025-26 average (9.3).",
-  "Ja'Kobe Walter is averaging 13.2 points over his first 4 games, 5.8 more than his 2025-26 average (7.5).",
+  "Zach LaVine is averaging 26.0 points over his first 5 games, 6.8 more than his 2025-26 average (19.2).",
+  "Aaron Wiggins is averaging 15.5 points over his first 6 games, 6.1 more than his 2025-26 average (9.4).",
   "Lauri Markkanen is averaging 16.0 points over the last 30 days, 10.7 fewer than his 2025-26 average (26.7).",
-  "Mikal Bridges is averaging 5.0 points over the last 30 days, 9.4 fewer than his 2025-26 average (14.4).",
-  "There were 42 30-point games over the last 30 days, plus 5 triple-doubles.",
-  "Pace was 103.9 possessions per 48 minutes over the last 30 days, up 1.8 from 102.0 (2025-26 average).",
-  "League-wide, teams took 35.9 3-point attempts per 100 possessions over the last 30 days, down 0.2 from 36.1 (2025-26 average).",
-  "The Portland Trail Blazers have the best net rating over the last 30 days (+18.1 in 3 games, 3-0); their 2025-26 net rating was -0.3.",
+  "Jerami Grant is averaging 8.2 points over the last 30 days, 10.4 fewer than his 2025-26 average (18.6).",
+  "There were 43 30-point games over the last 30 days, plus 6 triple-doubles.",
+  "Pace was 104.0 possessions per 48 minutes over the last 30 days, up 1.9 from 102.0 (2025-26 average).",
+  "League-wide, teams took 36.0 3-point attempts per 100 possessions over the last 30 days, down 0.1 from 36.1 (2025-26 average).",
+  "The Toronto Raptors have the best net rating over the last 30 days (+13.9 in 4 games, 3-1); their 2025-26 net rating was +2.8.",
   "The Houston Rockets have won 5 straight.",
-  "The Memphis Grizzlies have won 4 straight.",
-  "Still unbeaten: Houston Rockets, Memphis Grizzlies, Portland Trail Blazers.",
-  "Still winless: Brooklyn Nets, New Orleans Pelicans, Sacramento Kings.",
-  "Rebounds per game: Domantas Sabonis leads this period (16.5); the 2025-26 leader was Nikola Jokić (12.9).",
+  "The Memphis Grizzlies have won 5 straight.",
+  "Still unbeaten: Houston Rockets, Memphis Grizzlies.",
+  "Still winless: Sacramento Kings, Brooklyn Nets.",
+  "Rebounds per game: Domantas Sabonis leads this period (16.2); the 2025-26 leader was Nikola Jokić (12.9).",
   "Assists per game: Trae Young leads this period (10.4); the 2025-26 leader was Nikola Jokić (10.7).",
-  "True shooting % (10+ shots/game): Domantas Sabonis leads this period (76.6%); the 2025-26 leader was Jalen Duren (68.8%).",
-  "Top-scoring rookie over the last 30 days: Yaxel Lendeborg (GSW), 22.6 points per game in 5 games."
+  "True shooting % (10+ shots/game): Domantas Sabonis leads this period (73.9%); the 2025-26 leader was Jalen Duren (68.8%).",
+  "Top-scoring rookie over the last 30 days: Darius Acuff Jr. (SAC), 24.0 points per game in 5 games."
  ]
 }
