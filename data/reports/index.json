@@ -1,6 +1,14 @@
 {
- "generated_at": "2026-10-30 12:09 UTC",
+ "generated_at": "2026-10-31 12:00 UTC",
  "daily": [
+  {
+   "file": "daily/2026-10-30.json",
+   "name": "2026-10-30",
+   "start": "2026-10-30",
+   "end": "2026-10-30",
+   "games": 10,
+   "title": "Daily Report \u2014 Oct 30, 2026"
+  },
   {
    "file": "daily/2026-10-29.json",
    "name": "2026-10-29",
@@ -38,10 +46,10 @@
   {
    "file": "weekly/latest.json",
    "name": "latest",
-   "start": "2026-10-23",
-   "end": "2026-10-29",
-   "games": 55,
-   "title": "Weekly Report \u2014 Oct 23, 2026 to Oct 29, 2026"
+   "start": "2026-10-24",
+   "end": "2026-10-30",
+   "games": 53,
+   "title": "Weekly Report \u2014 Oct 24, 2026 to Oct 30, 2026"
   },
   {
    "file": "weekly/2026-10-21.json",
@@ -57,9 +65,9 @@
    "file": "monthly/latest.json",
    "name": "latest",
    "start": "2026-10-20",
-   "end": "2026-10-29",
-   "games": 71,
-   "title": "Monthly Report \u2014 Sep 30, 2026 to Oct 29, 2026"
+   "end": "2026-10-30",
+   "games": 81,
+   "title": "Monthly Report \u2014 Oct 1, 2026 to Oct 30, 2026"
   },
   {
    "file": "monthly/2026-10-21.json",
